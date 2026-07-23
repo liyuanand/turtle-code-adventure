@@ -385,8 +385,29 @@
     .knowledge-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .knowledge-tag { padding: 3px 6px; border: 1px solid #aeb9c8; border-radius: 5px; background: white; color: #46546b; font-size: 11px; font-weight: 800; }
     .syntax-example {
-      display: block; margin-top: 7px; padding: 6px 8px; overflow-wrap: anywhere; border-left: 4px solid var(--theme-primary);
+      display: block; margin-top: 7px; padding: 6px 8px; white-space: pre-wrap; overflow-wrap: anywhere; border-left: 4px solid var(--theme-primary);
       background: #17223b; color: #e9f4ff; font: 800 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .parameter-lab {
+      margin-top: 11px; padding: 10px; border: 2px solid #8b72c8; border-radius: 7px;
+      background: #f3efff; color: #352d55;
+    }
+    .parameter-lab-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .parameter-lab-head strong { font-size: 13px; font-weight: 1000; }
+    .parameter-lab-head span { color: #6b5c99; font-size: 11px; font-weight: 800; }
+    .parameter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 8px; }
+    .parameter-control { min-width: 0; padding: 8px; border: 1px solid #c7bce3; border-radius: 6px; background: #fff; }
+    .parameter-label { display: block; margin-bottom: 6px; color: #51466f; font-size: 11px; font-weight: 900; }
+    .parameter-stepper { display: grid; grid-template-columns: 44px minmax(42px, 1fr) 44px; align-items: center; gap: 5px; }
+    .parameter-stepper button {
+      width: 44px; height: 44px; padding: 0; border: 2px solid var(--ink); border-radius: 6px;
+      background: #fff; color: var(--ink); font-size: 24px; font-weight: 1000; cursor: pointer; box-shadow: 0 2px 0 var(--ink);
+    }
+    .parameter-stepper button:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+    .parameter-stepper button:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+    .parameter-value {
+      display: grid; place-items: center; min-width: 0; height: 44px; padding: 0 4px; border-radius: 5px;
+      background: #352d55; color: #fff; font: 1000 15px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     .command-palette { gap: 10px; margin: 15px 0; }
     .command-btn {
@@ -585,7 +606,7 @@
 
       <aside class="code-panel">
         <header class="panel-heading">
-          <div><h2>冒险指令台</h2><p>像搭积木一样，排出小海龟的路线</p></div>
+          <div><h2 id="panelTitle">冒险指令台</h2><p id="panelDescription">像搭积木一样，排出小海龟的路线</p></div>
           <span class="limit-badge" id="limitBadge">0 / 8 条</span>
         </header>
         <div class="mini-steps" aria-label="操作步骤"><span class="mini-step"><b>1</b>选指令</span><span class="mini-arrow">→</span><span class="mini-step"><b>2</b>排顺序</span><span class="mini-arrow">→</span><span class="mini-step"><b>3</b>启动</span></div>
@@ -593,6 +614,10 @@
           <div class="lesson-kit-head"><strong id="lessonKitTitle">本课 Python 技能包</strong><span class="lesson-number" id="lessonNumber">第 1 课</span></div>
           <div class="knowledge-tags" id="knowledgeTags"></div>
           <code class="syntax-example" id="syntaxExample"></code>
+        </section>
+        <section class="parameter-lab hidden" id="parameterLab" aria-labelledby="parameterLabTitle">
+          <div class="parameter-lab-head"><strong id="parameterLabTitle">调参实验台</strong><span id="parameterHint">点击 − 或 + 修改</span></div>
+          <div class="parameter-grid" id="parameterGrid"></div>
         </section>
         <div class="command-palette" id="commandPalette"></div>
         <div class="program-shell">
@@ -618,7 +643,7 @@
       <div class="guide-steps">
         <div class="guide-step"><span class="guide-num">1</span><span>选择 <strong>forward</strong>、<strong>left</strong>、<strong>right</strong> 指令</span></div>
         <div class="guide-step"><span class="guide-num">2</span><span>像搭积木一样调整顺序，再启动冒险程序</span></div>
-        <div class="guide-step"><span class="guide-num">3</span><span>安全抵达终点，用更少指令赢得三颗星</span></div>
+        <div class="guide-step"><span class="guide-num">3</span><span>完成迷宫或绘图目标，用更少指令赢得三颗星</span></div>
       </div>
       <button class="primary-btn" id="startGameBtn" type="button">带小海龟出发</button>
     </div></div>
@@ -714,41 +739,42 @@
         },
         {
           name: "星球救援站", shortName: "救援站", icon: "rocket", password: "TURTLE3",
-          goal: "用 for 循环执行重复动作并收集圆点", mission: "用 for 循环收集 2 个能量圆点", course: "第 3 课",
-          knowledge: ["for 循环", "循环执行顺序", "backward()", "dot()"],
-          example: "for i in range(2):\n    turtle.forward(3)",
-          lesson: "for 循环可以把重复动作交给程序完成。月球基地会用 dot() 留下圆点轨迹，backward() 则让海龟保持朝向向后退。",
-          debugTip: "先找出哪段路线在重复，再检查循环次数和循环里的前进距离。",
+          goal: "调试循环次数和转角，画出完整五角星", mission: "把默认参数调正确，画出五角星", course: "第 3 课",
+          knowledge: ["for 循环", "range() 次数", "right() 转角", "循环执行顺序", "backward()", "dot()"],
+          example: "for i in range(times):\n    turtle.forward(size)\n    turtle.right(angle)",
+          lesson: "for 循环会重复执行缩进的代码。五角星需要重复画 5 条边，每次右转 144°；默认的 4 次和 90° 会画出四边形，需要通过观察、猜想、试验找到正确参数。backward() 和 dot() 还能制作后退、圆点等绘图效果。",
+          debugTip: "先数图形有几条线，再观察线条有没有交叉；五角星需要循环 5 次，并把转角调成 144°。",
+          drawing: { mode: "singleStar", defaults: { loops: 4, angle: 90 }, target: { loops: 5, angle: 144 } },
+          parameters: [
+            {key:"loops",label:"for 循环次数",suffix:"次",min:3,max:7,step:1},
+            {key:"angle",label:"right() 旋转角度",suffix:"°",min:72,max:180,step:18}
+          ],
           commands: [
-            {type:"loopForward",count:2,value:3,label:"for × 2: forward(3)",meaning:"循环前进两次",badge:"循环",style:"loop"},
-            {type:"forward",value:1,label:"forward(1)",meaning:"向前 1 格",badge:"1 格",style:"forward"},
-            {type:"forward",value:3,label:"forward(3)",meaning:"向前 3 格",badge:"3 格",style:"forward"},
-            {type:"backward",value:1,label:"backward(1)",meaning:"保持朝向后退",badge:"后退",style:"utility"},
-            {type:"left",value:90,label:"left(90)",meaning:"向左转弯",badge:"左",style:"turn"},
-            {type:"right",value:90,label:"right(90)",meaning:"向右转弯",badge:"右",style:"turn"}
+            {type:"drawStarLoop",label:"运行 for 绘图循环",meaning:"重复 forward() + right()",badge:"画图",style:"loop"}
           ],
           palette: { sky: "#192b55", floor: "#dce9ff", wall: "#596f9f", wallTop: "#8da4d6", accent: "#ffd34e" },
           maze: ["111111111","100010001","101010101","101000101","101110101","100000001","111111111"],
-          start: { x: 1, y: 5, dir: 1 }, end: { x: 7, y: 1 }, collectibles: [{x:4,y:5},{x:7,y:3}], maxCommands: 8, stars: [7, 5]
+          start: { x: 1, y: 5, dir: 1 }, end: { x: 7, y: 1 }, collectibles: [], maxCommands: 1, stars: [1, 1]
         },
         {
-          name: "深海宝藏迷宫", shortName: "深海迷宫", icon: "shell", password: "CODE4",
-          goal: "寻找规律，用变量自增循环抵达宝藏", mission: "让 step 从 1 增长到 3，收集宝藏", course: "第 4 课",
-          knowledge: ["四步分析法", "变量自增", "for + 变量", "dot(大小, 颜色)", "speed()", "backward()/除法复习"],
-          example: "for step in range(1, 4):\n    turtle.forward(step)  # 1、2、3格",
-          lesson: "先观察相同规律，再用循环建立模型。循环中的 step 会依次变成 1、2、3；还可以结合 dot(大小, 颜色)、speed()、backward() 和除法画出不断变化的规律图形。",
-          debugTip: "按“确定目标、拆分动作、发现规律、写出代码”检查路线，再调整 speed 或循环范围。",
+          name: "深海星光工坊", shortName: "星光工坊", icon: "shell", password: "CODE4",
+          goal: "用变量自增，让循环画出的五角星不断长大", mission: "画出至少 3 颗逐渐变大的五角星", course: "第 4 课",
+          knowledge: ["嵌套 for 循环", "size += add", "变量自增", "寻找图形规律", "dot(大小, 颜色)", "speed()"],
+          example: "for star in range(times):\n    for edge in range(5):\n        turtle.forward(size)\n        turtle.right(144)\n    size += add",
+          lesson: "外层 for 循环决定画几颗五角星，size += add 会在每轮结束后增加画笔前进距离。循环次数至少为 3、自增量大于 0 时，就能看到五角星一颗比一颗大。",
+          debugTip: "先检查 for 循环是否至少执行 3 次，再检查 size 的自增量；如果 add 是 0，每一颗星都会重叠成同样大小。",
+          drawing: { mode: "growingStars", defaults: { loops: 2, increment: 0 }, target: { minLoops: 3, minIncrement: 4 } },
+          parameters: [
+            {key:"loops",label:"外层 for 循环次数",suffix:"次",min:2,max:5,step:1},
+            {key:"increment",label:"size 每次增加",prefix:"+",suffix:"",min:0,max:16,step:4}
+          ],
           commands: [
-            {type:"growLoop",label:"for step in 1,2,3",meaning:"变量自增前进",badge:"1→3",style:"loop"},
-            {type:"speed",value:8,label:"speed(8)",meaning:"加快画笔速度",badge:"快速",style:"utility"},
-            {type:"forward",value:1,label:"forward(1)",meaning:"向前 1 格",badge:"1 格",style:"forward"},
-            {type:"forward",value:3,label:"forward(3)",meaning:"向前 3 格",badge:"3 格",style:"forward"},
-            {type:"left",value:90,label:"left(90)",meaning:"向左转弯",badge:"左",style:"turn"},
-            {type:"right",value:90,label:"right(90)",meaning:"向右转弯",badge:"右",style:"turn"}
+            {type:"growStars",label:"运行变量自增循环",meaning:"内层循环画星 + size += add",badge:"自增",style:"loop"},
+            {type:"speed",value:8,label:"speed(8)",meaning:"加快画笔速度",badge:"快速",style:"utility"}
           ],
           palette: { sky: "#0d7996", floor: "#ccefdc", wall: "#197980", wallTop: "#40a9a0", accent: "#ffcf57" },
           maze: ["111111111","100000001","101110101","100010101","101010101","101000001","111111111"],
-          start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 5 }, collectibles: [{x:3,y:1},{x:7,y:3}], maxCommands: 8, stars: [7, 5]
+          start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 5 }, collectibles: [], maxCommands: 2, stars: [2, 1]
         },
         {
           name: "海龟代码城堡", shortName: "代码城堡", icon: "castle", password: "MASTER5",
@@ -788,6 +814,10 @@
     let executionSpeed = 5;
     let runtimeStep = 1;
     let usedSpecialCommands = new Set();
+    let levelParams = {};
+    let sketchSegments = [];
+    let activeSketchSegment = null;
+    let sketchTurtle = { x: .5, y: .62, heading: 0, visible: false };
     let running = false;
     let selectedLockedLevel = null;
     let audioContext = null;
@@ -809,6 +839,8 @@
     }
     function level() { return GAME_CONFIG.levels[currentLevel]; }
     function commandLabel(cmd) {
+      if (cmd.type === "drawStarLoop") return `for i in range(${levelParams.loops}): forward(size); right(${levelParams.angle})`;
+      if (cmd.type === "growStars") return `for star in range(${levelParams.loops}): for edge in range(5); size += ${levelParams.increment}`;
       if (cmd.label) return cmd.label;
       if (cmd.type === "forward" || cmd.type === "backward") return `${cmd.type}(${cmd.value})`;
       if (cmd.type === "left" || cmd.type === "right") return `${cmd.type}(${cmd.value || 90})`;
@@ -834,6 +866,44 @@
       }).join("");
     }
 
+    function initializeLevelParams() {
+      levelParams = level().drawing ? { ...level().drawing.defaults } : {};
+    }
+
+    function renderParameterLab() {
+      const lab = $("#parameterLab");
+      const params = level().parameters || [];
+      lab.classList.toggle("hidden", !params.length);
+      if (!params.length) { $("#parameterGrid").innerHTML = ""; return; }
+      $("#parameterGrid").innerHTML = params.map(param => {
+        const value = `${param.prefix || ""}${levelParams[param.key]}${param.suffix || ""}`;
+        return `<div class="parameter-control"><span class="parameter-label">${param.label}</span><div class="parameter-stepper"><button type="button" data-param="${param.key}" data-delta="-${param.step}" aria-label="减小${param.label}" title="减小${param.label}">&minus;</button><output class="parameter-value" id="param-${param.key}">${value}</output><button type="button" data-param="${param.key}" data-delta="${param.step}" aria-label="增加${param.label}" title="增加${param.label}">+</button></div></div>`;
+      }).join("");
+      updateParameterButtons();
+    }
+
+    function updateParameterButtons() {
+      const definitions = Object.fromEntries((level().parameters || []).map(item => [item.key, item]));
+      document.querySelectorAll("#parameterLab button[data-param]").forEach(btn => {
+        const param = definitions[btn.dataset.param];
+        const next = levelParams[btn.dataset.param] + Number(btn.dataset.delta);
+        btn.disabled = running || !param || next < param.min || next > param.max;
+      });
+    }
+
+    function changeParameter(key, delta) {
+      if (running) return;
+      const param = (level().parameters || []).find(item => item.key === key);
+      if (!param) return;
+      levelParams[key] = Math.min(param.max, Math.max(param.min, levelParams[key] + delta));
+      const output = $(`#param-${key}`);
+      output.textContent = `${param.prefix || ""}${levelParams[key]}${param.suffix || ""}`;
+      sketchSegments = []; activeSketchSegment = null; sketchTurtle.visible = false;
+      renderProgram(); updateParameterButtons(); updateCollectCount(); draw();
+      setStatus(`参数已更新：${param.label} = ${levelParams[key]}，运行程序看看图形发生什么变化。`);
+      playTone(560, .05);
+    }
+
     function renderLevelMap() {
       const map = $("#levelMap");
       map.innerHTML = "";
@@ -854,6 +924,7 @@
       if (running) return;
       currentLevel = index;
       program = [];
+      initializeLevelParams();
       resetBoard(false);
       renderLevelMap();
       renderLevelInfo();
@@ -873,6 +944,10 @@
       $("#lessonNumber").textContent = item.course;
       $("#knowledgeTags").innerHTML = item.knowledge.map(tag => `<span class="knowledge-tag">${tag}</span>`).join("");
       $("#syntaxExample").textContent = item.example;
+      $("#panelTitle").textContent = item.drawing ? "海龟绘图实验台" : "冒险指令台";
+      $("#panelDescription").textContent = item.drawing ? "调整参数，运行循环，观察图形变化" : "像搭积木一样，排出小海龟的路线";
+      canvas.setAttribute("aria-label", item.drawing ? "海龟绘图区域" : "迷宫游戏区域");
+      renderParameterLab();
       renderCommandPalette();
       $("#bestStars").textContent = "★".repeat(state.stars[currentLevel]) + "☆".repeat(3 - state.stars[currentLevel]);
       $("#bestStars").setAttribute("aria-label", `本关最高 ${state.stars[currentLevel]} 星`);
@@ -883,6 +958,9 @@
       turtle = { ...level().start };
       collected = new Set();
       trail = [{ x: turtle.x, y: turtle.y }];
+      sketchSegments = [];
+      activeSketchSegment = null;
+      sketchTurtle = { x: .5, y: .62, heading: 0, visible: false };
       penDown = true;
       executionSpeed = 5;
       runtimeStep = 1;
@@ -890,7 +968,7 @@
       running = false;
       clearProgramHighlights();
       setControls(false);
-      setStatus(showMessage ? "已回到起点，可以调整程序再试一次。" : "选择指令，帮小海龟走到终点吧！");
+      setStatus(showMessage ? "已重新开始，可以调整参数或程序再试一次。" : level().drawing ? "先观察默认参数，再运行循环看看会画出什么图形。" : "选择指令，帮小海龟走到终点吧！");
       updateCollectCount();
       draw();
     }
@@ -914,6 +992,7 @@
       $("#clearBtn").disabled = running || !program.length;
       $("#runBtn").disabled = running || !program.length;
       document.querySelectorAll(".command-btn").forEach(btn => btn.disabled = running || program.length >= level().maxCommands);
+      updateParameterButtons();
     }
 
     function addCommand(commandIndex) {
@@ -973,6 +1052,10 @@
           }
           await animateMove(cmd.x, cmd.y);
           collectAt(cmd.x, cmd.y);
+        } else if (cmd.type === "drawStarLoop") {
+          await executeLoopShape(index);
+        } else if (cmd.type === "growStars") {
+          await executeGrowingStars(index);
         } else if (cmd.type === "loopForward") {
           for (let repeat = 0; repeat < cmd.count; repeat++) {
             setStatus(`for 循环：正在执行第 ${repeat + 1} / ${cmd.count} 次。`);
@@ -994,6 +1077,10 @@
       running = false;
       setControls(false);
       clearProgramHighlights();
+      if (level().drawing) {
+        evaluateDrawingResult();
+        return;
+      }
       const atEnd = turtle.x === level().end.x && turtle.y === level().end.y;
       if (atEnd && allCollected() && requiredCommandsUsed()) completeLevel();
       else if (atEnd && allCollected() && !requiredCommandsUsed()) setStatus("坐标都正确，但还要用 pendown() 落下画笔才能完成任务。", true);
@@ -1017,6 +1104,68 @@
       return true;
     }
 
+    function buildLoopPath(loops, angle, scale = .9) {
+      const raw = [{x:0,y:0}];
+      let x = 0, y = 0, heading = -90;
+      for (let i = 0; i < loops; i++) {
+        x += Math.cos(heading * Math.PI / 180);
+        y += Math.sin(heading * Math.PI / 180);
+        raw.push({x,y});
+        heading += angle;
+      }
+      const xs = raw.map(p => p.x), ys = raw.map(p => p.y);
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      const width = Math.max(.001, maxX - minX), height = Math.max(.001, maxY - minY);
+      const fit = Math.min(.62 / width, .56 / height) * scale;
+      const centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
+      return raw.map(point => ({ x: .5 + (point.x - centerX) * fit, y: .56 + (point.y - centerY) * fit }));
+    }
+
+    async function traceSketchPath(points, commandIndex, group = 0) {
+      sketchTurtle = { ...points[0], heading: 0, visible: true };
+      draw();
+      for (let i = 1; i < points.length; i++) {
+        highlightLine(commandIndex);
+        await animateSketchSegment(points[i - 1], points[i], group);
+      }
+    }
+
+    async function executeLoopShape(commandIndex) {
+      sketchSegments = [];
+      const { loops, angle } = levelParams;
+      setStatus(`for 循环开始：将重复 ${loops} 次，每次右转 ${angle}°。`);
+      await traceSketchPath(buildLoopPath(loops, angle), commandIndex, 0);
+    }
+
+    async function executeGrowingStars(commandIndex) {
+      sketchSegments = [];
+      const { loops, increment } = levelParams;
+      for (let repeat = 0; repeat < loops; repeat++) {
+        const size = 32 + repeat * increment;
+        const scale = Math.min(.95, .38 + repeat * increment / 44);
+        setStatus(`外层循环第 ${repeat + 1} / ${loops} 次：size = ${size}，画完后 size += ${increment}。`);
+        await traceSketchPath(buildLoopPath(5, 144, scale), commandIndex, repeat);
+      }
+    }
+
+    function evaluateDrawingResult() {
+      const drawing = level().drawing;
+      if (drawing.mode === "singleStar") {
+        const success = levelParams.loops === drawing.target.loops && levelParams.angle === drawing.target.angle;
+        if (success) { completeLevel(); return; }
+        if (levelParams.loops !== drawing.target.loops && levelParams.angle !== drawing.target.angle) setStatus(`现在循环 ${levelParams.loops} 次、转角 ${levelParams.angle}°，还不是五角星。先数线条，再观察交叉角度。`, true);
+        else if (levelParams.loops !== drawing.target.loops) setStatus(`转角已经正确，还要把 for 循环次数调成 ${drawing.target.loops}。`, true);
+        else setStatus(`循环次数已经正确，还要把 right() 的角度调成 ${drawing.target.angle}°。`, true);
+      } else {
+        const enoughStars = levelParams.loops >= drawing.target.minLoops;
+        const growing = levelParams.increment >= drawing.target.minIncrement;
+        if (enoughStars && growing) { completeLevel(); return; }
+        if (!enoughStars && !growing) setStatus("现在星星数量太少，而且 size 没有增加。调大循环次数和自增量再试试。", true);
+        else if (!enoughStars) setStatus(`五角星已经会长大了，再把外层 for 循环调到至少 ${drawing.target.minLoops} 次。`, true);
+        else setStatus("循环次数够了，但 size += 0 会让星星重叠。把自增量调大再试试。", true);
+      }
+    }
+
     function failRun(index, message) {
       markFailedLine(index);
       setStatus(message, true);
@@ -1037,6 +1186,14 @@
       }
     }
     function updateCollectCount() {
+      if (level().drawing?.mode === "singleStar") {
+        $("#collectCount").textContent = `循环 ${levelParams.loops} 次 · 转角 ${levelParams.angle}°`;
+        return;
+      }
+      if (level().drawing?.mode === "growingStars") {
+        $("#collectCount").textContent = `循环 ${levelParams.loops} 次 · size += ${levelParams.increment}`;
+        return;
+      }
       const total = level().collectibles.length;
       const names = ["目标：彩旗终点", "目标：变量路线", "圆点收集", "宝藏收集", "坐标徽章"];
       $("#collectCount").textContent = total ? `${names[currentLevel]} ${collected.size} / ${total}` : names[currentLevel];
@@ -1058,6 +1215,7 @@
       $("#clearBtn").disabled = disabled || !program.length;
       $("#runBtn").disabled = disabled || !program.length;
       $("#runBtn").innerHTML = runButtonContent(disabled);
+      updateParameterButtons();
     }
     function setStatus(message, error = false) {
       $("#statusText").textContent = message;
@@ -1075,7 +1233,7 @@
     }
     function completeLevel() {
       const earned = calculateStars();
-      setStatus("闯关成功！你已经把小海龟送到终点。", false);
+      setStatus(level().drawing ? "绘图成功！小海龟完成了本课图形挑战。" : "闯关成功！你已经把小海龟送到终点。", false);
       state.completed[currentLevel] = true;
       state.stars[currentLevel] = Math.max(state.stars[currentLevel], earned);
       saveProgress();
@@ -1084,7 +1242,7 @@
       $("#completeIcon use").setAttribute("href", "#icon-trophy");
       $("#completeTitle").textContent = currentLevel === 4 ? "五关全部完成！" : "闯关成功！";
       $("#completeStars").textContent = "★".repeat(earned) + "☆".repeat(3 - earned);
-      $("#completeMessage").textContent = earned === 3 ? "三颗星到手！你的程序又短又准确。" : "小海龟安全抵达终点！再精简指令，还能点亮更多星星。";
+      $("#completeMessage").textContent = level().drawing ? (currentLevel === 2 ? "参数调对了！五条线组成了一颗完整五角星。" : "变量自增生效！五角星正在一轮一轮变大。") : earned === 3 ? "三颗星到手！你的程序又短又准确。" : "小海龟安全抵达终点！再精简指令，还能点亮更多星星。";
       const used = [...new Set(program.map(commandLabel))].map(label => `<code>${label}</code>`).join("、");
       $("#codeUsed").innerHTML = `本关使用：${used}`;
       $("#knowledgeText").textContent = level().lesson;
@@ -1181,11 +1339,75 @@
         grad.addColorStop(0,item.palette.sky); grad.addColorStop(1,shade(item.palette.sky, 20));
         ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
         drawBackgroundDetails(l, item);
+        if (item.drawing) {
+          drawSketchBoard(item);
+          drawSketch(item);
+          return;
+        }
         for (let y=0; y<l.rows; y++) for (let x=0; x<l.cols; x++) drawCell(x,y,item.maze[y][x],l,item);
         drawCoordinateGrid(l);
         drawTrail(l, item);
         drawEnd(l,item); drawCollectibles(l,item); drawTurtle(l,item);
       });
+    }
+
+    function drawSketchBoard(item) {
+      const pad = Math.min(canvas.width, canvas.height) * .09;
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.9)";
+      roundedRect(pad, pad, canvas.width - pad * 2, canvas.height - pad * 1.65, Math.max(8,pad*.12));
+      ctx.fill();
+      ctx.strokeStyle = currentLevel === 2 ? "rgba(64,88,145,.13)" : "rgba(10,112,124,.14)";
+      ctx.lineWidth = Math.max(1, canvas.width * .0015);
+      const gap = Math.max(28, Math.min(canvas.width, canvas.height) * .08);
+      for (let x = pad + gap; x < canvas.width - pad; x += gap) { ctx.beginPath(); ctx.moveTo(x,pad); ctx.lineTo(x,canvas.height-pad*.65); ctx.stroke(); }
+      for (let y = pad + gap; y < canvas.height - pad*.65; y += gap) { ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(canvas.width-pad,y); ctx.stroke(); }
+      ctx.fillStyle = currentLevel === 2 ? "rgba(50,64,108,.55)" : "rgba(10,92,101,.58)";
+      ctx.font = `900 ${Math.max(13,Math.min(canvas.width,canvas.height)*.027)}px "PingFang SC", sans-serif`;
+      ctx.textAlign = "left"; ctx.textBaseline = "top";
+      ctx.fillText(currentLevel === 2 ? "FOR 循环绘图板" : "变量自增绘图板", pad * 1.25, pad * 1.25);
+      ctx.restore();
+    }
+
+    function drawSketch(item) {
+      const colors = currentLevel === 2 ? ["#7154d9"] : ["#1766c2","#a83b82","#e06b2d","#087b49","#6752b7"];
+      const lineWidth = Math.max(4, Math.min(canvas.width,canvas.height) * .012);
+      ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = lineWidth;
+      [...sketchSegments, ...(activeSketchSegment ? [activeSketchSegment] : [])].forEach(segment => {
+        ctx.strokeStyle = colors[segment.group % colors.length];
+        ctx.beginPath(); ctx.moveTo(segment.from.x*canvas.width,segment.from.y*canvas.height); ctx.lineTo(segment.to.x*canvas.width,segment.to.y*canvas.height); ctx.stroke();
+      });
+      ctx.restore();
+      if (sketchTurtle.visible) drawSketchTurtle();
+    }
+
+    function drawSketchTurtle() {
+      const s = Math.min(canvas.width,canvas.height) * .055;
+      ctx.save(); ctx.translate(sketchTurtle.x*canvas.width,sketchTurtle.y*canvas.height); ctx.rotate(sketchTurtle.heading);
+      ctx.fillStyle = "#48bb78";
+      [[-.7,-.45],[.7,-.45],[-.7,.45],[.7,.45]].forEach(([x,y])=>{ctx.beginPath();ctx.ellipse(x*s,y*s,s*.28,s*.2,x>0?.5:-.5,0,Math.PI*2);ctx.fill();});
+      ctx.fillStyle="#23885a";ctx.beginPath();ctx.ellipse(0,0,s*.78,s*.62,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#48bb78";ctx.beginPath();ctx.arc(s*.95,0,s*.3,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#172334";ctx.beginPath();ctx.arc(s*1.05,-s*.08,s*.045,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+
+    async function animateSketchSegment(from, to, group) {
+      const duration = prefersReducedMotion ? 1 : 190 * 5 / executionSpeed;
+      const start = performance.now();
+      sketchTurtle.visible = true;
+      await new Promise(resolve => {
+        function frame(now) {
+          const progress = Math.min(1,(now-start)/duration), eased = 1-Math.pow(1-progress,3);
+          const point = {x:from.x+(to.x-from.x)*eased,y:from.y+(to.y-from.y)*eased};
+          activeSketchSegment = {from,to:point,group};
+          sketchTurtle = {x:point.x,y:point.y,heading:Math.atan2(to.y-from.y,to.x-from.x),visible:true};
+          draw();
+          if(progress<1) requestAnimationFrame(frame); else resolve();
+        }
+        requestAnimationFrame(frame);
+      });
+      sketchSegments.push({from,to,group}); activeSketchSegment = null; draw(); playTone(420 + group*55,.04);
     }
     function drawBackgroundDetails(l, item) {
       ctx.save();
@@ -1313,6 +1535,7 @@
 
     function setupEvents() {
       $("#commandPalette").addEventListener("click", e => { const btn=e.target.closest("[data-command-index]"); if(btn) addCommand(btn.dataset.commandIndex); });
+      $("#parameterLab").addEventListener("click", e => { const btn=e.target.closest("button[data-param]"); if(btn) changeParameter(btn.dataset.param, Number(btn.dataset.delta)); });
       $("#undoBtn").addEventListener("click", () => { if(!running){ program.pop(); renderProgram(); playTone(330,.05); } });
       $("#clearBtn").addEventListener("click", () => { if(!running){ program=[]; resetBoard(); renderProgram(); } });
       $("#runBtn").addEventListener("click", runProgram);
@@ -1336,7 +1559,7 @@
     }
     function renderAll() { renderLevelMap(); renderLevelInfo(); renderProgram(); updateTotalStars(); updateSoundButton(); resizeCanvas(); }
     function init() {
-      setupEvents(); renderAll(); resetBoard(false);
+      initializeLevelParams(); setupEvents(); renderAll(); resetBoard(false);
       if(state.guideSeen) $("#guideModal").classList.add("hidden");
       window.TurtleGame = { config: GAME_CONFIG, selectLevel, resetBoard, getState: () => ({currentLevel,program:[...program],turtle:{...turtle},progress:{...state}}) };
     }
