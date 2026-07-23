@@ -704,9 +704,9 @@
       <p class="code-used" id="codeUsed"></p>
       <div class="knowledge-card"><strong>本关知识卡</strong><p id="knowledgeText"></p></div>
       <div class="next-hint" id="nextHint">下一关口令会在直播课结束时公布，记得来上课哦！</div>
-      <div class="reward-card" id="rewardCard">
+      <div class="reward-card earned" id="rewardCard">
         <span class="reward-egg" aria-hidden="true"><svg class="ui-icon"><use href="#icon-star"></use></svg></span>
-        <div class="reward-copy"><strong id="rewardTitle">五关通关奖励</strong><p id="rewardText">完成全部 5 关，截图发给原子老师，可领取一颗 4500 积分赤星源码蛋！</p></div>
+        <div class="reward-copy"><strong id="rewardTitle">本关通关奖励</strong><p id="rewardText">记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！</p></div>
       </div>
       <button class="primary-btn" id="nextActionBtn" type="button">继续冒险</button>
       <button class="secondary-btn" id="replayBtn" type="button">再玩一次</button>
@@ -1306,9 +1306,9 @@
       $("#knowledgeText").textContent = level().lesson;
       const last = currentLevel === GAME_CONFIG.levels.length - 1;
       $("#nextHint").textContent = last ? "你已经完成五课知识挑战：方法、变量、循环、规律和坐标都成为了你的编程装备。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
-      $("#rewardCard").classList.toggle("earned", last);
-      $("#rewardTitle").textContent = last ? "赤星源码蛋已解锁！" : "五关通关奖励";
-      $("#rewardText").textContent = last ? "记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！" : "完成全部 5 关，截图发给原子老师，可领取一颗4500积分赤星源码蛋！";
+      $("#rewardCard").classList.add("earned");
+      $("#rewardTitle").textContent = "本关通关奖励";
+      $("#rewardText").textContent = "记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！";
       $("#nextActionBtn").textContent = last ? "查看我的冒险成绩" : "看看下一张地图";
       $("#completeModal").classList.remove("hidden");
     }
