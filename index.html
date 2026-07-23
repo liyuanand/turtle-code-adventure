@@ -1,0 +1,1346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff5c9">
+  <meta name="description" content="点选 Python 指令卡，带小海龟闯过五个奇妙迷宫世界。">
+  <title>海龟代码大冒险｜小学生 Python 闯关游戏</title>
+  <style>
+    :root {
+      --ink: #24324a;
+      --muted: #65718a;
+      --paper: #fffdf8;
+      --line: #dfe5ec;
+      --yellow: #ffcc4d;
+      --orange: #ff8a3d;
+      --green: #39b978;
+      --blue: #3e8fe8;
+      --red: #ef5a5a;
+      --shadow: 0 8px 24px rgba(38, 54, 78, .12);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: #f2f7fb; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background:
+        linear-gradient(180deg, rgba(255, 221, 112, .23) 0, rgba(255,255,255,0) 240px),
+        #f2f7fb;
+    }
+    button, input { font: inherit; letter-spacing: 0; }
+    button { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible { outline: 3px solid rgba(62,143,232,.35); outline-offset: 2px; }
+    .hidden { display: none !important; }
+    .skip-link { position: fixed; z-index: 100; top: 8px; left: 8px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 6px; background: white; color: var(--ink); font-weight: 900; transform: translateY(-140%); }
+    .skip-link:focus { transform: translateY(0); }
+
+    .app { width: min(1280px, 100%); margin: 0 auto; padding: 16px 20px 24px; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      min-height: 64px; margin-bottom: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .brand-mark {
+      display: grid; place-items: center; width: 48px; height: 48px; flex: 0 0 48px;
+      border: 2px solid #23885a; border-radius: 50%; background: #d9f8e8; font-size: 28px;
+      box-shadow: 0 4px 0 #b0dfc7;
+    }
+    .brand h1 { margin: 0; font-size: clamp(20px, 2.5vw, 30px); line-height: 1.15; letter-spacing: 0; }
+    .brand p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .score-pill {
+      display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 13px;
+      border: 1px solid #f0cf64; border-radius: 20px; background: #fff8d6; font-weight: 800;
+    }
+    .icon-btn {
+      width: 40px; height: 40px; padding: 0; border: 1px solid var(--line); border-radius: 50%;
+      background: white; color: var(--ink); cursor: pointer; font-size: 18px; box-shadow: 0 3px 8px rgba(38,54,78,.08);
+    }
+    .icon-btn:hover { background: #f7fafc; transform: translateY(-1px); }
+
+    .level-map {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px;
+      margin-bottom: 14px; padding: 8px; background: rgba(255,255,255,.7); border: 1px solid var(--line); border-radius: var(--radius);
+    }
+    .level-tab {
+      position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; height: 58px;
+      padding: 7px 10px; border: 2px solid transparent; border-radius: 7px; background: #eef2f6;
+      color: var(--muted); text-align: left; cursor: pointer; transition: .18s ease;
+    }
+    .level-tab:hover:not(:disabled) { transform: translateY(-1px); background: #e7f2ff; }
+    .level-tab.active { border-color: var(--blue); background: #eaf4ff; color: var(--ink); }
+    .level-tab.done { background: #e8f8ef; }
+    .level-tab.locked { cursor: pointer; opacity: .78; }
+    .level-num {
+      display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
+      border-radius: 50%; background: white; color: var(--ink); font-weight: 900; box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    }
+    .level-copy { min-width: 0; }
+    .level-copy strong, .level-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .level-copy strong { font-size: 13px; }
+    .level-copy small { margin-top: 2px; font-size: 11px; }
+    .lock-mark { position: absolute; top: 4px; right: 6px; font-size: 12px; }
+
+    .workspace { display: grid; grid-template-columns: minmax(440px, 1.42fr) minmax(330px, .78fr); gap: 14px; align-items: stretch; }
+    .game-panel, .code-panel {
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow);
+    }
+    .game-panel { overflow: hidden; }
+    .level-heading {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      min-height: 68px; padding: 11px 16px; border-bottom: 1px solid var(--line);
+    }
+    .level-title-wrap { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .theme-icon { font-size: 34px; line-height: 1; }
+    .level-heading h2 { margin: 0; font-size: 19px; letter-spacing: 0; }
+    .level-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .best-stars { flex: 0 0 auto; color: #e3a814; font-size: 18px; letter-spacing: 1px; }
+    .canvas-wrap {
+      position: relative; width: 100%; aspect-ratio: 9 / 7; min-height: 360px;
+      overflow: hidden; background: #dff1ff;
+    }
+    canvas { display: block; width: 100%; height: 100%; touch-action: manipulation; }
+    .status-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      min-height: 48px; padding: 9px 14px; border-top: 1px solid var(--line); background: white;
+    }
+    .status-text { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; font-weight: 700; }
+    .status-dot { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: var(--green); }
+    .status-dot.error { background: var(--red); }
+    .collect-count { color: var(--muted); font-size: 13px; white-space: nowrap; }
+
+    .code-panel { display: flex; flex-direction: column; min-height: 0; padding: 15px; }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .panel-heading h2 { margin: 0; font-size: 18px; letter-spacing: 0; }
+    .panel-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .limit-badge { flex: 0 0 auto; padding: 5px 9px; border-radius: 14px; background: #eef2f6; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .limit-badge.warn { background: #fff0e7; color: #bf551f; }
+    .command-palette { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+    .command-btn {
+      min-height: 50px; padding: 7px 5px; border: 0; border-radius: 7px; color: white;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 4px 0 rgba(36,50,74,.18); transition: transform .1s ease, filter .1s ease;
+    }
+    .command-btn.forward { background: var(--blue); }
+    .command-btn.turn { background: var(--orange); }
+    .command-btn:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
+    .command-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(36,50,74,.18); }
+    .command-btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+    .program-shell {
+      display: flex; flex-direction: column; min-height: 210px; flex: 1;
+      border: 1px solid #cfd7e2; border-radius: 7px; overflow: hidden; background: #f8fafc;
+    }
+    .program-title {
+      display: flex; justify-content: space-between; align-items: center; height: 36px; padding: 0 10px;
+      border-bottom: 1px solid #dce2e9; background: #edf1f5; font-size: 12px; font-weight: 800;
+    }
+    .program-list { margin: 0; padding: 8px 8px 10px 40px; overflow: auto; counter-reset: line; }
+    .program-list li {
+      position: relative; min-height: 33px; margin: 4px 0; padding: 7px 9px; border-left: 4px solid var(--blue);
+      border-radius: 4px; background: white; color: #21466f; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px; font-weight: 800; box-shadow: 0 1px 3px rgba(36,50,74,.08); transition: .15s;
+    }
+    .program-list li.turn-line { border-left-color: var(--orange); color: #884219; }
+    .program-list li.executing { outline: 2px solid var(--yellow); background: #fff9d9; transform: translateX(3px); }
+    .program-list li.failed { outline: 2px solid var(--red); background: #fff0f0; }
+    .empty-program { display: grid; place-items: center; flex: 1; min-height: 150px; padding: 24px; color: #8a95a8; text-align: center; font-size: 13px; }
+    .empty-program strong { display: block; margin-bottom: 6px; color: #68758a; font-size: 22px; }
+    .edit-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 11px; }
+    .action-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; padding: 8px 12px;
+      border: 1px solid var(--line); border-radius: 7px; background: white; color: var(--ink); font-weight: 800; cursor: pointer;
+    }
+    .action-btn:hover:not(:disabled) { background: #f4f7fa; }
+    .action-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .run-btn {
+      width: 100%; min-height: 52px; margin-top: 10px; border: 0; border-radius: 7px;
+      background: var(--green); color: white; font-size: 17px; font-weight: 900; cursor: pointer;
+      box-shadow: 0 5px 0 #258455; transition: .1s ease;
+    }
+    .run-btn:hover:not(:disabled) { filter: brightness(1.04); transform: translateY(-1px); }
+    .run-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #258455; }
+    .run-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 18px;
+      background: rgba(25, 35, 52, .64); backdrop-filter: blur(3px);
+    }
+    .modal {
+      width: min(520px, 100%); max-height: min(700px, 92vh); overflow: auto;
+      border: 1px solid rgba(255,255,255,.7); border-radius: var(--radius); background: white;
+      box-shadow: 0 24px 70px rgba(18,28,44,.3); animation: modal-in .22s ease-out;
+    }
+    @keyframes modal-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+    .modal-body { padding: 24px; }
+    .modal-icon { display: block; margin-bottom: 8px; font-size: 48px; text-align: center; }
+    .modal h2 { margin: 0 0 7px; text-align: center; font-size: 25px; letter-spacing: 0; }
+    .modal-intro { margin: 0 auto 18px; color: var(--muted); text-align: center; line-height: 1.65; }
+    .guide-steps { display: grid; gap: 8px; margin: 18px 0; }
+    .guide-step { display: flex; align-items: center; gap: 11px; padding: 10px; border-radius: 7px; background: #f5f8fb; }
+    .guide-num { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; background: var(--blue); color: white; font-weight: 900; }
+    .guide-step span:last-child { font-size: 14px; line-height: 1.45; }
+    .primary-btn {
+      width: 100%; min-height: 48px; border: 0; border-radius: 7px; background: var(--blue); color: white;
+      font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 0 #2869ad;
+    }
+    .primary-btn:hover { filter: brightness(1.04); }
+    .secondary-btn {
+      width: 100%; min-height: 44px; margin-top: 9px; border: 1px solid var(--line); border-radius: 7px;
+      background: white; color: var(--ink); font-weight: 800; cursor: pointer;
+    }
+    .password-box { margin: 16px 0; }
+    .password-box label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 800; }
+    .password-input {
+      width: 100%; height: 50px; padding: 0 14px; border: 2px solid #cdd6e0; border-radius: 7px;
+      color: var(--ink); font-size: 18px; font-weight: 800; text-align: center; text-transform: uppercase;
+    }
+    .form-error { min-height: 22px; margin: 7px 0 0; color: var(--red); font-size: 13px; text-align: center; }
+    .stars-big { margin: 8px 0 12px; color: #e3a814; font-size: 42px; letter-spacing: 4px; text-align: center; }
+    .knowledge-card { margin: 14px 0; padding: 14px; border-left: 5px solid var(--yellow); border-radius: 6px; background: #fff9dc; }
+    .knowledge-card strong { display: block; margin-bottom: 5px; }
+    .knowledge-card p { margin: 0; color: #65562d; font-size: 13px; line-height: 1.55; }
+    .next-hint { margin: 12px 0; padding: 12px; border-radius: 7px; background: #e9f5ff; color: #285c91; font-size: 13px; text-align: center; }
+    .code-used { margin: 8px 0; color: var(--muted); font-size: 12px; text-align: center; }
+    .code-used code { color: #225f9d; font-weight: 800; }
+
+    .toast {
+      position: fixed; z-index: 80; left: 50%; bottom: 24px; min-width: 240px; max-width: calc(100vw - 32px);
+      padding: 11px 16px; border-radius: 7px; background: #24324a; color: white; text-align: center; font-size: 13px;
+      font-weight: 800; box-shadow: 0 8px 26px rgba(0,0,0,.22); transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: .2s ease;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .confetti { position: fixed; z-index: 70; width: 9px; height: 14px; top: -20px; pointer-events: none; animation: fall 1.8s linear forwards; }
+    @keyframes fall { to { transform: translate3d(var(--drift), 105vh, 0) rotate(720deg); } }
+
+    @media (max-width: 900px) {
+      .app { padding: 12px; }
+      .workspace { grid-template-columns: 1fr; }
+      .canvas-wrap { min-height: 0; }
+      .code-panel { min-height: 440px; }
+      .level-copy small { display: none; }
+    }
+    @media (max-width: 620px) {
+      .app { padding: 8px; }
+      .topbar { align-items: flex-start; }
+      .brand-mark { width: 40px; height: 40px; flex-basis: 40px; font-size: 23px; }
+      .brand p { display: none; }
+      .top-actions { gap: 5px; }
+      .score-pill { min-height: 36px; padding: 0 9px; font-size: 13px; }
+      .icon-btn { width: 36px; height: 36px; }
+      .level-map { gap: 5px; padding: 6px; }
+      .level-tab { justify-content: center; height: 46px; padding: 4px; }
+      .level-copy { display: none; }
+      .level-num { width: 31px; height: 31px; flex-basis: 31px; }
+      .level-heading { min-height: 60px; padding: 8px 11px; }
+      .theme-icon { font-size: 28px; }
+      .level-heading h2 { font-size: 16px; }
+      .level-heading p { font-size: 11px; }
+      .best-stars { font-size: 14px; }
+      .status-bar { padding: 8px 10px; }
+      .collect-count { font-size: 11px; }
+      .code-panel { padding: 11px; min-height: 420px; }
+      .command-palette { grid-template-columns: repeat(2, 1fr); }
+      .command-btn { min-height: 47px; }
+      .modal-body { padding: 19px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+
+    /* Tool Promo Studio: 彩色编程乐园 */
+    :root {
+      --ink: #17223b;
+      --muted: #59657a;
+      --paper: #fffef8;
+      --line: #cfd8e6;
+      --yellow: #ffc928;
+      --orange: #ff7a30;
+      --green: #18a96b;
+      --blue: #2477dc;
+      --red: #e94949;
+      --purple: #7355d9;
+      --theme-primary: #e94949;
+      --theme-soft: #fff0d8;
+      --shadow: 0 7px 0 rgba(23, 34, 59, .11), 0 16px 32px rgba(23, 34, 59, .09);
+      --radius: 8px;
+      --z-modal: 50;
+      --z-celebrate: 70;
+      --z-toast: 80;
+    }
+    html { background: #eaf2fb; }
+    body {
+      font-family: ui-rounded, "Arial Rounded MT Bold", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background-color: #eaf2fb;
+      background-image:
+        linear-gradient(rgba(36,119,220,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36,119,220,.055) 1px, transparent 1px),
+        linear-gradient(180deg, #fff5c9 0, #f8fbff 250px, #eaf2fb 100%);
+      background-size: 32px 32px, 32px 32px, 100% 100%;
+    }
+    .svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .ui-icon { width: 22px; height: 22px; display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ui-icon.fill { fill: currentColor; stroke: none; }
+    .theme-icon-svg { width: 38px; height: 38px; display: block; color: var(--theme-primary); }
+    .theme-icon-svg use { pointer-events: none; }
+
+    .app { width: min(1360px, 100%); padding: max(16px, env(safe-area-inset-top)) 24px max(28px, env(safe-area-inset-bottom)); }
+    .topbar { min-height: 72px; margin-bottom: 16px; }
+    .brand { gap: 13px; }
+    .brand-mark {
+      width: 56px; height: 56px; flex-basis: 56px; border: 3px solid var(--ink); border-radius: 8px;
+      background: #58d691; color: #123e2c; box-shadow: 4px 4px 0 var(--ink); transform: rotate(-2deg);
+    }
+    .brand-mark .ui-icon { width: 42px; height: 42px; stroke-width: 1.8; }
+    .brand h1 { font-size: 30px; font-weight: 1000; line-height: 1; color: var(--ink); text-shadow: 2px 2px 0 #fff; }
+    .brand p { margin-top: 7px; color: #45536b; font-size: 14px; font-weight: 700; }
+    .top-actions { gap: 10px; }
+    .score-pill {
+      min-width: 158px; min-height: 48px; padding: 7px 12px; gap: 9px; border: 2px solid var(--ink); border-radius: 8px;
+      background: #fff7c8; box-shadow: 3px 3px 0 var(--ink); color: var(--ink);
+    }
+    .score-pill > .ui-icon { width: 25px; height: 25px; color: #e7a600; fill: #ffc928; stroke: #9b6900; }
+    .score-data { display: grid; min-width: 82px; gap: 4px; }
+    .score-row { display: flex; align-items: baseline; gap: 3px; line-height: 1; }
+    .score-label { color: #735b13; font-size: 11px; font-weight: 900; }
+    .energy-track { height: 6px; overflow: hidden; border: 1px solid #d49a00; border-radius: 3px; background: #fff; }
+    .energy-fill { width: 0; height: 100%; background: #ffbd13; transition: width .3s ease-out; }
+    .icon-btn {
+      width: 48px; height: 48px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 8px;
+      background: white; box-shadow: 3px 3px 0 var(--ink); transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .icon-btn:hover { background: #e8f3ff; transform: translateY(-1px); }
+    .icon-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+    .level-map {
+      position: relative; isolation: isolate; gap: 12px; margin-bottom: 18px; padding: 12px;
+      border: 2px solid var(--ink); background: #fffef8; box-shadow: 5px 5px 0 rgba(23,34,59,.16);
+    }
+    .level-map::before {
+      content: ""; position: absolute; z-index: -1; left: 8%; right: 8%; top: 50%; height: 4px;
+      background: repeating-linear-gradient(90deg, #9eacc0 0 11px, transparent 11px 18px); transform: translateY(-2px);
+    }
+    .level-tab {
+      height: 64px; padding: 8px 10px; gap: 9px; border: 2px solid #aab7c8; border-radius: 7px;
+      background: #f2f5f9; color: #5f6c7f; box-shadow: 0 3px 0 #aab7c8; transition: background .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+    .level-tab:hover:not(:disabled) { background: #fff; transform: translateY(-2px); box-shadow: 0 5px 0 #aab7c8; }
+    .level-tab.active { border-color: var(--ink); background: var(--theme-soft); color: var(--ink); box-shadow: 0 4px 0 var(--theme-primary); }
+    .level-tab.done { border-color: #228758; background: #e5f8ec; box-shadow: 0 3px 0 #228758; }
+    .level-tab.locked { opacity: 1; background: #edf0f4; border-style: dashed; }
+    .level-num {
+      width: 38px; height: 38px; flex-basis: 38px; border: 2px solid currentColor; background: white; box-shadow: none;
+      font-size: 15px; color: inherit;
+    }
+    .level-tab.active .level-num { color: var(--theme-primary); border-color: var(--theme-primary); }
+    .level-copy strong { color: inherit; font-size: 14px; font-weight: 1000; }
+    .level-copy small { color: inherit; font-size: 12px; font-weight: 800; }
+    .lock-mark { top: 7px; right: 7px; color: #68758a; }
+    .lock-mark .ui-icon { width: 15px; height: 15px; stroke-width: 2.4; }
+
+    .workspace { grid-template-columns: minmax(480px, 1.45fr) minmax(350px, .75fr); gap: 18px; }
+    .game-panel, .code-panel { border: 2px solid var(--ink); background: var(--paper); box-shadow: var(--shadow); }
+    .game-panel { border-top: 6px solid var(--theme-primary); }
+    .level-heading { min-height: 78px; padding: 12px 18px; border-bottom: 2px solid var(--ink); background: linear-gradient(90deg, var(--theme-soft), #fffef8 68%); }
+    .level-title-wrap { gap: 13px; }
+    .level-title-wrap > .theme-sticker {
+      width: 50px; height: 50px; display: grid; place-items: center; flex: 0 0 50px;
+      border: 2px solid var(--ink); border-radius: 8px; background: #fff; box-shadow: 3px 3px 0 var(--ink); transform: rotate(-2deg);
+    }
+    .level-heading h2 { font-size: 21px; font-weight: 1000; }
+    .level-heading p { margin-top: 5px; color: #526079; font-size: 14px; font-weight: 700; }
+    .best-stars { min-width: 86px; color: #d48c00; font-size: 22px; font-weight: 1000; text-align: right; }
+    .canvas-wrap { min-height: 380px; border-bottom: 0; background: #cdeeff; }
+    .mission-chip {
+      position: absolute; z-index: 2; top: 12px; left: 12px; display: inline-flex; align-items: center; gap: 7px;
+      min-height: 34px; padding: 5px 10px; border: 2px solid rgba(23,34,59,.88); border-radius: 7px;
+      background: rgba(255,255,255,.92); color: var(--ink); font-size: 12px; font-weight: 1000; box-shadow: 2px 2px 0 rgba(23,34,59,.75);
+    }
+    .mission-chip .ui-icon { width: 17px; height: 17px; color: var(--theme-primary); }
+    .status-bar { min-height: 54px; padding: 9px 14px; border-top: 2px solid var(--ink); background: var(--ink); color: white; }
+    .status-text { font-size: 14px; }
+    .status-dot { width: 12px; height: 12px; flex-basis: 12px; border: 2px solid #fff; background: #46d98b; }
+    .collect-count { padding: 5px 8px; border-radius: 5px; background: rgba(255,255,255,.13); color: white; font-size: 12px; font-weight: 900; }
+
+    .code-panel { position: relative; border-top: 6px solid #2477dc; padding: 16px; }
+    .panel-heading h2 { font-size: 20px; font-weight: 1000; }
+    .panel-heading p { margin-top: 5px; color: #59657a; font-size: 13px; font-weight: 700; }
+    .limit-badge { padding: 6px 10px; border: 2px solid #aeb9c8; border-radius: 7px; background: #f0f3f7; color: #435169; font-size: 12px; }
+    .limit-badge.warn { border-color: #d65b28; background: #fff0e7; color: #a43d14; }
+    .mini-steps { display: flex; align-items: center; gap: 5px; margin-top: 12px; color: #69758a; font-size: 11px; font-weight: 900; }
+    .mini-step { display: inline-flex; align-items: center; gap: 4px; }
+    .mini-step b { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 5px; background: #e7edf5; color: #35445d; }
+    .mini-arrow { color: #9ba7b8; }
+    .lesson-kit {
+      margin-top: 11px; padding: 10px 11px; border: 2px solid #aeb9c8; border-radius: 7px;
+      background: #f1f6fb; color: #34425a;
+    }
+    .lesson-kit-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+    .lesson-kit-head strong { font-size: 13px; font-weight: 1000; }
+    .lesson-number { padding: 3px 7px; border-radius: 5px; background: var(--theme-primary); color: #17223b; font-size: 11px; font-weight: 1000; }
+    .knowledge-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .knowledge-tag { padding: 3px 6px; border: 1px solid #aeb9c8; border-radius: 5px; background: white; color: #46546b; font-size: 11px; font-weight: 800; }
+    .syntax-example {
+      display: block; margin-top: 7px; padding: 6px 8px; overflow-wrap: anywhere; border-left: 4px solid var(--theme-primary);
+      background: #17223b; color: #e9f4ff; font: 800 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .command-palette { gap: 10px; margin: 15px 0; }
+    .command-btn {
+      position: relative; min-height: 64px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+      gap: 2px; padding: 8px 9px; border: 2px solid var(--ink); border-radius: 7px; box-shadow: 0 5px 0 var(--ink);
+      font-size: 13px; text-align: left; transition: filter .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .command-btn.forward { background: #1766c2; }
+    .command-btn.turn { background: #f47b35; color: var(--ink); }
+    .command-btn.variable { background: #7355d9; }
+    .command-btn.loop { background: #a83b82; }
+    .command-btn.utility { background: #217b77; }
+    .command-btn.coordinate { background: #9b5529; }
+    .command-btn:hover:not(:disabled) { filter: saturate(1.1) brightness(1.04); transform: translateY(-2px); }
+    .command-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+    .command-btn:disabled { filter: grayscale(.55); opacity: .48; }
+    .command-code { font-size: 13px; font-weight: 1000; }
+    .command-meaning { font-family: ui-rounded, "PingFang SC", sans-serif; font-size: 11px; font-weight: 800; opacity: .88; }
+    .command-step {
+      position: absolute; top: 6px; right: 7px; display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px;
+      border: 1px solid rgba(255,255,255,.72); border-radius: 5px; background: rgba(0,0,0,.12); font-family: inherit; font-size: 11px;
+    }
+    .program-shell { min-height: 215px; border: 2px solid var(--ink); background: #f4f7fb; }
+    .program-title { height: 40px; padding: 0 11px; border-bottom: 2px solid var(--ink); background: #dfe8f3; color: #35435a; font-size: 12px; }
+    .program-list { padding-top: 7px; }
+    .program-list li { min-height: 38px; margin: 5px 0; padding: 9px 10px; border-left-width: 6px; border-radius: 5px; box-shadow: 0 2px 0 #c2ccd9; }
+    .program-list li.executing { outline: 3px solid #ffbf10; background: #fff4b8; transform: translateX(4px); }
+    .empty-program { min-height: 155px; color: #69758a; font-size: 13px; font-weight: 700; line-height: 1.6; }
+    .empty-program .empty-icon { width: 46px; height: 46px; display: grid; place-items: center; margin: 0 auto 8px; border: 2px dashed #8996a8; border-radius: 8px; color: #65738a; }
+    .empty-program .ui-icon { width: 26px; height: 26px; }
+    .edit-actions { gap: 10px; margin-top: 12px; }
+    .action-btn { min-height: 46px; border: 2px solid var(--ink); background: white; box-shadow: 0 3px 0 var(--ink); }
+    .action-btn .ui-icon { width: 18px; height: 18px; }
+    .action-btn:hover:not(:disabled) { background: #edf5ff; }
+    .action-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+    .run-btn {
+      min-height: 58px; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 10px;
+      border: 2px solid var(--ink); background: #087b49; font-size: 18px; box-shadow: 0 6px 0 var(--ink);
+    }
+    .run-btn .ui-icon { width: 23px; height: 23px; fill: currentColor; }
+    .run-btn:hover:not(:disabled) { filter: saturate(1.08) brightness(1.03); transform: translateY(-2px); }
+    .run-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+    .debug-coach { margin-top: 10px; padding: 9px 10px; border: 2px solid #df8b2d; border-radius: 7px; background: #fff1d2; color: #6c3b0d; font-size: 12px; font-weight: 800; line-height: 1.45; }
+    .debug-coach strong { color: #9a4510; }
+
+    .modal-backdrop { z-index: var(--z-modal); background: rgba(15, 25, 45, .72); backdrop-filter: blur(4px); }
+    .modal { width: min(540px, 100%); border: 3px solid var(--ink); background: #fffef8; box-shadow: 8px 8px 0 rgba(7,14,28,.55); }
+    .modal-body { padding: 26px; }
+    .modal-illustration {
+      position: relative; display: grid; place-items: center; width: 112px; height: 92px; margin: -4px auto 12px;
+      border: 3px solid var(--ink); border-radius: 8px; background: #bdefff; box-shadow: 4px 4px 0 var(--ink); overflow: hidden;
+    }
+    .modal-illustration::before { content: ""; position: absolute; left: -10px; right: -10px; bottom: -18px; height: 46px; background: #7ddd91; transform: rotate(-3deg); }
+    .modal-illustration .ui-icon { position: relative; z-index: 1; width: 72px; height: 72px; color: #176443; stroke-width: 1.6; }
+    .modal h2 { font-size: 27px; font-weight: 1000; }
+    .modal-intro { max-width: 420px; color: #4f5d74; font-size: 15px; font-weight: 650; }
+    .guide-steps { gap: 10px; }
+    .guide-step { min-height: 56px; padding: 10px 12px; border: 2px solid #c9d3df; background: #f3f7fb; }
+    .guide-num { width: 34px; height: 34px; flex-basis: 34px; border: 2px solid var(--ink); border-radius: 7px; background: #ffcc39; color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+    .guide-step span:last-child { color: #35435a; font-size: 14px; font-weight: 700; }
+    .primary-btn, .secondary-btn { border: 2px solid var(--ink); border-radius: 7px; font-weight: 1000; }
+    .primary-btn { min-height: 54px; background: #1766c2; box-shadow: 0 5px 0 var(--ink); }
+    .primary-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+    .secondary-btn { min-height: 46px; box-shadow: 0 3px 0 #aeb9c8; }
+    .password-input { height: 54px; border: 3px solid #8694a7; background: #fff; font-size: 20px; }
+    .password-input:focus { border-color: #2477dc; }
+    .stars-big { color: #e59a00; text-shadow: 2px 2px 0 #ffe9a3; }
+    .knowledge-card { border: 2px solid #d29a00; border-left-width: 7px; background: #fff4bd; }
+    .knowledge-card p { color: #514823; }
+    .next-hint { border: 2px solid #9bc8eb; background: #e5f4ff; color: #234f78; font-weight: 750; }
+    .toast { z-index: var(--z-toast); border: 2px solid #fff; background: var(--ink); box-shadow: 4px 4px 0 rgba(0,0,0,.28); }
+    .confetti { z-index: var(--z-celebrate); }
+
+    @media (max-width: 900px) {
+      .app { padding: 12px; }
+      .workspace { grid-template-columns: 1fr; }
+      .code-panel { min-height: 470px; }
+      .level-map { gap: 8px; }
+      .level-tab { height: 58px; }
+    }
+    @media (max-width: 620px) {
+      body { background-size: 24px 24px, 24px 24px, 100% 100%; }
+      .app { padding: max(9px, env(safe-area-inset-top)) 9px max(16px, env(safe-area-inset-bottom)); }
+      .topbar { min-height: 58px; margin-bottom: 10px; gap: 6px; }
+      .brand { gap: 8px; flex: 1 1 auto; min-width: 0; }
+      .brand-mark { width: 40px; height: 40px; flex-basis: 40px; box-shadow: 3px 3px 0 var(--ink); }
+      .brand-mark .ui-icon { width: 31px; height: 31px; }
+      .brand h1 { font-size: 16px; white-space: nowrap; }
+      .top-actions { gap: 8px; flex: 0 0 auto; }
+      .score-pill { min-width: 52px; min-height: 44px; padding: 5px 6px; gap: 5px; }
+      .score-row > span, .energy-track { display: none; }
+      .score-data { min-width: 13px; }
+      .score-pill > .ui-icon { width: 21px; height: 21px; }
+      .icon-btn { width: 44px; height: 44px; box-shadow: 2px 2px 0 var(--ink); }
+      .level-map { gap: 5px; padding: 7px; margin-bottom: 11px; }
+      .level-map::before { left: 9%; right: 9%; }
+      .level-tab { height: 48px; padding: 3px; box-shadow: 0 2px 0 #aab7c8; }
+      .level-num { width: 32px; height: 32px; flex-basis: 32px; font-size: 13px; }
+      .lock-mark { top: 2px; right: 2px; }
+      .level-heading { min-height: 66px; padding: 8px 10px; }
+      .level-title-wrap { gap: 9px; }
+      .level-title-wrap > .theme-sticker { width: 42px; height: 42px; flex-basis: 42px; }
+      .theme-icon-svg { width: 32px; height: 32px; }
+      .level-heading h2 { font-size: 17px; }
+      .level-heading p { font-size: 12px; }
+      .best-stars { min-width: 62px; font-size: 16px; }
+      .canvas-wrap { min-height: 0; }
+      .mission-chip { top: 8px; left: 8px; min-height: 30px; font-size: 11px; }
+      .status-bar { min-height: 58px; align-items: flex-start; padding: 8px 10px; }
+      .status-text { font-size: 12px; line-height: 1.4; }
+      .collect-count { font-size: 11px; }
+      .code-panel { min-height: 460px; padding: 12px; }
+      .panel-heading h2 { font-size: 18px; }
+      .mini-steps { margin-top: 10px; }
+      .lesson-kit { padding: 9px; }
+      .knowledge-tag, .syntax-example { font-size: 11px; }
+      .command-palette { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+      .command-btn { min-height: 62px; }
+      .action-btn { min-height: 48px; padding: 7px 8px; font-size: 13px; }
+      .modal-body { padding: 20px 16px; }
+      .modal h2 { font-size: 23px; }
+      .modal-illustration { width: 96px; height: 78px; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="icon-turtle" viewBox="0 0 24 24">
+      <ellipse cx="11" cy="12" rx="6.4" ry="5.2" fill="currentColor" opacity=".22"></ellipse>
+      <path d="M5 9.5 2.6 7.8M5 14.5l-2.4 1.7M16.8 9.5l2.2-1.7M16.8 14.5l2.2 1.7"></path>
+      <ellipse cx="11" cy="12" rx="5.8" ry="4.7"></ellipse><path d="M11 7.4v9.2M5.4 12h11.2M7.1 8.9l7.8 6.2M14.9 8.9l-7.8 6.2"></path>
+      <path d="M16.7 11.8c.6-2.4 2.1-3.3 3.4-2.4 1.5 1 .9 3.8-1.2 4.2"></path><circle cx="19.7" cy="10.8" r=".45" fill="currentColor" stroke="none"></circle>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 2.7 2.8 5.7 6.3.9-4.5 4.4 1.1 6.2-5.7-3-5.7 3 1.1-6.2-4.5-4.4 6.3-.9Z"></path></symbol>
+    <symbol id="icon-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4Z"></path><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"></path></symbol>
+    <symbol id="icon-volume-off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4Z"></path><path d="m16 9 5 6m0-6-5 6"></path></symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M4 4v6h6"></path><path d="M5.2 15.5a8 8 0 1 0 .8-8.7L4 10"></path></symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"></path></symbol>
+    <symbol id="icon-flag" viewBox="0 0 24 24"><path d="M5 21V4m0 1h12l-2 3 2 3H5"></path></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"></path></symbol>
+    <symbol id="icon-undo" viewBox="0 0 24 24"><path d="m9 7-5 5 5 5"></path><path d="M4 12h9a6 6 0 0 1 6 6"></path></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 3h6l1 4H8Z"></path><path d="m6 7 1 14h10l1-14M10 11v6m4-6v6"></path></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></symbol>
+    <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"></circle><path d="M12 12h9m-3 0v3m-3-3v2"></path></symbol>
+    <symbol id="icon-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0Z"></path><path d="M8 6H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v5m-4 3h8m-7-3h6"></path></symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M15 9 21 3m-4 0h4v4"></path></symbol>
+    <symbol id="icon-mushroom" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 16 0Z" fill="currentColor" opacity=".25"></path><path d="M4 12a8 8 0 0 1 16 0M9 12v5a3 3 0 0 0 6 0v-5"></path><circle cx="9" cy="8" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15.5" cy="9" r="1" fill="currentColor" stroke="none"></circle></symbol>
+    <symbol id="icon-balloon" viewBox="0 0 24 24"><path d="M12 3c4 0 6 3 6 6.3 0 4-3 6.2-6 7.7-3-1.5-6-3.7-6-7.7C6 6 8 3 12 3Z" fill="currentColor" opacity=".22"></path><path d="M12 3c4 0 6 3 6 6.3 0 4-3 6.2-6 7.7-3-1.5-6-3.7-6-7.7C6 6 8 3 12 3Zm0 14v4m-2 0h4"></path></symbol>
+    <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M14 4c3-2 5-1 6 0 1 1 2 3 0 6l-6 6-6-6Z" fill="currentColor" opacity=".2"></path><path d="M14 4c3-2 5-1 6 0 1 1 2 3 0 6l-6 6-6-6Zm-6 6-4 2 3 2m7 2-2 4-2-3"></path><circle cx="15" cy="8" r="1.5"></circle><path d="m7 17-3 3m4-1-2 2"></path></symbol>
+    <symbol id="icon-shell" viewBox="0 0 24 24"><path d="M4 16c0-7 3-12 8-12s8 5 8 12c0 3-3 4-8 4s-8-1-8-4Z" fill="currentColor" opacity=".2"></path><path d="M4 16c0-7 3-12 8-12s8 5 8 12c0 3-3 4-8 4s-8-1-8-4ZM12 5v14M8 6.5l2 12M16 6.5l-2 12M5 13h14"></path></symbol>
+    <symbol id="icon-castle" viewBox="0 0 24 24"><path d="M4 8h4V4h4v4h4V4h4v17H4Z" fill="currentColor" opacity=".2"></path><path d="M4 8h4V4h4v4h4V4h4v17H4Zm6 13v-5a2 2 0 0 1 4 0v5M4 11h16"></path></symbol>
+  </svg>
+  <a class="skip-link" href="#gameWorkspace">跳到游戏区</a>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg class="ui-icon"><use href="#icon-turtle"></use></svg></div>
+        <div>
+          <h1>海龟代码大冒险</h1>
+          <p>点选 Python 指令卡，亲手带小海龟闯过 5 个奇妙世界</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="score-pill" aria-label="获得的星星总数">
+          <svg class="ui-icon" aria-hidden="true"><use href="#icon-star"></use></svg>
+          <span class="score-data"><span class="score-row"><strong id="totalStars">0</strong><span>/ 15</span><span class="score-label">冒险能量</span></span><span class="energy-track"><span class="energy-fill" id="energyFill"></span></span></span>
+        </div>
+        <button class="icon-btn" id="soundBtn" type="button" title="关闭声音" aria-label="关闭声音"><svg class="ui-icon" aria-hidden="true"><use href="#icon-volume"></use></svg></button>
+        <button class="icon-btn" id="resetProgressBtn" type="button" title="重置全部进度" aria-label="重置全部进度"><svg class="ui-icon" aria-hidden="true"><use href="#icon-reset"></use></svg></button>
+      </div>
+    </header>
+
+    <nav class="level-map" id="levelMap" aria-label="选择关卡"></nav>
+
+    <section class="workspace" id="gameWorkspace" tabindex="-1">
+      <article class="game-panel">
+        <header class="level-heading">
+          <div class="level-title-wrap">
+            <span class="theme-sticker" aria-hidden="true"><svg class="theme-icon-svg" id="themeIcon"><use href="#icon-mushroom"></use></svg></span>
+            <div>
+              <h2 id="levelTitle">第 1 关 · 水管蘑菇王国</h2>
+              <p id="levelGoal">认识 forward，走到彩旗旁</p>
+            </div>
+          </div>
+          <div class="best-stars" id="bestStars" aria-label="本关最高星级">☆☆☆</div>
+        </header>
+        <div class="canvas-wrap" id="canvasWrap">
+          <div class="mission-chip"><svg class="ui-icon" aria-hidden="true"><use href="#icon-target"></use></svg><span id="missionChip">任务：抵达终点</span></div>
+          <canvas id="gameCanvas" width="900" height="700" aria-label="迷宫游戏区域"></canvas>
+        </div>
+        <footer class="status-bar">
+          <div class="status-text"><span class="status-dot" id="statusDot"></span><span id="statusText">选择指令，帮小海龟走到终点吧！</span></div>
+          <div class="collect-count" id="collectCount">目标：彩旗终点</div>
+        </footer>
+      </article>
+
+      <aside class="code-panel">
+        <header class="panel-heading">
+          <div><h2>冒险指令台</h2><p>像搭积木一样，排出小海龟的路线</p></div>
+          <span class="limit-badge" id="limitBadge">0 / 8 条</span>
+        </header>
+        <div class="mini-steps" aria-label="操作步骤"><span class="mini-step"><b>1</b>选指令</span><span class="mini-arrow">→</span><span class="mini-step"><b>2</b>排顺序</span><span class="mini-arrow">→</span><span class="mini-step"><b>3</b>启动</span></div>
+        <section class="lesson-kit" aria-labelledby="lessonKitTitle">
+          <div class="lesson-kit-head"><strong id="lessonKitTitle">本课 Python 技能包</strong><span class="lesson-number" id="lessonNumber">第 1 课</span></div>
+          <div class="knowledge-tags" id="knowledgeTags"></div>
+          <code class="syntax-example" id="syntaxExample"></code>
+        </section>
+        <div class="command-palette" id="commandPalette"></div>
+        <div class="program-shell">
+          <div class="program-title"><span>运行顺序</span><span>从上往下执行 ↓</span></div>
+          <ol class="program-list hidden" id="programList"></ol>
+          <div class="empty-program" id="emptyProgram"><div><span class="empty-icon"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"></use></svg></span>指令队伍还空着<br>从上面选一张卡送进来吧</div></div>
+        </div>
+        <div class="edit-actions">
+          <button class="action-btn" id="undoBtn" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-undo"></use></svg>撤销一步</button>
+          <button class="action-btn" id="clearBtn" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-trash"></use></svg>清空指令</button>
+        </div>
+        <button class="run-btn" id="runBtn" type="button" aria-label="运行程序"><svg class="ui-icon" aria-hidden="true"><use href="#icon-play"></use></svg><span>启动冒险程序</span></button>
+        <div class="debug-coach hidden" id="debugCoach" role="status"><strong>调试提示：</strong><span id="debugCoachText"></span></div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="modal"><div class="modal-body">
+      <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon"><use href="#icon-turtle"></use></svg></div>
+      <h2 id="guideTitle">小海龟收到了一封冒险邀请</h2>
+      <p class="modal-intro">不用打字。挑选 Python 指令卡、排好顺序，小海龟就会照着你的程序行动。</p>
+      <div class="guide-steps">
+        <div class="guide-step"><span class="guide-num">1</span><span>选择 <strong>forward</strong>、<strong>left</strong>、<strong>right</strong> 指令</span></div>
+        <div class="guide-step"><span class="guide-num">2</span><span>像搭积木一样调整顺序，再启动冒险程序</span></div>
+        <div class="guide-step"><span class="guide-num">3</span><span>安全抵达终点，用更少指令赢得三颗星</span></div>
+      </div>
+      <button class="primary-btn" id="startGameBtn" type="button">带小海龟出发</button>
+    </div></div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
+    <div class="modal"><div class="modal-body">
+      <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon"><use href="#icon-key"></use></svg></div>
+      <h2 id="passwordTitle">输入直播彩蛋口令</h2>
+      <p class="modal-intro" id="passwordIntro">直播课结束时，老师会公布通往新世界的口令。</p>
+      <form id="passwordForm">
+        <div class="password-box">
+          <label for="passwordInput">关卡口令</label>
+          <input class="password-input" id="passwordInput" type="text" maxlength="20" autocomplete="off" placeholder="请输入口令">
+          <p class="form-error" id="passwordError" aria-live="polite"></p>
+        </div>
+        <button class="primary-btn" type="submit">打开新世界</button>
+        <button class="secondary-btn" id="cancelPasswordBtn" type="button">暂时不解锁</button>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="completeModal" role="dialog" aria-modal="true" aria-labelledby="completeTitle">
+    <div class="modal"><div class="modal-body">
+      <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon" id="completeIcon"><use href="#icon-trophy"></use></svg></div>
+      <h2 id="completeTitle">闯关成功！</h2>
+      <div class="stars-big" id="completeStars">★★★</div>
+      <p class="modal-intro" id="completeMessage">你成功带小海龟到达终点！</p>
+      <p class="code-used" id="codeUsed"></p>
+      <div class="knowledge-card"><strong>本关知识卡</strong><p id="knowledgeText"></p></div>
+      <div class="next-hint" id="nextHint">下一关口令会在直播课结束时公布，记得来上课哦！</div>
+      <button class="primary-btn" id="nextActionBtn" type="button">继续冒险</button>
+      <button class="secondary-btn" id="replayBtn" type="button">再玩一次</button>
+    </div></div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal"><div class="modal-body">
+      <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon"><use href="#icon-reset"></use></svg></div>
+      <h2 id="confirmTitle">重置全部进度？</h2>
+      <p class="modal-intro">已解锁的关卡和获得的星星都会清除，此操作无法撤销。</p>
+      <button class="primary-btn" id="confirmResetBtn" type="button">确定重置</button>
+      <button class="secondary-btn" id="cancelResetBtn" type="button">取消</button>
+    </div></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    // 老师只需要在这里修改五关口令和关卡内容。
+    const GAME_CONFIG = {
+      storageKey: "turtle-code-adventure-v1",
+      stepDuration: 260,
+      levels: [
+        {
+          name: "水管蘑菇王国", shortName: "蘑菇王国", icon: "mushroom", password: "666",
+          goal: "判断旋转方向和 90° 角，调试路线", mission: "用方向、角度和顺序抵达彩旗", course: "第 1 课",
+          knowledge: ["对象.方法(参数)", "left/right 旋转", "forward()", "pencolor()/shape()", "顺序执行", "调试三步法"],
+          example: "turtle.right(90)  # turtle是对象，right是方法，90是参数",
+          lesson: "对象.方法(参数) 是海龟绘图的基本结构。forward() 负责移动，left()/right() 负责旋转；pencolor() 和 shape() 能改变画笔外观。遇到错误时，按“观察、猜想、试验”三步调试。",
+          debugTip: "先观察海龟朝向，再猜想应该左转还是右转，最后换一张旋转卡试验。",
+          commands: [
+            {type:"forward",value:1,label:"forward(1)",meaning:"向前走",badge:"1 格",style:"forward"},
+            {type:"forward",value:2,label:"forward(2)",meaning:"向前走",badge:"2 格",style:"forward"},
+            {type:"forward",value:3,label:"forward(3)",meaning:"向前走",badge:"3 格",style:"forward"},
+            {type:"left",value:90,label:"left(90)",meaning:"逆时针旋转",badge:"90°",style:"turn"},
+            {type:"right",value:90,label:"right(90)",meaning:"顺时针旋转",badge:"90°",style:"turn"}
+          ],
+          palette: { sky: "#cdeeff", floor: "#fff1bd", wall: "#43a869", wallTop: "#73cf86", accent: "#ef5a5a" },
+          maze: ["111111111","100000001","101111101","100000101","101110101","100000001","111111111"],
+          start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 5 }, collectibles: [], maxCommands: 8, stars: [7, 6]
+        },
+        {
+          name: "欢乐潮玩派对岛", shortName: "派对岛", icon: "balloon", password: "PYTHON2",
+          goal: "给变量赋值，用算术运算控制步长", mission: "设置 step 变量，控制每次前进距离", course: "第 2 课",
+          knowledge: ["变量与命名", "算术运算符", "注释 #", "pensize()"],
+          example: "step = 1 + 2\nturtle.forward(step)  # step的值是3",
+          lesson: "变量像一个有名字的盒子，可以保存数字。先给 step 赋值，再把它作为 forward() 的参数使用；# 注释能说明代码，pensize() 能改变画笔粗细。",
+          debugTip: "观察还差几格，把距离拆成数字，再选择合适的 step 赋值表达式。",
+          commands: [
+            {type:"setVar",value:1,expression:"1",label:"step = 1",meaning:"创建步长变量",badge:"= 1",style:"variable"},
+            {type:"setVar",value:2,expression:"1 + 1",label:"step = 1 + 1",meaning:"加法得到 2",badge:"= 2",style:"variable"},
+            {type:"setVar",value:3,expression:"1 + 2",label:"step = 1 + 2",meaning:"加法得到 3",badge:"= 3",style:"variable"},
+            {type:"forwardVar",label:"forward(step)",meaning:"按变量前进",badge:"step",style:"forward"},
+            {type:"left",value:90,label:"left(90)",meaning:"向左转弯",badge:"左",style:"turn"},
+            {type:"right",value:90,label:"right(90)",meaning:"向右转弯",badge:"右",style:"turn"}
+          ],
+          palette: { sky: "#ffe4f0", floor: "#fff5d9", wall: "#f082ae", wallTop: "#ffb4cf", accent: "#7c5ce4" },
+          maze: ["111111111","100000001","101111101","101000101","101011101","100010001","111111111"],
+          start: { x: 1, y: 5, dir: 0 }, end: { x: 7, y: 1 }, collectibles: [], maxCommands: 10, stars: [10, 8]
+        },
+        {
+          name: "星球救援站", shortName: "救援站", icon: "rocket", password: "TURTLE3",
+          goal: "用 for 循环执行重复动作并收集圆点", mission: "用 for 循环收集 2 个能量圆点", course: "第 3 课",
+          knowledge: ["for 循环", "循环执行顺序", "backward()", "dot()"],
+          example: "for i in range(2):\n    turtle.forward(3)",
+          lesson: "for 循环可以把重复动作交给程序完成。月球基地会用 dot() 留下圆点轨迹，backward() 则让海龟保持朝向向后退。",
+          debugTip: "先找出哪段路线在重复，再检查循环次数和循环里的前进距离。",
+          commands: [
+            {type:"loopForward",count:2,value:3,label:"for × 2: forward(3)",meaning:"循环前进两次",badge:"循环",style:"loop"},
+            {type:"forward",value:1,label:"forward(1)",meaning:"向前 1 格",badge:"1 格",style:"forward"},
+            {type:"forward",value:3,label:"forward(3)",meaning:"向前 3 格",badge:"3 格",style:"forward"},
+            {type:"backward",value:1,label:"backward(1)",meaning:"保持朝向后退",badge:"后退",style:"utility"},
+            {type:"left",value:90,label:"left(90)",meaning:"向左转弯",badge:"左",style:"turn"},
+            {type:"right",value:90,label:"right(90)",meaning:"向右转弯",badge:"右",style:"turn"}
+          ],
+          palette: { sky: "#192b55", floor: "#dce9ff", wall: "#596f9f", wallTop: "#8da4d6", accent: "#ffd34e" },
+          maze: ["111111111","100010001","101010101","101000101","101110101","100000001","111111111"],
+          start: { x: 1, y: 5, dir: 1 }, end: { x: 7, y: 1 }, collectibles: [{x:4,y:5},{x:7,y:3}], maxCommands: 8, stars: [7, 5]
+        },
+        {
+          name: "深海宝藏迷宫", shortName: "深海迷宫", icon: "shell", password: "CODE4",
+          goal: "寻找规律，用变量自增循环抵达宝藏", mission: "让 step 从 1 增长到 3，收集宝藏", course: "第 4 课",
+          knowledge: ["四步分析法", "变量自增", "for + 变量", "dot(大小, 颜色)", "speed()", "backward()/除法复习"],
+          example: "for step in range(1, 4):\n    turtle.forward(step)  # 1、2、3格",
+          lesson: "先观察相同规律，再用循环建立模型。循环中的 step 会依次变成 1、2、3；还可以结合 dot(大小, 颜色)、speed()、backward() 和除法画出不断变化的规律图形。",
+          debugTip: "按“确定目标、拆分动作、发现规律、写出代码”检查路线，再调整 speed 或循环范围。",
+          commands: [
+            {type:"growLoop",label:"for step in 1,2,3",meaning:"变量自增前进",badge:"1→3",style:"loop"},
+            {type:"speed",value:8,label:"speed(8)",meaning:"加快画笔速度",badge:"快速",style:"utility"},
+            {type:"forward",value:1,label:"forward(1)",meaning:"向前 1 格",badge:"1 格",style:"forward"},
+            {type:"forward",value:3,label:"forward(3)",meaning:"向前 3 格",badge:"3 格",style:"forward"},
+            {type:"left",value:90,label:"left(90)",meaning:"向左转弯",badge:"左",style:"turn"},
+            {type:"right",value:90,label:"right(90)",meaning:"向右转弯",badge:"右",style:"turn"}
+          ],
+          palette: { sky: "#0d7996", floor: "#ccefdc", wall: "#197980", wallTop: "#40a9a0", accent: "#ffcf57" },
+          maze: ["111111111","100000001","101110101","100010101","101010101","101000001","111111111"],
+          start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 5 }, collectibles: [{x:3,y:1},{x:7,y:3}], maxCommands: 8, stars: [7, 5]
+        },
+        {
+          name: "海龟代码城堡", shortName: "代码城堡", icon: "castle", password: "MASTER5",
+          goal: "抬起画笔，用 goto 坐标收集三枚徽章", mission: "按 A、B、C 坐标顺序传送并落笔", course: "第 5 课",
+          knowledge: ["平面坐标系", "goto(x, y)", "penup()/pendown()", "海龟画图四步法"],
+          example: "turtle.penup()\nturtle.goto(4, 5)\nturtle.pendown()",
+          lesson: "goto(x, y) 会把海龟移动到指定坐标。移动前先 penup()，到达目标后 pendown()，并用“分解、规划、编程、调试”完成创作。",
+          debugTip: "先读横向 x 坐标，再读纵向 y 坐标；按“分解、规划、编程、调试”检查每个目标点。",
+          requiredCommands: ["penup", "pendown"],
+          commands: [
+            {type:"penup",label:"penup()",meaning:"抬起画笔",badge:"抬笔",style:"utility"},
+            {type:"goto",x:1,y:3,label:"goto(1, 3)",meaning:"前往坐标点 A",badge:"A",style:"coordinate"},
+            {type:"goto",x:4,y:5,label:"goto(4, 5)",meaning:"前往坐标点 B",badge:"B",style:"coordinate"},
+            {type:"goto",x:7,y:3,label:"goto(7, 3)",meaning:"前往坐标点 C",badge:"C",style:"coordinate"},
+            {type:"goto",x:7,y:1,label:"goto(7, 1)",meaning:"前往彩旗坐标",badge:"终点",style:"coordinate"},
+            {type:"pendown",label:"pendown()",meaning:"落下画笔",badge:"落笔",style:"utility"}
+          ],
+          palette: { sky: "#dfe5f5", floor: "#eef4e3", wall: "#665d8d", wallTop: "#938ab8", accent: "#39b978" },
+          maze: ["111111111","100010001","101010101","101000101","101110101","100000001","111111111"],
+          start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 1 }, collectibles: [{x:1,y:3},{x:4,y:5},{x:7,y:3}], maxCommands: 8, stars: [8, 6]
+        }
+      ]
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const canvas = $("#gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const directions = [{x:0,y:-1},{x:1,y:0},{x:0,y:1},{x:-1,y:0}];
+    let state = loadProgress();
+    let currentLevel = 0;
+    let program = [];
+    let turtle = { x: 1, y: 1, dir: 1 };
+    let collected = new Set();
+    let trail = [];
+    let penDown = true;
+    let executionSpeed = 5;
+    let runtimeStep = 1;
+    let usedSpecialCommands = new Set();
+    let running = false;
+    let selectedLockedLevel = null;
+    let audioContext = null;
+    let animationFrame = null;
+    let toastTimer = null;
+
+    function defaultProgress() {
+      return { unlocked: [0], stars: [0,0,0,0,0], completed: [false,false,false,false,false], sound: true, guideSeen: false };
+    }
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(GAME_CONFIG.storageKey));
+        if (!saved || !Array.isArray(saved.unlocked)) return defaultProgress();
+        return { ...defaultProgress(), ...saved };
+      } catch { return defaultProgress(); }
+    }
+    function saveProgress() {
+      try { localStorage.setItem(GAME_CONFIG.storageKey, JSON.stringify(state)); } catch {}
+    }
+    function level() { return GAME_CONFIG.levels[currentLevel]; }
+    function commandLabel(cmd) {
+      if (cmd.label) return cmd.label;
+      if (cmd.type === "forward" || cmd.type === "backward") return `${cmd.type}(${cmd.value})`;
+      if (cmd.type === "left" || cmd.type === "right") return `${cmd.type}(${cmd.value || 90})`;
+      if (cmd.type === "setVar") return `step = ${cmd.expression}`;
+      if (cmd.type === "forwardVar") return "forward(step)";
+      if (cmd.type === "loopForward") return `for × ${cmd.count}: forward(${cmd.value})`;
+      if (cmd.type === "growLoop") return "for step in 1,2,3";
+      if (cmd.type === "speed") return `speed(${cmd.value})`;
+      if (cmd.type === "goto") return `goto(${cmd.x}, ${cmd.y})`;
+      return `${cmd.type}()`;
+    }
+    function iconSvg(name, className = "ui-icon") { return `<svg class="${className}" aria-hidden="true"><use href="#icon-${name}"></use></svg>`; }
+    function runButtonContent(isRunning) { return `${iconSvg(isRunning ? "turtle" : "play")}<span>${isRunning ? "小海龟出发中…" : "启动冒险程序"}</span>`; }
+    function collectedKey(x, y) { return `${x},${y}`; }
+    function allCollected() { return collected.size === level().collectibles.length; }
+    function requiredCommandsUsed() { return !level().requiredCommands || level().requiredCommands.every(type => usedSpecialCommands.has(type)); }
+
+    function renderCommandPalette() {
+      const palette = $("#commandPalette");
+      palette.innerHTML = level().commands.map((cmd, index) => {
+        const attrs = [`data-command="${cmd.type}"`, `data-command-index="${index}"`, `aria-label="${cmd.label}"`];
+        return `<button class="command-btn ${cmd.style}" type="button" ${attrs.join(" ")}><span class="command-code">${cmd.label}</span><span class="command-meaning">${cmd.meaning}</span><span class="command-step">${cmd.badge}</span></button>`;
+      }).join("");
+    }
+
+    function renderLevelMap() {
+      const map = $("#levelMap");
+      map.innerHTML = "";
+      GAME_CONFIG.levels.forEach((item, index) => {
+        const unlocked = state.unlocked.includes(index);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `level-tab${index === currentLevel ? " active" : ""}${state.completed[index] ? " done" : ""}${unlocked ? "" : " locked"}`;
+        btn.setAttribute("aria-label", `${unlocked ? "进入" : "解锁"}第 ${index + 1} 关 ${item.name}`);
+        if (index === currentLevel) btn.setAttribute("aria-current", "step");
+        btn.innerHTML = `<span class="level-num">${state.completed[index] ? "✓" : index + 1}</span><span class="level-copy"><strong>${item.shortName}</strong><small>${state.stars[index] ? "★".repeat(state.stars[index]) : unlocked ? "等待挑战" : "直播解锁"}</small></span>${unlocked ? "" : `<span class="lock-mark">${iconSvg("lock")}</span>`}`;
+        btn.addEventListener("click", () => unlocked ? selectLevel(index) : openPassword(index));
+        map.appendChild(btn);
+      });
+    }
+
+    function selectLevel(index) {
+      if (running) return;
+      currentLevel = index;
+      program = [];
+      resetBoard(false);
+      renderLevelMap();
+      renderLevelInfo();
+      renderProgram();
+      playTone(420, .06);
+    }
+
+    function renderLevelInfo() {
+      const item = level();
+      $("#themeIcon use").setAttribute("href", `#icon-${item.icon}`);
+      document.body.dataset.level = String(currentLevel + 1);
+      document.documentElement.style.setProperty("--theme-primary", item.palette.accent);
+      document.documentElement.style.setProperty("--theme-soft", shade(item.palette.floor, 15));
+      $("#levelTitle").textContent = `第 ${currentLevel + 1} 关 · ${item.name}`;
+      $("#levelGoal").textContent = item.goal;
+      $("#missionChip").textContent = `任务：${item.mission}`;
+      $("#lessonNumber").textContent = item.course;
+      $("#knowledgeTags").innerHTML = item.knowledge.map(tag => `<span class="knowledge-tag">${tag}</span>`).join("");
+      $("#syntaxExample").textContent = item.example;
+      renderCommandPalette();
+      $("#bestStars").textContent = "★".repeat(state.stars[currentLevel]) + "☆".repeat(3 - state.stars[currentLevel]);
+      $("#bestStars").setAttribute("aria-label", `本关最高 ${state.stars[currentLevel]} 星`);
+      updateCollectCount();
+    }
+
+    function resetBoard(showMessage = true) {
+      turtle = { ...level().start };
+      collected = new Set();
+      trail = [{ x: turtle.x, y: turtle.y }];
+      penDown = true;
+      executionSpeed = 5;
+      runtimeStep = 1;
+      usedSpecialCommands = new Set();
+      running = false;
+      clearProgramHighlights();
+      setControls(false);
+      setStatus(showMessage ? "已回到起点，可以调整程序再试一次。" : "选择指令，帮小海龟走到终点吧！");
+      updateCollectCount();
+      draw();
+    }
+
+    function renderProgram() {
+      const list = $("#programList");
+      list.innerHTML = "";
+      program.forEach((cmd, index) => {
+        const li = document.createElement("li");
+        li.dataset.index = index;
+        li.className = ["left","right","setVar","speed","penup","pendown"].includes(cmd.type) ? "turn-line" : "";
+        li.textContent = commandLabel(cmd);
+        list.appendChild(li);
+      });
+      list.classList.toggle("hidden", program.length === 0);
+      $("#emptyProgram").classList.toggle("hidden", program.length > 0);
+      const badge = $("#limitBadge");
+      badge.textContent = `${program.length} / ${level().maxCommands} 条`;
+      badge.classList.toggle("warn", program.length >= level().maxCommands - 1);
+      $("#undoBtn").disabled = running || !program.length;
+      $("#clearBtn").disabled = running || !program.length;
+      $("#runBtn").disabled = running || !program.length;
+      document.querySelectorAll(".command-btn").forEach(btn => btn.disabled = running || program.length >= level().maxCommands);
+    }
+
+    function addCommand(commandIndex) {
+      if (running) return;
+      if (program.length >= level().maxCommands) {
+        setStatus(`这一关最多使用 ${level().maxCommands} 条指令，先撤销一条吧。`, true);
+        playTone(180, .12, "square");
+        return;
+      }
+      const source = level().commands[Number(commandIndex)];
+      if (!source) return;
+      program.push({ ...source });
+      renderProgram();
+      playTone(["forward","forwardVar","goto"].includes(source.type) ? 520 : 620, .045);
+      setStatus(`已加入 ${commandLabel(program[program.length - 1])}，继续排指令或启动程序。`);
+      const list = $("#programList");
+      list.scrollTop = list.scrollHeight;
+    }
+
+    async function runProgram() {
+      if (running) return;
+      if (!program.length) { setStatus("程序还是空的，请先添加至少一条指令。", true); return; }
+      resetBoard(false);
+      running = true;
+      setControls(true);
+      setStatus("程序正在从上往下运行…");
+      for (let index = 0; index < program.length; index++) {
+        highlightLine(index);
+        const cmd = program[index];
+        if (cmd.type === "left" || cmd.type === "right") {
+          turtle.dir = (turtle.dir + (cmd.type === "right" ? 1 : 3)) % 4;
+          playTone(610, .06);
+          draw();
+          await wait(prefersReducedMotion ? 20 : GAME_CONFIG.stepDuration * 5 / executionSpeed);
+        } else if (cmd.type === "setVar") {
+          runtimeStep = cmd.value;
+          setStatus(`变量 step 现在保存的值是 ${runtimeStep}。`);
+          await wait(prefersReducedMotion ? 20 : 240);
+        } else if (cmd.type === "speed") {
+          executionSpeed = cmd.value;
+          setStatus(`speed(${cmd.value}) 生效，后面的动作会更快。`);
+          await wait(prefersReducedMotion ? 20 : 180);
+        } else if (cmd.type === "penup" || cmd.type === "pendown") {
+          penDown = cmd.type === "pendown";
+          usedSpecialCommands.add(cmd.type);
+          setStatus(penDown ? "pendown()：画笔已经落下。" : "penup()：画笔已经抬起，移动不会留下轨迹。 ");
+          draw();
+          await wait(prefersReducedMotion ? 20 : 220);
+        } else if (cmd.type === "goto") {
+          if (penDown) {
+            failRun(index, "使用 goto() 前要先 penup()，否则画笔会在迷宫上画线。 ");
+            return;
+          }
+          if (!isOpen(cmd.x, cmd.y)) {
+            failRun(index, `坐标 (${cmd.x}, ${cmd.y}) 落在障碍上，请重新检查坐标。`);
+            return;
+          }
+          await animateMove(cmd.x, cmd.y);
+          collectAt(cmd.x, cmd.y);
+        } else if (cmd.type === "loopForward") {
+          for (let repeat = 0; repeat < cmd.count; repeat++) {
+            setStatus(`for 循环：正在执行第 ${repeat + 1} / ${cmd.count} 次。`);
+            if (!await moveDistance(cmd.value, false, index)) return;
+          }
+        } else if (cmd.type === "growLoop") {
+          for (const stepValue of [1, 2, 3]) {
+            runtimeStep = stepValue;
+            setStatus(`循环中的 step = ${stepValue}，现在前进 ${stepValue} 格。`);
+            if (!await moveDistance(stepValue, false, index)) return;
+          }
+        } else if (cmd.type === "backward") {
+          if (!await moveDistance(cmd.value, true, index)) return;
+        } else {
+          const distance = cmd.type === "forwardVar" ? runtimeStep : cmd.value;
+          if (!await moveDistance(distance, false, index)) return;
+        }
+      }
+      running = false;
+      setControls(false);
+      clearProgramHighlights();
+      const atEnd = turtle.x === level().end.x && turtle.y === level().end.y;
+      if (atEnd && allCollected() && requiredCommandsUsed()) completeLevel();
+      else if (atEnd && allCollected() && !requiredCommandsUsed()) setStatus("坐标都正确，但还要用 pendown() 落下画笔才能完成任务。", true);
+      else if (atEnd) setStatus(`还差 ${level().collectibles.length - collected.size} 个物品，收集齐后才能通关。`, true);
+      else setStatus("程序运行完了，但还没到终点。观察位置，再调整一下吧！", true);
+    }
+
+    async function moveDistance(distance, reverse, commandIndex) {
+      for (let step = 0; step < distance; step++) {
+        const moveDir = reverse ? (turtle.dir + 2) % 4 : turtle.dir;
+        const next = directions[moveDir];
+        const nx = turtle.x + next.x;
+        const ny = turtle.y + next.y;
+        if (!isOpen(nx, ny)) {
+          failRun(commandIndex, reverse ? "后退方向有障碍，检查 backward() 的距离。" : "前面是障碍，检查旋转方向、角度或前进距离。 ");
+          return false;
+        }
+        await animateMove(nx, ny);
+        collectAt(nx, ny);
+      }
+      return true;
+    }
+
+    function failRun(index, message) {
+      markFailedLine(index);
+      setStatus(message, true);
+      playTone(150, .25, "sawtooth");
+      running = false;
+      setControls(false);
+    }
+
+    function isOpen(x, y) {
+      return y >= 0 && y < level().maze.length && x >= 0 && x < level().maze[0].length && level().maze[y][x] === "0";
+    }
+    function collectAt(x, y) {
+      if (level().collectibles.some(item => item.x === x && item.y === y)) {
+        const key = collectedKey(x, y);
+        if (!collected.has(key)) {
+          collected.add(key); playTone(880, .12); updateCollectCount(); showToast("收集成功！继续前进"); draw();
+        }
+      }
+    }
+    function updateCollectCount() {
+      const total = level().collectibles.length;
+      const names = ["目标：彩旗终点", "目标：变量路线", "圆点收集", "宝藏收集", "坐标徽章"];
+      $("#collectCount").textContent = total ? `${names[currentLevel]} ${collected.size} / ${total}` : names[currentLevel];
+    }
+    function highlightLine(index) {
+      clearProgramHighlights();
+      const line = $(`#programList li[data-index="${index}"]`);
+      if (line) { line.classList.add("executing"); line.scrollIntoView({ block: "nearest" }); }
+    }
+    function markFailedLine(index) {
+      clearProgramHighlights();
+      const line = $(`#programList li[data-index="${index}"]`);
+      if (line) line.classList.add("failed");
+    }
+    function clearProgramHighlights() { document.querySelectorAll("#programList li").forEach(li => li.classList.remove("executing", "failed")); }
+    function setControls(disabled) {
+      document.querySelectorAll(".command-btn").forEach(btn => btn.disabled = disabled || program.length >= level().maxCommands);
+      $("#undoBtn").disabled = disabled || !program.length;
+      $("#clearBtn").disabled = disabled || !program.length;
+      $("#runBtn").disabled = disabled || !program.length;
+      $("#runBtn").innerHTML = runButtonContent(disabled);
+    }
+    function setStatus(message, error = false) {
+      $("#statusText").textContent = message;
+      $("#statusDot").classList.toggle("error", error);
+      $("#debugCoach").classList.toggle("hidden", !error);
+      $("#debugCoachText").textContent = level().debugTip;
+    }
+    function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+    function calculateStars() {
+      const [oneStarMax, twoStarMax] = level().stars;
+      if (program.length <= twoStarMax) return 3;
+      if (program.length <= oneStarMax) return 2;
+      return 1;
+    }
+    function completeLevel() {
+      const earned = calculateStars();
+      setStatus("闯关成功！你已经把小海龟送到终点。", false);
+      state.completed[currentLevel] = true;
+      state.stars[currentLevel] = Math.max(state.stars[currentLevel], earned);
+      saveProgress();
+      renderLevelMap(); renderLevelInfo(); updateTotalStars();
+      playSuccess(); launchConfetti();
+      $("#completeIcon use").setAttribute("href", "#icon-trophy");
+      $("#completeTitle").textContent = currentLevel === 4 ? "五关全部完成！" : "闯关成功！";
+      $("#completeStars").textContent = "★".repeat(earned) + "☆".repeat(3 - earned);
+      $("#completeMessage").textContent = earned === 3 ? "三颗星到手！你的程序又短又准确。" : "小海龟安全抵达终点！再精简指令，还能点亮更多星星。";
+      const used = [...new Set(program.map(commandLabel))].map(label => `<code>${label}</code>`).join("、");
+      $("#codeUsed").innerHTML = `本关使用：${used}`;
+      $("#knowledgeText").textContent = level().lesson;
+      const last = currentLevel === GAME_CONFIG.levels.length - 1;
+      $("#nextHint").textContent = last ? "你已经完成五课知识挑战：方法、变量、循环、规律和坐标都成为了你的编程装备。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
+      $("#nextActionBtn").textContent = last ? "查看我的冒险成绩" : "看看下一张地图";
+      $("#completeModal").classList.remove("hidden");
+    }
+
+    function openPassword(index) {
+      selectedLockedLevel = index;
+      $("#passwordTitle").textContent = `打开第 ${index + 1} 个冒险世界`;
+      $("#passwordIntro").textContent = `${GAME_CONFIG.levels[index].name}的彩蛋口令，会在直播课结束时公布。`;
+      $("#passwordInput").value = ""; $("#passwordError").textContent = "";
+      $("#passwordModal").classList.remove("hidden");
+      setTimeout(() => $("#passwordInput").focus(), 50);
+    }
+    function submitPassword(event) {
+      event.preventDefault();
+      const entered = $("#passwordInput").value.trim().toUpperCase();
+      const expected = GAME_CONFIG.levels[selectedLockedLevel].password.toUpperCase();
+      if (!entered) { $("#passwordError").textContent = "先输入老师公布的口令哦。"; return; }
+      if (entered !== expected) {
+        $("#passwordError").textContent = "口令不正确，再检查一下大小写或数字。";
+        playTone(160, .18, "square"); return;
+      }
+      if (!state.unlocked.includes(selectedLockedLevel)) state.unlocked.push(selectedLockedLevel);
+      saveProgress();
+      $("#passwordModal").classList.add("hidden");
+      showToast(`第 ${selectedLockedLevel + 1} 关解锁成功！`);
+      playSuccess(); selectLevel(selectedLockedLevel);
+    }
+
+    function updateTotalStars() {
+      const total = state.stars.reduce((sum, n) => sum + n, 0);
+      $("#totalStars").textContent = total;
+      $("#energyFill").style.width = `${total / 15 * 100}%`;
+    }
+    function toggleSound() {
+      state.sound = !state.sound; saveProgress(); updateSoundButton();
+      if (state.sound) playTone(620, .08);
+    }
+    function updateSoundButton() {
+      $("#soundBtn").innerHTML = iconSvg(state.sound ? "volume" : "volume-off");
+      $("#soundBtn").title = state.sound ? "关闭声音" : "打开声音";
+      $("#soundBtn").setAttribute("aria-label", state.sound ? "关闭声音" : "打开声音");
+    }
+    function playTone(frequency, duration, type = "sine", delay = 0) {
+      if (!state.sound) return;
+      try {
+        audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioContext.createOscillator(); const gain = audioContext.createGain();
+        const start = audioContext.currentTime + delay;
+        osc.type = type; osc.frequency.value = frequency;
+        gain.gain.setValueAtTime(.0001, start); gain.gain.exponentialRampToValueAtTime(.09, start + .015); gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+        osc.connect(gain); gain.connect(audioContext.destination); osc.start(start); osc.stop(start + duration + .02);
+      } catch {}
+    }
+    function playSuccess() { [523,659,784,1047].forEach((note,i) => playTone(note, .18, "sine", i * .09)); }
+    function showToast(message) {
+      const toast = $("#toast"); toast.textContent = message; toast.classList.add("show");
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+    function launchConfetti() {
+      if (prefersReducedMotion) return;
+      const colors = ["#ffcc4d","#ef5a5a","#39b978","#3e8fe8","#f082ae"];
+      for (let i = 0; i < 45; i++) {
+        const bit = document.createElement("i"); bit.className = "confetti";
+        bit.style.left = `${Math.random()*100}vw`; bit.style.background = colors[i % colors.length];
+        bit.style.setProperty("--drift", `${(Math.random()-.5)*180}px`); bit.style.animationDelay = `${Math.random()*.45}s`;
+        document.body.appendChild(bit); setTimeout(() => bit.remove(), 2400);
+      }
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const width = Math.max(1, Math.round(rect.width * dpr)); const height = Math.max(1, Math.round(rect.height * dpr));
+      if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+      draw();
+    }
+    function layout() {
+      const rows = level().maze.length, cols = level().maze[0].length;
+      const pad = Math.min(canvas.width, canvas.height) * .035;
+      const cell = Math.min((canvas.width - pad*2) / cols, (canvas.height - pad*2) / rows);
+      return { cell, ox: (canvas.width - cell*cols)/2, oy: (canvas.height - cell*rows)/2, rows, cols };
+    }
+    function draw() {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(() => {
+        const item = level(), l = layout();
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+        grad.addColorStop(0,item.palette.sky); grad.addColorStop(1,shade(item.palette.sky, 20));
+        ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+        drawBackgroundDetails(l, item);
+        for (let y=0; y<l.rows; y++) for (let x=0; x<l.cols; x++) drawCell(x,y,item.maze[y][x],l,item);
+        drawCoordinateGrid(l);
+        drawTrail(l, item);
+        drawEnd(l,item); drawCollectibles(l,item); drawTurtle(l,item);
+      });
+    }
+    function drawBackgroundDetails(l, item) {
+      ctx.save();
+      if (currentLevel === 0) {
+        ctx.globalAlpha = .72; ctx.fillStyle = "#fff";
+        [[.13,.12],[.72,.08],[.88,.24]].forEach(([x,y]) => {
+          const px=canvas.width*x, py=canvas.height*y, r=l.cell*.18;
+          ctx.beginPath(); ctx.arc(px-r*.6,py,r*.55,0,Math.PI*2); ctx.arc(px,py-r*.25,r*.75,0,Math.PI*2); ctx.arc(px+r*.7,py,r*.5,0,Math.PI*2); ctx.fill();
+        });
+      } else if (currentLevel === 1) {
+        const colors=["#fff","#7355d9","#ffcf39","#31b978"];
+        for(let i=0;i<22;i++){const x=(i*173)%canvas.width,y=(i*97)%canvas.height;ctx.save();ctx.translate(x,y);ctx.rotate(i*.7);ctx.fillStyle=colors[i%colors.length];ctx.globalAlpha=.38;ctx.fillRect(-l.cell*.045,-l.cell*.11,l.cell*.09,l.cell*.22);ctx.restore();}
+      } else if (currentLevel === 2) {
+        ctx.fillStyle="#fff";
+        for(let i=0;i<28;i++){const x=(i*149)%canvas.width,y=(i*71)%canvas.height,r=i%5===0?l.cell*.035:l.cell*.016;ctx.globalAlpha=i%4===0?.8:.4;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+        ctx.globalAlpha=.25;ctx.strokeStyle="#b5c9ff";ctx.lineWidth=l.cell*.06;ctx.beginPath();ctx.ellipse(canvas.width*.83,canvas.height*.18,l.cell*.55,l.cell*.18,-.3,0,Math.PI*2);ctx.stroke();
+      } else if (currentLevel === 3) {
+        ctx.strokeStyle="#d8ffff";ctx.lineWidth=l.cell*.035;ctx.globalAlpha=.38;
+        for(let i=0;i<12;i++){const x=(i*131)%canvas.width,y=(i*103)%canvas.height,r=l.cell*(.04+(i%3)*.025);ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();}
+        ctx.globalAlpha=.22;ctx.fillStyle="#73e0bb";for(let i=0;i<7;i++){const x=i*canvas.width/6;ctx.beginPath();ctx.moveTo(x,canvas.height);ctx.quadraticCurveTo(x+l.cell*.2,canvas.height-l.cell*.55,x-l.cell*.06,canvas.height-l.cell);ctx.quadraticCurveTo(x+l.cell*.38,canvas.height-l.cell*.45,x+l.cell*.18,canvas.height);ctx.fill();}
+      } else {
+        ctx.globalAlpha=.2;ctx.fillStyle="#fff";
+        for(let i=0;i<8;i++){const x=i*canvas.width/7;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+l.cell*.17,l.cell*.3);ctx.lineTo(x+l.cell*.34,0);ctx.closePath();ctx.fill();}
+        ctx.strokeStyle="#4d446c";ctx.lineWidth=l.cell*.03;ctx.globalAlpha=.18;for(let y=l.cell*.35;y<canvas.height;y+=l.cell*.5){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+      }
+      ctx.restore();
+    }
+    function roundedRect(x,y,w,h,r) {
+      const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath();
+    }
+    function drawCell(x,y,type,l,item) {
+      const px=l.ox+x*l.cell, py=l.oy+y*l.cell, inset=l.cell*.045;
+      if (type === "0") {
+        ctx.fillStyle=item.palette.floor; roundedRect(px+inset,py+inset,l.cell-inset*2,l.cell-inset*2,l.cell*.08); ctx.fill();
+        ctx.fillStyle="rgba(255,255,255,.35)"; ctx.beginPath(); ctx.arc(px+l.cell*.28,py+l.cell*.28,l.cell*.055,0,Math.PI*2); ctx.fill();
+        if (currentLevel === 2) { ctx.fillStyle="rgba(50,72,120,.11)"; ctx.fillRect(px+l.cell*.47,py+l.cell*.16,l.cell*.06,l.cell*.68); }
+        if (currentLevel === 3) { ctx.strokeStyle="rgba(12,108,127,.18)";ctx.lineWidth=l.cell*.025;ctx.beginPath();ctx.arc(px+l.cell*.55,py+l.cell*.55,l.cell*.18,0,Math.PI);ctx.stroke(); }
+      } else {
+        ctx.fillStyle="rgba(20,30,45,.14)"; roundedRect(px+inset,py+inset+l.cell*.07,l.cell-inset*2,l.cell-inset*2,l.cell*.09); ctx.fill();
+        ctx.fillStyle=item.palette.wall; roundedRect(px+inset,py+inset,l.cell-inset*2,l.cell-inset*2,l.cell*.09); ctx.fill();
+        if (currentLevel === 0) {
+          ctx.fillStyle=item.palette.wallTop;roundedRect(px+inset*1.2,py+inset*1.2,l.cell-inset*2.4,l.cell*.25,l.cell*.06);ctx.fill();
+          ctx.strokeStyle="rgba(20,92,45,.28)";ctx.lineWidth=l.cell*.035;ctx.beginPath();ctx.moveTo(px+l.cell*.25,py+l.cell*.38);ctx.lineTo(px+l.cell*.25,py+l.cell*.82);ctx.stroke();
+        } else if (currentLevel === 1) {
+          ctx.save();roundedRect(px+inset,py+inset,l.cell-inset*2,l.cell-inset*2,l.cell*.09);ctx.clip();ctx.strokeStyle=item.palette.wallTop;ctx.lineWidth=l.cell*.12;ctx.globalAlpha=.8;for(let d=-l.cell;d<l.cell*2;d+=l.cell*.28){ctx.beginPath();ctx.moveTo(px+d,py+l.cell);ctx.lineTo(px+d+l.cell,py);ctx.stroke();}ctx.restore();
+        } else if (currentLevel === 2) {
+          ctx.fillStyle=item.palette.wallTop;roundedRect(px+inset*2,py+inset*2,l.cell-inset*4,l.cell*.2,l.cell*.03);ctx.fill();
+          ctx.fillStyle="rgba(235,244,255,.55)";[[.23,.28],[.77,.28],[.23,.75],[.77,.75]].forEach(([dx,dy])=>{ctx.beginPath();ctx.arc(px+l.cell*dx,py+l.cell*dy,l.cell*.035,0,Math.PI*2);ctx.fill();});
+        } else if (currentLevel === 3) {
+          ctx.strokeStyle=item.palette.wallTop;ctx.lineWidth=l.cell*.055;ctx.globalAlpha=.8;ctx.beginPath();ctx.moveTo(px+l.cell*.2,py+l.cell*.33);ctx.quadraticCurveTo(px+l.cell*.5,py+l.cell*.16,px+l.cell*.8,py+l.cell*.33);ctx.moveTo(px+l.cell*.22,py+l.cell*.65);ctx.quadraticCurveTo(px+l.cell*.5,py+l.cell*.48,px+l.cell*.78,py+l.cell*.65);ctx.stroke();ctx.globalAlpha=1;
+        } else {
+          ctx.strokeStyle=item.palette.wallTop;ctx.lineWidth=l.cell*.04;ctx.globalAlpha=.85;ctx.beginPath();ctx.moveTo(px+inset,py+l.cell*.46);ctx.lineTo(px+l.cell-inset,py+l.cell*.46);ctx.moveTo(px+l.cell*.5,py+inset);ctx.lineTo(px+l.cell*.5,py+l.cell*.46);ctx.moveTo(px+l.cell*.28,py+l.cell*.46);ctx.lineTo(px+l.cell*.28,py+l.cell-inset);ctx.moveTo(px+l.cell*.73,py+l.cell*.46);ctx.lineTo(px+l.cell*.73,py+l.cell-inset);ctx.stroke();ctx.globalAlpha=1;
+        }
+        ctx.fillStyle="rgba(255,255,255,.2)"; ctx.beginPath(); ctx.arc(px+l.cell*.27,py+l.cell*.54,l.cell*.045,0,Math.PI*2); ctx.fill();
+      }
+    }
+    function cellCenter(x,y,l) { return { x:l.ox+(x+.5)*l.cell, y:l.oy+(y+.5)*l.cell }; }
+    function drawCoordinateGrid(l) {
+      if (currentLevel !== 4) return;
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.88)";
+      ctx.font = `800 ${Math.max(12,l.cell*.17)}px ui-monospace, monospace`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      for (let x=1; x<l.cols-1; x++) { const c=cellCenter(x,0,l); ctx.fillText(`x${x}`,c.x,c.y); }
+      for (let y=1; y<l.rows-1; y++) { const c=cellCenter(0,y,l); ctx.fillText(`y${y}`,c.x,c.y); }
+      ctx.restore();
+    }
+    function drawTrail(l,item) {
+      if (trail.length < 1 || (currentLevel !== 2 && currentLevel !== 4)) return;
+      ctx.save();
+      if (currentLevel === 2) {
+        trail.forEach(point => { const c=cellCenter(point.x,point.y,l); ctx.fillStyle="#6f4fd6";ctx.beginPath();ctx.arc(c.x,c.y,l.cell*.07,0,Math.PI*2);ctx.fill(); });
+      } else if (trail.length > 1) {
+        ctx.strokeStyle=item.palette.accent;ctx.lineWidth=l.cell*.055;ctx.setLineDash([l.cell*.12,l.cell*.08]);ctx.beginPath();trail.forEach((point,index)=>{const c=cellCenter(point.x,point.y,l);index?ctx.lineTo(c.x,c.y):ctx.moveTo(c.x,c.y);});ctx.stroke();
+      }
+      ctx.restore();
+    }
+    function drawEnd(l,item) {
+      const c=cellCenter(item.end.x,item.end.y,l), s=l.cell;
+      ctx.save(); ctx.strokeStyle="#4c4f56"; ctx.lineWidth=s*.055; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(c.x-s*.16,c.y+s*.26); ctx.lineTo(c.x-s*.16,c.y-s*.28); ctx.stroke();
+      ctx.fillStyle=item.palette.accent; ctx.beginPath(); ctx.moveTo(c.x-s*.13,c.y-s*.26); ctx.lineTo(c.x+s*.26,c.y-s*.13); ctx.lineTo(c.x-s*.13,c.y); ctx.closePath(); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.85)"; ctx.fillRect(c.x-s*.08,c.y-s*.22,s*.1,s*.1); ctx.fillRect(c.x+s*.03,c.y-s*.12,s*.1,s*.1); ctx.restore();
+    }
+    function drawCollectibles(l,item) {
+      item.collectibles.forEach((obj,index) => {
+        if (collected.has(collectedKey(obj.x,obj.y))) return;
+        const c=cellCenter(obj.x,obj.y,l), size=l.cell*.23;
+        ctx.save(); ctx.translate(c.x,c.y); ctx.fillStyle=item.palette.accent; ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=l.cell*.035;
+        if (currentLevel===4) { roundedRect(-size,-size,size*2,size*2,size*.35); ctx.fill(); ctx.stroke(); ctx.fillStyle="#fff"; ctx.font=`bold ${l.cell*.3}px sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(String.fromCharCode(65+index),0,1); }
+        else { drawStar(0,0,size,size*.44,5); ctx.fill(); ctx.stroke(); }
+        ctx.restore();
+      });
+    }
+    function drawStar(cx,cy,outer,inner,points) {
+      ctx.beginPath(); for(let i=0;i<points*2;i++){const r=i%2?inner:outer,a=-Math.PI/2+i*Math.PI/points; const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.closePath();
+    }
+    function drawTurtle(l,item,position=turtle) {
+      const c=cellCenter(position.x,position.y,l), s=l.cell;
+      ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(position.dir*Math.PI/2);
+      ctx.fillStyle="rgba(29,45,59,.18)"; ctx.beginPath(); ctx.ellipse(0,s*.21,s*.29,s*.11,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="#48bb78";
+      [[-.24,-.2],[.24,-.2],[-.24,.18],[.24,.18]].forEach(([x,y])=>{ctx.beginPath();ctx.ellipse(x*s,y*s,s*.095,s*.065,x>0?.6:-.6,0,Math.PI*2);ctx.fill();});
+      ctx.beginPath(); ctx.arc(0,-s*.29,s*.12,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="#23885a"; ctx.beginPath(); ctx.ellipse(0,0,s*.29,s*.25,0,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle="#8be0aa"; ctx.lineWidth=s*.035; ctx.beginPath(); ctx.moveTo(-s*.23,0);ctx.lineTo(s*.23,0);ctx.moveTo(0,-s*.2);ctx.lineTo(0,s*.2);ctx.stroke();
+      ctx.fillStyle="#172334"; ctx.beginPath();ctx.arc(-s*.045,-s*.32,s*.018,0,Math.PI*2);ctx.arc(s*.045,-s*.32,s*.018,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+    async function animateMove(nx,ny) {
+      const from={...turtle}, distance=Math.hypot(nx-from.x,ny-from.y), duration=prefersReducedMotion?1:GAME_CONFIG.stepDuration*.72*(5/executionSpeed)*Math.min(1.5,Math.max(1,distance/2)), start=performance.now();
+      await new Promise(resolve => {
+        function frame(now) {
+          const p=Math.min(1,(now-start)/duration), eased=1-Math.pow(1-p,3);
+          turtle.x=from.x+(nx-from.x)*eased; turtle.y=from.y+(ny-from.y)*eased; draw();
+          if(p<1) requestAnimationFrame(frame); else {turtle.x=nx;turtle.y=ny;draw();resolve();}
+        } requestAnimationFrame(frame);
+      });
+      if (penDown) trail.push({x:nx,y:ny});
+      playTone(380, .04);
+    }
+    function shade(hex, amount) {
+      const n=parseInt(hex.slice(1),16), r=Math.min(255,Math.max(0,(n>>16)+amount)), g=Math.min(255,Math.max(0,((n>>8)&255)+amount)), b=Math.min(255,Math.max(0,(n&255)+amount));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function setupEvents() {
+      $("#commandPalette").addEventListener("click", e => { const btn=e.target.closest("[data-command-index]"); if(btn) addCommand(btn.dataset.commandIndex); });
+      $("#undoBtn").addEventListener("click", () => { if(!running){ program.pop(); renderProgram(); playTone(330,.05); } });
+      $("#clearBtn").addEventListener("click", () => { if(!running){ program=[]; resetBoard(); renderProgram(); } });
+      $("#runBtn").addEventListener("click", runProgram);
+      $("#soundBtn").addEventListener("click", toggleSound);
+      $("#resetProgressBtn").addEventListener("click", () => $("#confirmModal").classList.remove("hidden"));
+      $("#cancelResetBtn").addEventListener("click", () => $("#confirmModal").classList.add("hidden"));
+      $("#confirmResetBtn").addEventListener("click", () => { localStorage.removeItem(GAME_CONFIG.storageKey); state=defaultProgress(); currentLevel=0; program=[]; $("#confirmModal").classList.add("hidden"); renderAll(); resetBoard(); $("#guideModal").classList.remove("hidden"); });
+      $("#startGameBtn").addEventListener("click", () => { state.guideSeen=true; saveProgress(); $("#guideModal").classList.add("hidden"); playSuccess(); });
+      $("#passwordForm").addEventListener("submit", submitPassword);
+      $("#passwordInput").addEventListener("input", () => $("#passwordError").textContent="");
+      $("#cancelPasswordBtn").addEventListener("click", () => $("#passwordModal").classList.add("hidden"));
+      $("#replayBtn").addEventListener("click", () => { $("#completeModal").classList.add("hidden"); program=[]; resetBoard(); renderProgram(); });
+      $("#nextActionBtn").addEventListener("click", () => {
+        $("#completeModal").classList.add("hidden");
+        if(currentLevel < GAME_CONFIG.levels.length-1) {
+          const next=currentLevel+1; state.unlocked.includes(next)?selectLevel(next):openPassword(next);
+        } else { showToast(`你一共获得了 ${state.stars.reduce((a,b)=>a+b,0)} 颗星！`); }
+      });
+      window.addEventListener("resize", resizeCanvas);
+      new ResizeObserver(resizeCanvas).observe($("#canvasWrap"));
+    }
+    function renderAll() { renderLevelMap(); renderLevelInfo(); renderProgram(); updateTotalStars(); updateSoundButton(); resizeCanvas(); }
+    function init() {
+      setupEvents(); renderAll(); resetBoard(false);
+      if(state.guideSeen) $("#guideModal").classList.add("hidden");
+      window.TurtleGame = { config: GAME_CONFIG, selectLevel, resetBoard, getState: () => ({currentLevel,program:[...program],turtle:{...turtle},progress:{...state}}) };
+    }
+    init();
+  </script>
+</body>
+</html>
