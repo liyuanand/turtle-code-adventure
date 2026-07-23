@@ -496,6 +496,46 @@
     .toast { z-index: var(--z-toast); border: 2px solid #fff; background: var(--ink); box-shadow: 4px 4px 0 rgba(0,0,0,.28); }
     .confetti { z-index: var(--z-celebrate); }
 
+    .leaderboard-modal { width: min(720px, 100%); }
+    .leaderboard-modal .modal-body { padding: 22px; }
+    .leaderboard-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+    .leaderboard-title { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .leaderboard-title .title-icon {
+      display: grid; place-items: center; width: 52px; height: 52px; flex: 0 0 52px;
+      border: 2px solid var(--ink); border-radius: 7px; background: #fff0a8; color: #b56f00; box-shadow: 3px 3px 0 var(--ink);
+    }
+    .leaderboard-title .ui-icon { width: 31px; height: 31px; }
+    .leaderboard-title h2 { margin: 0; text-align: left; font-size: 24px; }
+    .leaderboard-title p { margin: 4px 0 0; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .leaderboard-status { min-height: 22px; margin: 0 0 10px; color: #506079; font-size: 13px; font-weight: 800; text-align: center; }
+    .leaderboard-status.error { color: #b52f2f; }
+    .my-rank-panel {
+      display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px;
+      min-height: 62px; margin-bottom: 12px; padding: 10px 13px; border: 2px solid #1766c2; border-radius: 7px;
+      background: #e8f4ff; box-shadow: 0 3px 0 #1766c2;
+    }
+    .my-rank-number { min-width: 58px; color: #124f98; font-size: 22px; font-weight: 1000; }
+    .my-rank-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 1000; }
+    .rank-metric { color: #45536b; font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .leaderboard-table-wrap { max-height: min(410px, 48vh); overflow: auto; border: 2px solid var(--ink); border-radius: 7px; background: white; }
+    .leaderboard-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .leaderboard-table th {
+      position: sticky; z-index: 1; top: 0; padding: 10px 8px; border-bottom: 2px solid var(--ink);
+      background: #dfe8f3; color: #35435a; font-size: 12px; text-align: left;
+    }
+    .leaderboard-table td { height: 45px; padding: 8px; border-bottom: 1px solid #dfe5ec; color: #34425a; font-size: 13px; font-weight: 800; }
+    .leaderboard-table tr:last-child td { border-bottom: 0; }
+    .leaderboard-table tr.current-row td { background: #fff2b9; color: #5d4500; }
+    .leaderboard-table .rank-col { width: 72px; text-align: center; }
+    .leaderboard-table .metric-col { width: 92px; text-align: center; }
+    .leaderboard-table .name-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .current-tag { display: inline-block; margin-left: 5px; padding: 1px 5px; border-radius: 4px; background: #1766c2; color: white; font-size: 10px; vertical-align: 1px; }
+    .leaderboard-empty { padding: 30px 16px; color: var(--muted); text-align: center; font-weight: 800; }
+    .leaderboard-actions { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 10px; margin-top: 13px; }
+    .leaderboard-actions .secondary-btn { margin-top: 0; }
+    .name-input { text-transform: none; }
+    .name-helper { margin: -8px 0 12px; color: var(--muted); font-size: 12px; text-align: center; }
+
     @media (max-width: 900px) {
       body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
       .app { padding: 12px; }
@@ -557,6 +597,24 @@
       .modal-body { padding: 20px 16px; }
       .modal h2 { font-size: 23px; }
       .modal-illustration { width: 96px; height: 78px; }
+      .leaderboard-modal .modal-body { padding: 14px; }
+      .leaderboard-head { margin-bottom: 10px; }
+      .leaderboard-title .title-icon { width: 44px; height: 44px; flex-basis: 44px; }
+      .leaderboard-title .ui-icon { width: 26px; height: 26px; }
+      .leaderboard-title h2 { font-size: 20px; }
+      .leaderboard-title p { font-size: 11px; }
+      .my-rank-panel { grid-template-columns: auto minmax(0,1fr) auto; gap: 7px; min-height: 56px; padding: 8px; }
+      .my-rank-panel .rank-metric:first-of-type { display: none; }
+      .my-rank-number { min-width: 49px; font-size: 18px; }
+      .my-rank-name { font-size: 14px; }
+      .leaderboard-table-wrap { max-height: 46vh; }
+      .leaderboard-table th, .leaderboard-table td { padding: 7px 4px; font-size: 11px; }
+      .leaderboard-table .rank-col { width: 50px; }
+      .leaderboard-table .metric-col { width: 54px; }
+      .current-tag { display: block; width: max-content; margin: 2px 0 0; }
+      .leaderboard-actions { grid-template-columns: 1fr; gap: 8px; }
+      .leaderboard-actions .primary-btn, .leaderboard-actions .secondary-btn { min-height: 48px; }
+      .top-actions #resetProgressBtn { display: none; }
     }
   </style>
 </head>
@@ -580,6 +638,7 @@
     <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></symbol>
     <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"></circle><path d="M12 12h9m-3 0v3m-3-3v2"></path></symbol>
     <symbol id="icon-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0Z"></path><path d="M8 6H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v5m-4 3h8m-7-3h6"></path></symbol>
+    <symbol id="icon-leaderboard" viewBox="0 0 24 24"><path d="M8 21H4v-7h4Zm6 0h-4V7h4Zm6 0h-4V3h4Z"></path><path d="M2 21h20"></path></symbol>
     <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M15 9 21 3m-4 0h4v4"></path></symbol>
     <symbol id="icon-mushroom" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 16 0Z" fill="currentColor" opacity=".25"></path><path d="M4 12a8 8 0 0 1 16 0M9 12v5a3 3 0 0 0 6 0v-5"></path><circle cx="9" cy="8" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15.5" cy="9" r="1" fill="currentColor" stroke="none"></circle></symbol>
     <symbol id="icon-balloon" viewBox="0 0 24 24"><path d="M12 3c4 0 6 3 6 6.3 0 4-3 6.2-6 7.7-3-1.5-6-3.7-6-7.7C6 6 8 3 12 3Z" fill="currentColor" opacity=".22"></path><path d="M12 3c4 0 6 3 6 6.3 0 4-3 6.2-6 7.7-3-1.5-6-3.7-6-7.7C6 6 8 3 12 3Zm0 14v4m-2 0h4"></path></symbol>
@@ -602,6 +661,7 @@
           <svg class="ui-icon" aria-hidden="true"><use href="#icon-star"></use></svg>
           <span class="score-data"><span class="score-row"><strong id="totalStars">0</strong><span>/ 15</span><span class="score-label">冒险能量</span></span><span class="energy-track"><span class="energy-fill" id="energyFill"></span></span></span>
         </div>
+        <button class="icon-btn" id="leaderboardBtn" type="button" title="查看排行榜" aria-label="查看排行榜"><svg class="ui-icon" aria-hidden="true"><use href="#icon-leaderboard"></use></svg></button>
         <button class="icon-btn" id="soundBtn" type="button" title="关闭声音" aria-label="关闭声音"><svg class="ui-icon" aria-hidden="true"><use href="#icon-volume"></use></svg></button>
         <button class="icon-btn" id="resetProgressBtn" type="button" title="重置全部进度" aria-label="重置全部进度"><svg class="ui-icon" aria-hidden="true"><use href="#icon-reset"></use></svg></button>
       </div>
@@ -713,11 +773,59 @@
     </div></div>
   </div>
 
+  <div class="modal-backdrop hidden" id="nameModal" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <div class="modal"><div class="modal-body">
+      <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon"><use href="#icon-turtle"></use></svg></div>
+      <h2 id="nameTitle">写下你的冒险昵称</h2>
+      <p class="modal-intro" id="nameIntro">成绩会用这个昵称进入排行榜。</p>
+      <form id="nameForm">
+        <div class="password-box">
+          <label for="nameInput">排行榜昵称</label>
+          <input class="password-input name-input" id="nameInput" type="text" minlength="2" maxlength="12" autocomplete="nickname" placeholder="请输入 2～12 个字">
+          <p class="form-error" id="nameError" aria-live="polite"></p>
+        </div>
+        <p class="name-helper">同名同学会按不同设备分别记录</p>
+        <button class="primary-btn" id="saveNameBtn" type="submit">保存并查看排名</button>
+        <button class="secondary-btn" id="cancelNameBtn" type="button">暂不登记</button>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
+    <div class="modal leaderboard-modal"><div class="modal-body">
+      <div class="leaderboard-head">
+        <div class="leaderboard-title">
+          <span class="title-icon" aria-hidden="true"><svg class="ui-icon"><use href="#icon-trophy"></use></svg></span>
+          <div><h2 id="leaderboardTitle">冒险排行榜</h2><p>累计闯关排名 · 展示前 100 位</p></div>
+        </div>
+      </div>
+      <p class="leaderboard-status" id="leaderboardStatus" role="status" aria-live="polite">正在获取最新排名…</p>
+      <div class="my-rank-panel hidden" id="myRankPanel">
+        <span class="my-rank-number" id="myRankNumber">第 -- 名</span>
+        <span class="my-rank-name" id="myRankName">我的昵称</span>
+        <span class="rank-metric" id="myRankLevels">0 关</span>
+        <span class="rank-metric" id="myRankStars">0 星</span>
+      </div>
+      <div class="leaderboard-table-wrap">
+        <table class="leaderboard-table">
+          <thead><tr><th class="rank-col">名次</th><th>昵称</th><th class="metric-col">闯关</th><th class="metric-col">星星</th></tr></thead>
+          <tbody id="leaderboardRows"></tbody>
+        </table>
+        <div class="leaderboard-empty hidden" id="leaderboardEmpty">还没有学生上榜，等你来拿第一名！</div>
+      </div>
+      <div class="leaderboard-actions">
+        <button class="secondary-btn" id="editNameBtn" type="button">修改昵称</button>
+        <button class="secondary-btn" id="leaderboardResetBtn" type="button">重置本机进度</button>
+        <button class="primary-btn" id="closeLeaderboardBtn" type="button">继续冒险</button>
+      </div>
+    </div></div>
+  </div>
+
   <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
     <div class="modal"><div class="modal-body">
       <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon"><use href="#icon-reset"></use></svg></div>
       <h2 id="confirmTitle">重置全部进度？</h2>
-      <p class="modal-intro">已解锁的关卡和获得的星星都会清除，此操作无法撤销。</p>
+      <p class="modal-intro">本机已解锁的关卡和星星会清除；排行榜中的历史最好成绩会保留。</p>
       <button class="primary-btn" id="confirmResetBtn" type="button">确定重置</button>
       <button class="secondary-btn" id="cancelResetBtn" type="button">取消</button>
     </div></div>
@@ -731,6 +839,8 @@
     // 老师只需要在这里修改五关口令和关卡内容。
     const GAME_CONFIG = {
       storageKey: "turtle-code-adventure-v1",
+      playerStorageKey: "turtle-code-adventure-player-v1",
+      apiBase: "https://tanyue-zhijing.codemao.cn/api/game/leaderboard/",
       stepDuration: 260,
       levels: [
         {
@@ -836,6 +946,8 @@
     const canvas = $("#gameCanvas");
     const ctx = canvas.getContext("2d");
     const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const apiBaseOverride = new URLSearchParams(location.search).get("api");
+    const leaderboardApiBase = apiBaseOverride || GAME_CONFIG.apiBase;
     const directions = [{x:0,y:-1},{x:1,y:0},{x:0,y:1},{x:-1,y:0}];
     let state = loadProgress();
     let currentLevel = 0;
@@ -856,6 +968,10 @@
     let audioContext = null;
     let animationFrame = null;
     let toastTimer = null;
+    let playerProfile = loadPlayerProfile();
+    let leaderboardBusy = false;
+    let pendingCompletionModal = false;
+    let nameEditMode = false;
 
     function defaultProgress() {
       return { unlocked: [0], stars: [0,0,0,0,0], completed: [false,false,false,false,false], sound: true, guideSeen: false };
@@ -869,6 +985,202 @@
     }
     function saveProgress() {
       try { localStorage.setItem(GAME_CONFIG.storageKey, JSON.stringify(state)); } catch {}
+    }
+    function createDeviceId() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, digit =>
+        (Number(digit) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(digit) / 4).toString(16)
+      );
+    }
+    function defaultPlayerProfile() {
+      return { deviceId: createDeviceId(), displayName: "", pendingScores: {}, cachedLeaderboard: null };
+    }
+    function loadPlayerProfile() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(GAME_CONFIG.playerStorageKey));
+        if (!saved || typeof saved.deviceId !== "string") return defaultPlayerProfile();
+        return { ...defaultPlayerProfile(), ...saved, pendingScores: saved.pendingScores || {} };
+      } catch { return defaultPlayerProfile(); }
+    }
+    function savePlayerProfile() {
+      try { localStorage.setItem(GAME_CONFIG.playerStorageKey, JSON.stringify(playerProfile)); } catch {}
+    }
+    function queueLeaderboardScore(levelNumber, stars) {
+      const previous = Number(playerProfile.pendingScores[levelNumber] || 0);
+      playerProfile.pendingScores[levelNumber] = Math.max(previous, stars);
+      savePlayerProfile();
+    }
+    function waitFor(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+    async function requestLeaderboard(url, options = {}) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        let data = {};
+        try { data = await response.json(); } catch {}
+        if (!response.ok) {
+          const failure = new Error(data.error || "排行榜暂时连接不上，请稍后再试。");
+          failure.status = response.status;
+          throw failure;
+        }
+        return data;
+      } catch (error) {
+        if (error.name === "AbortError") throw new Error("排行榜连接超时，成绩已保存在本机。");
+        throw error;
+      } finally { clearTimeout(timeout); }
+    }
+    async function flushPendingScores() {
+      if (leaderboardBusy) return playerProfile.cachedLeaderboard;
+      leaderboardBusy = true;
+      try {
+        const pending = Object.entries(playerProfile.pendingScores)
+          .map(([levelNumber, stars]) => ({ level: Number(levelNumber), stars: Number(stars) }))
+          .sort((a, b) => a.level - b.level);
+        let latest = null;
+        if (playerProfile.displayName && pending.length) {
+          for (let index = 0; index < pending.length; index += 1) {
+            const item = pending[index];
+            latest = await requestLeaderboard(`${leaderboardApiBase}submit/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                device_id: playerProfile.deviceId,
+                display_name: playerProfile.displayName,
+                level: item.level,
+                stars: item.stars
+              })
+            });
+            delete playerProfile.pendingScores[item.level];
+            playerProfile.cachedLeaderboard = latest;
+            savePlayerProfile();
+            if (index < pending.length - 1) await waitFor(1050);
+          }
+        }
+        if (!latest) {
+          const query = playerProfile.displayName ? `?device_id=${encodeURIComponent(playerProfile.deviceId)}` : "";
+          latest = await requestLeaderboard(`${leaderboardApiBase}${query}`);
+          playerProfile.cachedLeaderboard = latest;
+          savePlayerProfile();
+        }
+        return latest;
+      } finally { leaderboardBusy = false; }
+    }
+    function addLeaderboardCell(row, text, className = "") {
+      const cell = document.createElement("td");
+      cell.textContent = text;
+      if (className) cell.className = className;
+      row.appendChild(cell);
+      return cell;
+    }
+    function renderLeaderboard(data, statusMessage = "", isError = false) {
+      const rows = Array.isArray(data?.leaderboard) ? data.leaderboard : [];
+      const current = data?.current_player || null;
+      const body = $("#leaderboardRows");
+      body.replaceChildren();
+      rows.forEach(item => {
+        const row = document.createElement("tr");
+        if (item.is_current) row.className = "current-row";
+        addLeaderboardCell(row, `第 ${item.rank} 名`, "rank-col");
+        const nameCell = addLeaderboardCell(row, item.display_name, "name-cell");
+        if (item.is_current) {
+          const tag = document.createElement("span"); tag.className = "current-tag"; tag.textContent = "我"; nameCell.appendChild(tag);
+        }
+        addLeaderboardCell(row, `${item.completed_levels} 关`, "metric-col");
+        addLeaderboardCell(row, `${item.total_stars} 星`, "metric-col");
+        body.appendChild(row);
+      });
+      $("#leaderboardEmpty").classList.toggle("hidden", rows.length > 0);
+      $("#myRankPanel").classList.toggle("hidden", !current);
+      if (current) {
+        $("#myRankNumber").textContent = `第 ${current.rank} 名`;
+        $("#myRankName").textContent = current.display_name;
+        $("#myRankLevels").textContent = `${current.completed_levels} 关`;
+        $("#myRankStars").textContent = `${current.total_stars} 星`;
+      }
+      const status = $("#leaderboardStatus");
+      status.textContent = statusMessage || (current ? `成绩已更新，共有 ${data.total_players} 位同学上榜。` : `目前共有 ${data?.total_players || 0} 位同学上榜。`);
+      status.classList.toggle("error", isError);
+      $("#editNameBtn").textContent = playerProfile.displayName ? "修改昵称" : "登记昵称";
+    }
+    async function showLeaderboard() {
+      $("#nameModal").classList.add("hidden");
+      $("#leaderboardModal").classList.remove("hidden");
+      if (playerProfile.cachedLeaderboard) renderLeaderboard(playerProfile.cachedLeaderboard, "正在获取最新排名…");
+      else renderLeaderboard({ leaderboard: [], current_player: null, total_players: 0 }, "正在获取最新排名…");
+      try {
+        renderLeaderboard(await flushPendingScores());
+      } catch (error) {
+        const cached = playerProfile.cachedLeaderboard || { leaderboard: [], current_player: null, total_players: 0 };
+        renderLeaderboard(cached, `${error.message} 成绩将在联网后自动重试。`, true);
+      }
+    }
+    function openNameModal(editMode = false) {
+      nameEditMode = editMode;
+      $("#leaderboardModal").classList.add("hidden");
+      $("#nameTitle").textContent = editMode ? "修改排行榜昵称" : "写下你的冒险昵称";
+      $("#nameIntro").textContent = editMode ? "新昵称会更新到你已经获得的成绩中。" : "成绩会用这个昵称进入排行榜。";
+      $("#nameInput").value = playerProfile.displayName;
+      $("#nameError").textContent = "";
+      $("#cancelNameBtn").classList.remove("hidden");
+      $("#cancelNameBtn").textContent = editMode ? "取消修改" : "暂不登记";
+      $("#saveNameBtn").textContent = editMode ? "保存昵称" : "保存并查看排名";
+      $("#nameModal").classList.remove("hidden");
+      setTimeout(() => $("#nameInput").focus(), 50);
+    }
+    function queueBestCompletedScore() {
+      for (let index = state.completed.length - 1; index >= 0; index -= 1) {
+        if (state.completed[index] && state.stars[index]) {
+          queueLeaderboardScore(index + 1, state.stars[index]);
+          return true;
+        }
+      }
+      return false;
+    }
+    async function submitPlayerName(event) {
+      event.preventDefault();
+      const value = $("#nameInput").value.replace(/\s+/g, " ").trim();
+      if (value.length < 2 || value.length > 12) {
+        $("#nameError").textContent = "昵称需要填写 2～12 个字。"; return;
+      }
+      const button = $("#saveNameBtn");
+      button.disabled = true; button.textContent = "正在保存…";
+      const previousName = playerProfile.displayName;
+      playerProfile.displayName = value;
+      if (nameEditMode) queueBestCompletedScore();
+      savePlayerProfile();
+      try {
+        const data = await flushPendingScores();
+        $("#nameModal").classList.add("hidden");
+        $("#leaderboardModal").classList.remove("hidden");
+        renderLeaderboard(data);
+      } catch (error) {
+        if (error.status) {
+          playerProfile.displayName = previousName;
+          savePlayerProfile();
+          $("#nameError").textContent = error.message;
+        } else {
+          $("#nameModal").classList.add("hidden");
+          $("#leaderboardModal").classList.remove("hidden");
+          const cached = playerProfile.cachedLeaderboard || { leaderboard: [], current_player: null, total_players: 0 };
+          renderLeaderboard(cached, `${error.message} 成绩将在联网后自动重试。`, true);
+        }
+      } finally {
+        button.disabled = false;
+        button.textContent = nameEditMode ? "保存昵称" : "保存并查看排名";
+      }
+    }
+    function closeLeaderboard() {
+      $("#leaderboardModal").classList.add("hidden");
+      if (pendingCompletionModal) {
+        pendingCompletionModal = false;
+        $("#completeModal").classList.remove("hidden");
+      }
+    }
+    function beginLeaderboardFlow(levelNumber, stars) {
+      queueLeaderboardScore(levelNumber, stars);
+      pendingCompletionModal = true;
+      if (!playerProfile.displayName) openNameModal(false);
+      else showLeaderboard();
     }
     function level() { return GAME_CONFIG.levels[currentLevel]; }
     function commandLabel(cmd) {
@@ -1310,7 +1622,7 @@
       $("#rewardTitle").textContent = "本关通关奖励";
       $("#rewardText").textContent = "记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！";
       $("#nextActionBtn").textContent = last ? "查看我的冒险成绩" : "看看下一张地图";
-      $("#completeModal").classList.remove("hidden");
+      beginLeaderboardFlow(currentLevel + 1, state.stars[currentLevel]);
     }
 
     function openPassword(index) {
@@ -1602,13 +1914,24 @@
       $("#runBtn").addEventListener("click", runProgram);
       $("#mobileRunBtn").addEventListener("click", runProgram);
       $("#soundBtn").addEventListener("click", toggleSound);
+      $("#leaderboardBtn").addEventListener("click", () => { pendingCompletionModal=false; showLeaderboard(); });
       $("#resetProgressBtn").addEventListener("click", () => $("#confirmModal").classList.remove("hidden"));
       $("#cancelResetBtn").addEventListener("click", () => $("#confirmModal").classList.add("hidden"));
-      $("#confirmResetBtn").addEventListener("click", () => { localStorage.removeItem(GAME_CONFIG.storageKey); state=defaultProgress(); currentLevel=0; program=[]; $("#confirmModal").classList.add("hidden"); renderAll(); resetBoard(); $("#guideModal").classList.remove("hidden"); });
+      $("#confirmResetBtn").addEventListener("click", () => { localStorage.removeItem(GAME_CONFIG.storageKey); playerProfile.pendingScores={}; savePlayerProfile(); state=defaultProgress(); currentLevel=0; program=[]; $("#confirmModal").classList.add("hidden"); renderAll(); resetBoard(); $("#guideModal").classList.remove("hidden"); });
       $("#startGameBtn").addEventListener("click", () => { state.guideSeen=true; saveProgress(); $("#guideModal").classList.add("hidden"); playSuccess(); });
       $("#passwordForm").addEventListener("submit", submitPassword);
       $("#passwordInput").addEventListener("input", () => $("#passwordError").textContent="");
       $("#cancelPasswordBtn").addEventListener("click", () => $("#passwordModal").classList.add("hidden"));
+      $("#nameForm").addEventListener("submit", submitPlayerName);
+      $("#nameInput").addEventListener("input", () => $("#nameError").textContent="");
+      $("#cancelNameBtn").addEventListener("click", () => {
+        $("#nameModal").classList.add("hidden");
+        if (nameEditMode || !pendingCompletionModal) $("#leaderboardModal").classList.remove("hidden");
+        else { pendingCompletionModal=false; $("#completeModal").classList.remove("hidden"); }
+      });
+      $("#editNameBtn").addEventListener("click", () => openNameModal(Boolean(playerProfile.displayName)));
+      $("#leaderboardResetBtn").addEventListener("click", () => { $("#leaderboardModal").classList.add("hidden"); $("#confirmModal").classList.remove("hidden"); });
+      $("#closeLeaderboardBtn").addEventListener("click", closeLeaderboard);
       $("#replayBtn").addEventListener("click", () => { $("#completeModal").classList.add("hidden"); program=[]; resetBoard(); renderProgram(); });
       $("#nextActionBtn").addEventListener("click", () => {
         $("#completeModal").classList.add("hidden");
@@ -1617,12 +1940,14 @@
         } else { showToast(`你一共获得了 ${state.stars.reduce((a,b)=>a+b,0)} 颗星！`); }
       });
       window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("online", () => { if(playerProfile.displayName && Object.keys(playerProfile.pendingScores).length) flushPendingScores().catch(()=>{}); });
       new ResizeObserver(resizeCanvas).observe($("#canvasWrap"));
     }
     function renderAll() { renderLevelMap(); renderLevelInfo(); renderProgram(); updateTotalStars(); updateSoundButton(); resizeCanvas(); }
     function init() {
       initializeLevelParams(); setupEvents(); renderAll(); resetBoard(false);
       if(state.guideSeen) $("#guideModal").classList.add("hidden");
+      if(playerProfile.displayName && Object.keys(playerProfile.pendingScores).length) flushPendingScores().catch(()=>{});
       window.TurtleGame = { config: GAME_CONFIG, selectLevel, resetBoard, getState: () => ({currentLevel,program:[...program],turtle:{...turtle},progress:{...state}}) };
     }
     init();
