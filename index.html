@@ -148,6 +148,7 @@
     .program-list li.turn-line { border-left-color: var(--orange); color: #884219; }
     .program-list li.executing { outline: 2px solid var(--yellow); background: #fff9d9; transform: translateX(3px); }
     .program-list li.failed { outline: 2px solid var(--red); background: #fff0f0; }
+    .program-list li code { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; color: inherit; }
     .empty-program { display: grid; place-items: center; flex: 1; min-height: 150px; padding: 24px; color: #8a95a8; text-align: center; font-size: 13px; }
     .empty-program strong { display: block; margin-bottom: 6px; color: #68758a; font-size: 22px; }
     .edit-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 11px; }
@@ -165,6 +166,7 @@
     .run-btn:hover:not(:disabled) { filter: brightness(1.04); transform: translateY(-1px); }
     .run-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #258455; }
     .run-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+    .mobile-run-btn { display: none; }
 
     .modal-backdrop {
       position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 18px;
@@ -205,6 +207,19 @@
     .knowledge-card strong { display: block; margin-bottom: 5px; }
     .knowledge-card p { margin: 0; color: #65562d; font-size: 13px; line-height: 1.55; }
     .next-hint { margin: 12px 0; padding: 12px; border-radius: 7px; background: #e9f5ff; color: #285c91; font-size: 13px; text-align: center; }
+    .reward-card {
+      display: flex; align-items: center; gap: 12px; margin: 12px 0; padding: 12px;
+      border: 2px solid #e25043; border-radius: 7px; background: #fff0e9; color: #70251f;
+    }
+    .reward-card.earned { border-color: #b92525; background: #ffe4d8; box-shadow: 0 3px 0 #b92525; }
+    .reward-egg {
+      display: grid; place-items: center; width: 54px; height: 64px; flex: 0 0 54px;
+      border: 3px solid #7d2020; border-radius: 50% 50% 45% 45%; background: #d93737; box-shadow: inset 0 -8px 0 rgba(111,20,20,.18), 3px 3px 0 #7d2020;
+    }
+    .reward-egg .ui-icon { width: 29px; height: 29px; color: #fff2a6; fill: #ffcf36; stroke: #fff2a6; }
+    .reward-copy { min-width: 0; }
+    .reward-copy strong { display: block; margin-bottom: 3px; color: #a32121; font-size: 14px; }
+    .reward-copy p { margin: 0; font-size: 13px; font-weight: 800; line-height: 1.5; }
     .code-used { margin: 8px 0; color: var(--muted); font-size: 12px; text-align: center; }
     .code-used code { color: #225f9d; font-weight: 800; }
 
@@ -482,11 +497,23 @@
     .confetti { z-index: var(--z-celebrate); }
 
     @media (max-width: 900px) {
+      body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
       .app { padding: 12px; }
       .workspace { grid-template-columns: 1fr; }
       .code-panel { min-height: 470px; }
       .level-map { gap: 8px; }
       .level-tab { height: 58px; }
+      .code-panel > .run-btn { display: none; }
+      .mobile-run-btn {
+        position: fixed; z-index: 40; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom));
+        width: min(360px, calc(100vw - 24px)); min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 9px;
+        padding: 9px 18px; border: 2px solid #fff; border-radius: 7px; background: #087b49; color: #fff;
+        font-size: 17px; font-weight: 1000; box-shadow: 0 5px 0 var(--ink), 0 9px 24px rgba(20,37,60,.3); cursor: pointer;
+      }
+      .mobile-run-btn .ui-icon { width: 22px; height: 22px; fill: currentColor; }
+      .mobile-run-btn:active:not(:disabled) { transform: translate(-50%, 3px); box-shadow: 0 2px 0 var(--ink); }
+      .mobile-run-btn { transform: translateX(-50%); }
+      .mobile-run-btn:disabled { opacity: .52; cursor: not-allowed; }
     }
     @media (max-width: 620px) {
       body { background-size: 24px 24px, 24px 24px, 100% 100%; }
@@ -635,6 +662,8 @@
     </section>
   </main>
 
+  <button class="mobile-run-btn" id="mobileRunBtn" type="button" aria-label="运行程序并查看画布"><svg class="ui-icon" aria-hidden="true"><use href="#icon-play"></use></svg><span>运行程序 · 查看效果</span></button>
+
   <div class="modal-backdrop" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
     <div class="modal"><div class="modal-body">
       <div class="modal-illustration" aria-hidden="true"><svg class="ui-icon"><use href="#icon-turtle"></use></svg></div>
@@ -675,6 +704,10 @@
       <p class="code-used" id="codeUsed"></p>
       <div class="knowledge-card"><strong>本关知识卡</strong><p id="knowledgeText"></p></div>
       <div class="next-hint" id="nextHint">下一关口令会在直播课结束时公布，记得来上课哦！</div>
+      <div class="reward-card" id="rewardCard">
+        <span class="reward-egg" aria-hidden="true"><svg class="ui-icon"><use href="#icon-star"></use></svg></span>
+        <div class="reward-copy"><strong id="rewardTitle">五关通关奖励</strong><p id="rewardText">完成全部 5 关，截图发给原子老师，可领取一颗 4500 积分赤星源码蛋！</p></div>
+      </div>
       <button class="primary-btn" id="nextActionBtn" type="button">继续冒险</button>
       <button class="secondary-btn" id="replayBtn" type="button">再玩一次</button>
     </div></div>
@@ -852,8 +885,20 @@
       if (cmd.type === "goto") return `goto(${cmd.x}, ${cmd.y})`;
       return `${cmd.type}()`;
     }
+    function commandProgramCode(cmd) {
+      if (cmd.type === "drawStarLoop") return `for i in range(${levelParams.loops}):\n    turtle.forward(size)\n    turtle.right(${levelParams.angle})`;
+      if (cmd.type === "growStars") return `size = 32\nfor star in range(${levelParams.loops}):\n    for edge in range(5):\n        turtle.forward(size)\n        turtle.right(144)\n    size += ${levelParams.increment}`;
+      if (cmd.type === "loopForward") return `for i in range(${cmd.count}):\n    turtle.forward(${cmd.value})`;
+      if (cmd.type === "growLoop") return "for step in range(1, 4):\n    turtle.forward(step)";
+      if (cmd.type === "setVar") return `step = ${cmd.expression}`;
+      if (cmd.type === "forwardVar") return "turtle.forward(step)";
+      if (["forward","backward","left","right","speed"].includes(cmd.type)) return `turtle.${cmd.type}(${cmd.value || 90})`;
+      if (cmd.type === "goto") return `turtle.goto(${cmd.x}, ${cmd.y})`;
+      if (["penup","pendown"].includes(cmd.type)) return `turtle.${cmd.type}()`;
+      return commandLabel(cmd);
+    }
     function iconSvg(name, className = "ui-icon") { return `<svg class="${className}" aria-hidden="true"><use href="#icon-${name}"></use></svg>`; }
-    function runButtonContent(isRunning) { return `${iconSvg(isRunning ? "turtle" : "play")}<span>${isRunning ? "小海龟出发中…" : "启动冒险程序"}</span>`; }
+    function runButtonContent(isRunning, mobile = false) { return `${iconSvg(isRunning ? "turtle" : "play")}<span>${isRunning ? "小海龟出发中…" : mobile ? "运行程序 · 查看效果" : "启动冒险程序"}</span>`; }
     function collectedKey(x, y) { return `${x},${y}`; }
     function allCollected() { return collected.size === level().collectibles.length; }
     function requiredCommandsUsed() { return !level().requiredCommands || level().requiredCommands.every(type => usedSpecialCommands.has(type)); }
@@ -980,7 +1025,9 @@
         const li = document.createElement("li");
         li.dataset.index = index;
         li.className = ["left","right","setVar","speed","penup","pendown"].includes(cmd.type) ? "turn-line" : "";
-        li.textContent = commandLabel(cmd);
+        const code = document.createElement("code");
+        code.textContent = commandProgramCode(cmd);
+        li.appendChild(code);
         list.appendChild(li);
       });
       list.classList.toggle("hidden", program.length === 0);
@@ -991,6 +1038,8 @@
       $("#undoBtn").disabled = running || !program.length;
       $("#clearBtn").disabled = running || !program.length;
       $("#runBtn").disabled = running || !program.length;
+      $("#mobileRunBtn").disabled = running || !program.length;
+      $("#mobileRunBtn").innerHTML = runButtonContent(running, true);
       document.querySelectorAll(".command-btn").forEach(btn => btn.disabled = running || program.length >= level().maxCommands);
       updateParameterButtons();
     }
@@ -1018,6 +1067,10 @@
       resetBoard(false);
       running = true;
       setControls(true);
+      if (matchMedia("(max-width: 900px)").matches) {
+        $("#canvasWrap").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+        await wait(prefersReducedMotion ? 20 : 360);
+      }
       setStatus("程序正在从上往下运行…");
       for (let index = 0; index < program.length; index++) {
         highlightLine(index);
@@ -1201,7 +1254,10 @@
     function highlightLine(index) {
       clearProgramHighlights();
       const line = $(`#programList li[data-index="${index}"]`);
-      if (line) { line.classList.add("executing"); line.scrollIntoView({ block: "nearest" }); }
+      if (line) {
+        line.classList.add("executing");
+        if (!matchMedia("(max-width: 900px)").matches) line.scrollIntoView({ block: "nearest" });
+      }
     }
     function markFailedLine(index) {
       clearProgramHighlights();
@@ -1215,6 +1271,8 @@
       $("#clearBtn").disabled = disabled || !program.length;
       $("#runBtn").disabled = disabled || !program.length;
       $("#runBtn").innerHTML = runButtonContent(disabled);
+      $("#mobileRunBtn").disabled = disabled || !program.length;
+      $("#mobileRunBtn").innerHTML = runButtonContent(disabled, true);
       updateParameterButtons();
     }
     function setStatus(message, error = false) {
@@ -1248,6 +1306,9 @@
       $("#knowledgeText").textContent = level().lesson;
       const last = currentLevel === GAME_CONFIG.levels.length - 1;
       $("#nextHint").textContent = last ? "你已经完成五课知识挑战：方法、变量、循环、规律和坐标都成为了你的编程装备。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
+      $("#rewardCard").classList.toggle("earned", last);
+      $("#rewardTitle").textContent = last ? "赤星源码蛋已解锁！" : "五关通关奖励";
+      $("#rewardText").textContent = last ? "记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！" : "完成全部 5 关，截图发给原子老师，可领取一颗4500积分赤星源码蛋！";
       $("#nextActionBtn").textContent = last ? "查看我的冒险成绩" : "看看下一张地图";
       $("#completeModal").classList.remove("hidden");
     }
@@ -1539,6 +1600,7 @@
       $("#undoBtn").addEventListener("click", () => { if(!running){ program.pop(); renderProgram(); playTone(330,.05); } });
       $("#clearBtn").addEventListener("click", () => { if(!running){ program=[]; resetBoard(); renderProgram(); } });
       $("#runBtn").addEventListener("click", runProgram);
+      $("#mobileRunBtn").addEventListener("click", runProgram);
       $("#soundBtn").addEventListener("click", toggleSound);
       $("#resetProgressBtn").addEventListener("click", () => $("#confirmModal").classList.remove("hidden"));
       $("#cancelResetBtn").addEventListener("click", () => $("#confirmModal").classList.add("hidden"));
