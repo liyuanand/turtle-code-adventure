@@ -501,6 +501,32 @@
     .station-bot::after { content: "•  •"; position: absolute; left: 16px; right: 16px; top: 25px; height: 35px; border: 3px solid #0c1424; border-radius: 6px; background: #b8d6ea; color: #17223b; font-size: 28px; line-height: 26px; }
     .station-bot.fixed { background: #28b875; }
     .station-bot span { position: absolute; left: 8px; right: 8px; bottom: 12px; font-size: 12px; font-weight: 1000; }
+    .battle-arena { position: relative; width: min(650px, 100%); height: 230px; overflow: hidden; border-radius: 8px; background: linear-gradient(#233966 0 62%, #17223b 62%); box-shadow: inset 0 0 0 3px rgba(255,255,255,.12); }
+    .battle-arena::after { content: ""; position: absolute; left: 0; right: 0; bottom: 31px; height: 4px; background: #6e83a4; box-shadow: 0 7px 0 rgba(0,0,0,.22); }
+    .battle-name { position: absolute; z-index: 5; top: 10px; left: 50%; transform: translateX(-50%); padding: 5px 10px; border-radius: 5px; background: rgba(7,17,30,.82); color: #fff3a4; font-size: 12px; font-weight: 1000; white-space: nowrap; }
+    .battle-character { position: absolute; z-index: 3; bottom: 34px; width: 72px; height: 112px; }
+    .battle-hero { left: 9%; animation: hero-charge 3.4s ease-in-out both; }
+    .battle-enemy { right: 10%; animation: enemy-defeat 3.4s ease-in both; }
+    .figure-head { position: absolute; left: 21px; top: 0; width: 31px; height: 31px; border: 4px solid #fff; border-radius: 50%; background: #080a0f; }
+    .battle-enemy .figure-head { background: #b62f42; }
+    .figure-body { position: absolute; left: 30px; top: 31px; width: 12px; height: 48px; border-radius: 6px; background: #080a0f; }
+    .battle-enemy .figure-body { background: #b62f42; }
+    .figure-arm, .figure-leg { position: absolute; width: 10px; border-radius: 5px; transform-origin: 50% 0; }
+    .figure-arm { top: 39px; height: 43px; background: #080a0f; }
+    .figure-arm.left { left: 27px; transform: rotate(52deg); } .figure-arm.right { left: 36px; transform: rotate(-52deg); }
+    .figure-leg { top: 72px; height: 45px; background: #080a0f; }
+    .figure-leg.left { left: 28px; transform: rotate(25deg); } .figure-leg.right { left: 35px; transform: rotate(-25deg); }
+    .battle-enemy .figure-arm, .battle-enemy .figure-leg { background: #b62f42; }
+    .battle-star { position: absolute; z-index: 6; left: 18%; bottom: 105px; color: #ffd532; font-size: 52px; line-height: 1; filter: drop-shadow(0 0 9px #ffdf55); animation: star-strike 3.4s ease-in-out both; }
+    .battle-impact { position: absolute; z-index: 7; right: 9%; top: 72px; color: #fff; font-size: 19px; font-weight: 1000; opacity: 0; transform: rotate(-8deg); text-shadow: 2px 2px 0 #d53f3f; animation: impact-pop 3.4s ease-out both; }
+    .firework { position: absolute; z-index: 2; width: 8px; height: 8px; border-radius: 50%; opacity: 0; animation: firework-burst 3.4s ease-out both; }
+    .firework::before { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #ffd532; box-shadow: 0 -30px #ff5d70, 22px -22px #52d99b, 30px 0 #52b9ff, 22px 22px #ff9a3d, 0 30px #b787ff, -22px 22px #52d99b, -30px 0 #ff5d70, -22px -22px #52b9ff; }
+    .firework.one { left: 22%; top: 57px; } .firework.two { left: 52%; top: 43px; animation-delay: .18s; } .firework.three { right: 17%; top: 51px; animation-delay: .34s; }
+    @keyframes hero-charge { 0%,25% { transform: translateX(0); } 55% { transform: translateX(150px); } 72%,100% { transform: translateX(105px); } }
+    @keyframes star-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.8); } 64% { transform: translate(365px,-14px) rotate(540deg) scale(1.25); } 72%,100% { transform: translate(365px,-14px) rotate(620deg) scale(0); } }
+    @keyframes enemy-defeat { 0%,61% { transform: rotate(0); opacity: 1; } 76%,100% { transform: translate(24px,34px) rotate(82deg); opacity: .18; } }
+    @keyframes impact-pop { 0%,60% { opacity: 0; transform: scale(.2) rotate(-8deg); } 68%,92% { opacity: 1; transform: scale(1.15) rotate(-8deg); } 100% { opacity: 0; } }
+    @keyframes firework-burst { 0%,69% { opacity: 0; transform: scale(.1); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: .7; transform: scale(1.35); } }
     .gate-scene { position: relative; width: min(630px, 100%); height: 205px; }
     .gate-frame { position: absolute; left: 50%; bottom: 0; width: 170px; height: 190px; transform: translateX(-50%); border: 14px solid #324b6c; border-bottom: 0; border-radius: 16px 16px 0 0; box-shadow: inset 0 0 0 4px #7892b4; }
     .gate-light { position: absolute; left: 50%; top: 8px; width: 24px; height: 24px; transform: translateX(-50%); border: 3px solid #10192a; border-radius: 50%; background: #ffc928; }
@@ -716,6 +742,16 @@
       .station-bot::before { left: 22px; width: 24px; }
       .station-bot::after { left: 10px; right: 10px; top: 18px; height: 26px; font-size: 20px; line-height: 18px; }
       .station-bot span { bottom: 7px; font-size: 10px; }
+      #missionLab[data-scene="star-battle"] .scene-shell > p { display: none; }
+      #missionLab[data-scene="star-battle"] .scene-visual { min-height: 138px; height: 138px; }
+      .battle-arena { height: 138px; }
+      .battle-character { bottom: 25px; transform: scale(.72); transform-origin: bottom center; }
+      .battle-hero { left: 2%; } .battle-enemy { right: 2%; }
+      .battle-star { left: 13%; bottom: 80px; font-size: 38px; }
+      .battle-impact { right: 2%; top: 51px; font-size: 13px; }
+      .firework.one { left: 18%; top: 40px; } .firework.two { left: 50%; top: 30px; } .firework.three { right: 15%; top: 38px; }
+      @keyframes hero-charge { 0%,25% { transform: translateX(0) scale(.72); } 55% { transform: translateX(88px) scale(.72); } 72%,100% { transform: translateX(65px) scale(.72); } }
+      @keyframes star-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.65); } 64% { transform: translate(210px,-8px) rotate(540deg) scale(1); } 72%,100% { transform: translate(210px,-8px) rotate(620deg) scale(0); } }
       .console-window { min-height: 104px; padding: 9px 11px; font-size: 11px; }
       .gate-scene { height: 150px; }
       .gate-frame { width: 122px; height: 142px; border-width: 10px; }
@@ -734,6 +770,12 @@
       #missionLab.free-studio .robot-preview { transform: scale(.5); transform-origin: center; margin: -53px auto; }
       #missionLab.free-studio .scene-shell > p { display: none; }
       .challenge-options { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .battle-hero { animation-duration: .01ms; transform: translateX(105px); }
+      .battle-star { animation-duration: .01ms; opacity: 0; }
+      .battle-enemy { animation-duration: .01ms; opacity: .18; transform: translate(24px,34px) rotate(82deg); }
+      .battle-impact, .firework { animation-duration: .01ms; opacity: 1; }
     }
   </style>
 </head>
@@ -1061,28 +1103,21 @@
           start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 1 }, collectibles: [{x:1,y:3},{x:4,y:5},{x:7,y:3}], maxCommands: 8, stars: [8, 6]
         },
         {
-          name: "星际通讯站", shortName: "通讯站", icon: "rocket", password: "1313", mode: "challenge",
-          goal: "让 input()、print() 和控制台完成一次真正对话", mission: "修复三台通讯机器人", course: "第 6 课",
-          knowledge: ["input() 输入", "print() 输出", "控制台", "fixed += 1", "对照调试"],
-          example: "name = input('请输入昵称：')\nprint(name)\nfixed += 1",
-          lesson: "input() 会在控制台提出问题并等待输入，输入内容会保存到变量；print() 把数据输出到控制台。fixed += 1 会让修复计数增加 1。调试时要比较实际效果和期望结果。",
-          debugTip: "先看期望控制台，再逐行比较实际代码：有没有接收 input()、有没有 print()、计数是否真的增加。",
-          hintLimit: 0, attemptLimit: 2, expectedTests: ["输入能保存到变量", "print 按顺序输出", "fixed 最终为 3"],
+          name: "星光勇士训练场", shortName: "星光勇士", icon: "rocket", password: "1313", mode: "challenge",
+          goal: "用 input() 输入姓名，再用 print() 打印五角星", mission: "打印星星，为小勇士注入力量", course: "第 6 课",
+          knowledge: ["input() 输入", "print() 输出", "字符串", "控制台", "测试调试"],
+          example: "name = input('请输入学生姓名：')\nprint('★')",
+          lesson: "input() 会在控制台提出问题并等待输入，输入的姓名会保存到 name 变量。print('★') 会把引号中的五角星打印到控制台；只有实际输出与期望的实心五角星一致，程序才算成功。",
+          debugTip: "先确认 input() 的结果保存到了 name，再检查 print() 的括号、引号和五角星是实心 ★ 还是空心 ☆。",
+          hintLimit: 0, attemptLimit: 2, expectedTests: ["姓名保存到 name", "控制台打印实心五角星", "成功后触发战斗动画"],
           stages: [
-            { title: "建立通讯", scene: "robots", prompt: "先询问昵称，再把昵称打印到控制台。点击代码卡排出正确顺序。", code: "# 期望：控制台先提问，再显示玩家输入的昵称", hint: "input() 先执行并把结果交给 name，print(name) 才能输出刚才的内容。", rounds: [
-              { question: "排出两行程序并输入你的通讯昵称", mode: "sequence", requiresInput: true, placeholder: "输入 2～12 个字的通讯昵称", cards: [
-                {id:"print-first",label:"print(name)  # name 还没创建"},{id:"ask-name",label:"name = input('请输入昵称：')"},{id:"print-name",label:"print(name)"},{id:"loose-input",label:"input('请输入昵称：')"}
-              ], correct:["ask-name","print-name"], successConsole:"请输入昵称：{input}\n{input}\n通讯建立成功" }
+            { title: "输入学生姓名", scene: "console", prompt: "让 input() 在控制台询问姓名，并把输入保存到 name 变量。", code: "name = ______", hint: "只有 name = input(...) 才会把输入结果保存进变量。", rounds: [
+              { question: "选择正确代码，并输入学生姓名", mode: "single", requiresInput: true, placeholder: "请输入 2～12 个字的学生姓名", cards: [
+                {id:"ask-name",label:"name = input('请输入学生姓名：')"},{id:"loose-input",label:"input('请输入学生姓名：')"},{id:"print-name",label:"print('请输入学生姓名：')"}
+              ], correct:["ask-name"], successConsole:"请输入学生姓名：{input}\nname = '{input}'\n姓名输入成功" }
             ]},
-            { title: "回传暗号", scene: "console", prompt: "收到暗号后，先打印“暗号已收到”，再回显暗号内容。", code: "code = input('请输入暗号：')\n# 补全下面两行", hint: "固定提示文字要放在 print() 的引号里；变量 code 不加引号。", rounds: [
-              { question:"输入一个暗号，并排列两条输出指令", mode:"sequence", requiresInput:true, placeholder:"例如：星光出发", cards:[
-                {id:"echo",label:"print(code)"},{id:"received",label:"print('暗号已收到')"},{id:"wrong-code",label:"print('code')"},{id:"wrong-input",label:"input(code)"}
-              ], correct:["received","echo"], successConsole:"请输入暗号：{input}\n暗号已收到\n{input}" }
-            ]},
-            { title: "三机 Debug", scene: "robots", prompt: "依次修复接收、输出和自增错误。每修好一台，fixed 才会增加。", code: "fixed = 0\n# 对照实际效果与期望结果修复", hint: "第一台缺输出，第二台没有保存输入，第三台把 =+ 错写成了自增。", rounds: [
-              {question:"1 号机：变量里已有名字，但控制台没有显示",mode:"single",actual:"实际：控制台空白",expected:"期望：显示 小海龟",cards:[{id:"r1-ok",label:"print(name)"},{id:"r1-bad",label:"input(name)"},{id:"r1-text",label:"print('name')"}],correct:["r1-ok"],successConsole:"小海龟\nfixed = 1"},
-              {question:"2 号机：input() 问了暗号，但变量 code 仍是空的",mode:"single",actual:"实际：code 没有得到输入",expected:"期望：code 保存输入内容",cards:[{id:"r2-ok",label:"code = input('暗号：')"},{id:"r2-bad",label:"print('暗号：')"},{id:"r2-loose",label:"input('暗号：')"}],correct:["r2-ok"],successConsole:"code 已保存\nfixed = 2"},
-              {question:"3 号机：fixed 原来是 2，运行后却变成 1",mode:"single",actual:"实际：fixed = 1",expected:"期望：fixed = 3",cards:[{id:"r3-bad",label:"fixed =+ 1"},{id:"r3-ok",label:"fixed += 1"},{id:"r3-zero",label:"fixed = 1"}],correct:["r3-ok"],successConsole:"fixed = 3\n三台通讯机器人全部恢复"}
+            { title: "打印能量五角星", scene: "star-battle", prompt: "选择能在控制台打印一个实心五角星的代码。", code: "# 期望输出\n★", hint: "print() 的内容要放进括号和引号中，并且必须是实心五角星 ★。", rounds: [
+              {question:"哪行代码会正确打印一个实心五角星？",mode:"single",cards:[{id:"print-star",label:"print('★')"},{id:"print-hollow",label:"print('☆')"},{id:"input-star",label:"input('★')"},{id:"bare-star",label:"print(★)"}],correct:["print-star"],successConsole:"★\n五角星打印成功，星光勇士出击！"}
             ]}
           ],
           palette:{sky:"#17223b",floor:"#d8eeff",wall:"#344968",wallTop:"#7896bd",accent:"#37c6a0"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
@@ -1429,7 +1464,7 @@
     function level() { return GAME_CONFIG.levels[currentLevel]; }
     function isChallengeLevel() { return level().mode === "challenge"; }
     function createChallengeState() {
-      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy" };
+      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy" };
     }
     function commandLabel(cmd) {
       if (cmd.type === "drawStarLoop") return `for i in range(${levelParams.loops}): forward(size); right(${levelParams.angle})`;
@@ -1482,7 +1517,9 @@
       lab.classList.toggle("free-studio", challengeState.freeMode);
       const dots = level().stages.map((_, index) => `<span class="stage-dot${index < challengeState.stage ? " done" : index === challengeState.stage ? " active" : ""}"></span>`).join("");
       let visual = "";
-      if (challengeState.freeMode) {
+      if (challengeState.battle) {
+        visual = `<div class="battle-arena" role="img" aria-label="黑色小勇士拿着五角星击败敌人，烟花绽放"><div class="battle-name">${escapeHtml(challengeState.studentName)}的星光勇士</div><span class="firework one"></span><span class="firework two"></span><span class="firework three"></span><div class="battle-character battle-hero"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><span class="battle-star">★</span><div class="battle-character battle-enemy"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><strong class="battle-impact">成功击败！</strong></div>`;
+      } else if (challengeState.freeMode) {
         visual = renderRobotPreview();
       } else if (stage.scene === "robots") {
         visual = `<div class="robot-row">${[0,1,2].map(index => `<div class="station-bot${index < challengeState.fixed ? " fixed" : ""}"><span>${index < challengeState.fixed ? "已修复" : `${index + 1} 号机`}</span></div>`).join("")}</div>`;
@@ -1505,8 +1542,8 @@
       } else {
         visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || "> 等待测试……")}</div>`;
       }
-      const title = challengeState.freeMode ? "自由表情创作室" : stage.title;
-      const intro = challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : (round.question || stage.prompt);
+      const title = challengeState.battle ? "五角星出击！" : challengeState.freeMode ? "自由表情创作室" : stage.title;
+      const intro = challengeState.battle ? `${challengeState.studentName}成功打印五角星，黑色小勇士获得星光力量！` : challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : (round.question || stage.prompt);
       lab.innerHTML = `<div class="scene-shell"><div class="scene-kicker">${escapeHtml(level().course)} · 阶段 ${challengeState.stage + 1} / ${level().stages.length}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(intro)}</p><div class="stage-dots">${dots}</div><div class="scene-visual">${visual}</div></div>`;
     }
     function renderFreeStudioPanel() {
@@ -1528,7 +1565,7 @@
       const chips = round.mode === "prompt" ? `<div class="prompt-chips">${(stage.promptChips || []).map(text => `<button type="button" class="prompt-chip" data-prompt-chip="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join("")}</div>` : "";
       const comparison = round.actual || round.expected ? `<div class="hint-output"><strong>${escapeHtml(round.actual || "")}</strong>${round.expected ? `<br>${escapeHtml(round.expected)}` : ""}</div>` : "";
       const preview = round.mode === "sequence" ? `<div class="selection-preview">${chosen.length ? chosen.map((label,index) => `${index + 1}. ${escapeHtml(label)}`).join("<br>") : "按运行顺序点击代码卡"}</div>` : "";
-      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>阶段 ${challengeState.stage + 1} / 3 · 小题 ${challengeState.round + 1} / ${stage.rounds.length}</span><span>失败 ${challengeState.failedAttempts} 次</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run>${challengeState.roundPassed ? "继续下一步" : round.mode === "prompt" ? "向模拟 AI 提问" : "运行并验证"}</button></div></div>`;
+      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>阶段 ${challengeState.stage + 1} / ${level().stages.length} · 小题 ${challengeState.round + 1} / ${stage.rounds.length}</span><span>失败 ${challengeState.failedAttempts} 次</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed || challengeState.battle ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run ${challengeState.battle ? "disabled" : ""}>${challengeState.battle ? "战斗动画播放中…" : challengeState.roundPassed ? "继续下一步" : round.mode === "prompt" ? "向模拟 AI 提问" : "运行并验证"}</button></div></div>`;
       renderChallengeScene();
     }
     function chooseChallengeCard(cardId) {
@@ -1546,6 +1583,15 @@
     function evaluatePrompt(value) {
       const checks = [/(Python|turtle|海龟)/i, /(机器人|表情|开心|惊讶)/, /(圆|半圆|眼睛|嘴巴|颜色|circle)/i, /(参数|步骤|代码|方法|怎么|如何)/];
       return checks.filter(pattern => pattern.test(value)).length;
+    }
+    function startStarBattle() {
+      challengeState.battle = true;
+      setStatus(`${challengeState.studentName}打印成功！五角星正在帮助小勇士击败敌人。`, false);
+      renderChallengePanel();
+      [660, 780, 920, 1100].forEach((note, index) => playTone(note, .12, "triangle", index * .22));
+      setTimeout(() => {
+        if (currentLevel === 5 && challengeState.battle) completeLevel();
+      }, prefersReducedMotion ? 900 : 3600);
     }
     function runChallengeRound() {
       if (challengeState.roundPassed) { advanceChallenge(); return; }
@@ -1577,9 +1623,10 @@
       }
       challengeState.roundPassed = true;
       challengeState.lastConsole = String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
-      if (currentLevel === 5 && challengeState.stage === 2) challengeState.fixed = challengeState.round + 1;
+      if (currentLevel === 5 && challengeState.stage === 0) challengeState.studentName = challengeState.inputValue;
       setStatus("测试通过！观察效果，然后继续下一步。", false);
       playSuccess();
+      if (currentLevel === 5 && challengeState.stage === level().stages.length - 1) { startStarBattle(); return; }
       renderChallengePanel();
     }
     function advanceChallenge() {
@@ -1592,7 +1639,7 @@
       challengeState.lastConsole = "";
       challengeState.inputValue = "";
       setStatus(`进入阶段 ${challengeState.stage + 1}：${challengeStage().title}`);
-      renderChallengePanel();
+      updateCollectCount(); renderChallengePanel();
     }
 
     function renderCommandPalette() {
@@ -1998,7 +2045,7 @@
     }
     function completeLevel() {
       const earned = calculateStars();
-      setStatus(isChallengeLevel() ? "三阶段测试全部通过，本课编程任务完成！" : level().drawing ? "绘图成功！小海龟完成了本课图形挑战。" : "闯关成功！你已经把小海龟送到终点。", false);
+      setStatus(isChallengeLevel() ? "全部测试通过，本课编程任务完成！" : level().drawing ? "绘图成功！小海龟完成了本课图形挑战。" : "闯关成功！你已经把小海龟送到终点。", false);
       state.completed[currentLevel] = true;
       state.stars[currentLevel] = Math.max(state.stars[currentLevel], earned);
       saveProgress();
