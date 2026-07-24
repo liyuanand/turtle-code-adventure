@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fff5c9">
-  <meta name="description" content="点选 Python 指令卡，带小海龟闯过五个奇妙迷宫世界。">
+  <meta name="description" content="点选 Python 指令卡，带小海龟闯过十个输入、分支、调试与绘图世界。">
   <title>海龟代码大冒险｜小学生 Python 闯关游戏</title>
   <style>
     :root {
@@ -468,6 +468,99 @@
     .debug-coach { margin-top: 10px; padding: 9px 10px; border: 2px solid #df8b2d; border-radius: 7px; background: #fff1d2; color: #6c3b0d; font-size: 12px; font-weight: 800; line-height: 1.45; }
     .debug-coach strong { color: #9a4510; }
 
+    .mission-lab {
+      position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; overflow: hidden;
+      padding: 58px 28px 24px; color: #f7fbff; background: #17223b;
+    }
+    .mission-lab::before {
+      content: ""; position: absolute; inset: 0; opacity: .22; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.14) 1px, transparent 1px);
+      background-size: 34px 34px;
+    }
+    .scene-shell { position: relative; z-index: 1; width: min(760px, 100%); text-align: center; }
+    .scene-kicker { color: #a9d8ff; font-size: 12px; font-weight: 1000; letter-spacing: 0; }
+    .scene-shell h3 { margin: 7px 0 5px; font-size: clamp(22px, 3.2vw, 34px); letter-spacing: 0; }
+    .scene-shell > p { margin: 0 auto 16px; max-width: 590px; color: #c9d5e7; font-size: 13px; font-weight: 700; line-height: 1.55; }
+    .stage-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+    .stage-dot { width: 34px; height: 7px; border-radius: 4px; background: rgba(255,255,255,.2); }
+    .stage-dot.done { background: #46d98b; }
+    .stage-dot.active { background: #ffc928; }
+    .scene-visual { min-height: 218px; display: grid; place-items: center; }
+    .console-window {
+      width: min(610px, 100%); min-height: 142px; padding: 13px 16px; border: 3px solid #09111f; border-radius: 8px;
+      background: #07111e; box-shadow: 7px 7px 0 rgba(0,0,0,.28); color: #78f2a6; text-align: left;
+      font: 800 14px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap;
+    }
+    .console-window::before { content: "控制台"; display: block; margin-bottom: 7px; color: #7ea0c9; font: 900 11px/1.2 ui-rounded, sans-serif; }
+    .robot-row, .visitor-row, .data-row { display: flex; align-items: flex-end; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .station-bot {
+      position: relative; width: 108px; height: 116px; border: 4px solid #0c1424; border-radius: 8px 8px 24px 24px;
+      background: #4b607c; box-shadow: 5px 5px 0 rgba(0,0,0,.25);
+    }
+    .station-bot::before { content: ""; position: absolute; width: 34px; height: 12px; left: 33px; top: -18px; border: 4px solid #0c1424; border-bottom: 0; background: #ffc928; }
+    .station-bot::after { content: "•  •"; position: absolute; left: 16px; right: 16px; top: 25px; height: 35px; border: 3px solid #0c1424; border-radius: 6px; background: #b8d6ea; color: #17223b; font-size: 28px; line-height: 26px; }
+    .station-bot.fixed { background: #28b875; }
+    .station-bot span { position: absolute; left: 8px; right: 8px; bottom: 12px; font-size: 12px; font-weight: 1000; }
+    .gate-scene { position: relative; width: min(630px, 100%); height: 205px; }
+    .gate-frame { position: absolute; left: 50%; bottom: 0; width: 170px; height: 190px; transform: translateX(-50%); border: 14px solid #324b6c; border-bottom: 0; border-radius: 16px 16px 0 0; box-shadow: inset 0 0 0 4px #7892b4; }
+    .gate-light { position: absolute; left: 50%; top: 8px; width: 24px; height: 24px; transform: translateX(-50%); border: 3px solid #10192a; border-radius: 50%; background: #ffc928; }
+    .visitor { width: 78px; padding: 10px 7px; border: 3px solid #10192a; border-radius: 8px; background: #fff; color: #17223b; font-size: 12px; font-weight: 1000; box-shadow: 4px 4px 0 rgba(0,0,0,.24); }
+    .visitor .badge { display: grid; place-items: center; width: 42px; height: 42px; margin: 0 auto 6px; border-radius: 50%; background: #283f67; color: #ffd64a; font-size: 23px; }
+    .fuel-scene { display: grid; grid-template-columns: 1fr 150px 1fr; align-items: center; gap: 18px; width: min(620px, 100%); }
+    .fuel-card { padding: 13px; border: 3px solid #10192a; border-radius: 8px; background: #fff; color: #17223b; font-weight: 900; box-shadow: 4px 4px 0 rgba(0,0,0,.22); }
+    .fuel-card strong { display: block; color: #1673c8; font-size: 23px; }
+    .rocket-figure { font-size: 96px; filter: drop-shadow(5px 7px 0 rgba(0,0,0,.2)); }
+    .type-chip { min-width: 92px; padding: 12px; border: 3px solid #10192a; border-radius: 8px; background: #fff; color: #17223b; font: 1000 16px ui-monospace, monospace; box-shadow: 4px 4px 0 rgba(0,0,0,.2); }
+    .test-table { width: min(570px, 100%); border-collapse: separate; border-spacing: 0 6px; color: #17223b; font-size: 12px; font-weight: 900; }
+    .test-table td { padding: 8px 10px; background: #fff; }
+    .test-table td:first-child { border-radius: 6px 0 0 6px; }
+    .test-table td:last-child { border-radius: 0 6px 6px 0; }
+    .test-pass { color: #087b49; }
+    .test-fail { color: #c83939; }
+    .circle-demo { display: flex; align-items: center; justify-content: center; gap: 36px; min-height: 190px; }
+    .demo-circle { width: 128px; height: 128px; border: 9px solid #62d6ff; border-radius: 50%; box-shadow: 5px 5px 0 rgba(0,0,0,.2); }
+    .demo-arc { width: 150px; height: 76px; border: 9px solid #ffcf4e; border-bottom: 0; border-radius: 90px 90px 0 0; }
+    .robot-preview { position: relative; width: 245px; height: 210px; margin: 0 auto; }
+    .robot-head { position: absolute; left: 35px; top: 16px; width: 175px; height: 166px; border: 9px solid var(--robot-color, #39a8ff); border-radius: 42%; background: #ecf8ff; box-shadow: 7px 7px 0 rgba(0,0,0,.25); }
+    .robot-eye { position: absolute; top: 66px; width: 27px; height: 27px; border: 5px solid #17223b; border-radius: 50%; background: #fff; }
+    .robot-eye.left { left: 77px; } .robot-eye.right { right: 77px; }
+    .robot-mouth { position: absolute; left: 88px; top: 119px; width: 70px; height: 36px; border: 7px solid #17223b; border-top: 0; border-radius: 0 0 50px 50px; }
+    .robot-preview.surprised .robot-mouth { left: 107px; width: 32px; height: 32px; border-top: 7px solid #17223b; border-radius: 50%; }
+    .robot-preview.sleepy .robot-mouth { left: 92px; top: 136px; width: 62px; height: 0; border-width: 0 0 7px; border-radius: 0; }
+    .robot-antenna { position: absolute; left: 119px; top: -15px; width: 8px; height: 40px; background: #17223b; }
+    .robot-antenna::before { content: ""; position: absolute; left: -8px; top: -10px; width: 24px; height: 24px; border-radius: 50%; background: #ffc928; border: 4px solid #17223b; }
+
+    .challenge-panel { margin-top: 13px; }
+    .challenge-card { padding: 12px; border: 2px solid var(--ink); border-radius: 7px; background: #f7faff; box-shadow: 0 3px 0 #b9c6d6; }
+    .challenge-progress { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #56647a; font-size: 11px; font-weight: 1000; }
+    .challenge-card h3 { margin: 8px 0 5px; font-size: 17px; letter-spacing: 0; }
+    .challenge-prompt { margin: 0; color: #46546a; font-size: 12px; font-weight: 750; line-height: 1.55; }
+    .challenge-code { display: block; min-height: 62px; margin: 10px 0; padding: 10px; overflow: auto; border: 2px solid #18253b; border-radius: 6px; background: #101a2b; color: #9df1be; font: 800 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
+    .challenge-input { width: 100%; min-height: 48px; padding: 10px 12px; border: 2px solid #8494aa; border-radius: 6px; color: var(--ink); font-size: 14px; font-weight: 800; }
+    textarea.challenge-input { min-height: 86px; resize: vertical; line-height: 1.45; }
+    .challenge-options { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin: 10px 0; }
+    .challenge-option { min-height: 50px; padding: 8px; border: 2px solid #75859b; border-radius: 6px; background: #fff; color: #26354c; text-align: left; font: 900 12px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; cursor: pointer; }
+    .challenge-option:hover { border-color: #2477dc; background: #edf6ff; }
+    .challenge-option.selected { border-color: #17223b; background: #fff0a8; box-shadow: 0 3px 0 #17223b; }
+    .challenge-option:disabled { opacity: .58; cursor: default; box-shadow: none; }
+    .selection-preview { min-height: 38px; padding: 8px; border: 2px dashed #9aa8ba; border-radius: 6px; color: #5a687b; font-size: 11px; font-weight: 800; line-height: 1.5; }
+    .prompt-chips, .studio-controls { display: flex; flex-wrap: wrap; gap: 7px; margin: 9px 0; }
+    .prompt-chip, .studio-chip { min-height: 38px; padding: 6px 9px; border: 2px solid #65758d; border-radius: 6px; background: #fff; color: #34435a; font-size: 11px; font-weight: 900; cursor: pointer; }
+    .studio-swatch { width: 40px; height: 40px; padding: 0; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px #17223b; cursor: pointer; }
+    .challenge-actions { display: grid; grid-template-columns: 1fr 1.7fr; gap: 8px; margin-top: 10px; }
+    .hint-btn, .challenge-run { min-height: 48px; border: 2px solid var(--ink); border-radius: 7px; font-weight: 1000; cursor: pointer; }
+    .hint-btn { background: #fff; color: var(--ink); }
+    .challenge-run { background: #087b49; color: #fff; box-shadow: 0 4px 0 var(--ink); }
+    .hint-output { margin: 8px 0 0; padding: 8px; border-left: 5px solid #df8b2d; background: #fff1d2; color: #6c3b0d; font-size: 11px; font-weight: 800; line-height: 1.45; }
+    body.challenge-active .mini-steps,
+    body.challenge-active #limitBadge,
+    body.challenge-active #parameterLab,
+    body.challenge-active #commandPalette,
+    body.challenge-active .program-shell,
+    body.challenge-active .edit-actions,
+    body.challenge-active #runBtn,
+    body.challenge-active #mobileRunBtn { display: none !important; }
+
     .modal-backdrop { z-index: var(--z-modal); background: rgba(15, 25, 45, .72); backdrop-filter: blur(4px); }
     .modal { width: min(540px, 100%); border: 3px solid var(--ink); background: #fffef8; box-shadow: 8px 8px 0 rgba(7,14,28,.55); }
     .modal-body { padding: 26px; }
@@ -615,6 +708,32 @@
       .leaderboard-actions { grid-template-columns: 1fr; gap: 8px; }
       .leaderboard-actions .primary-btn, .leaderboard-actions .secondary-btn { min-height: 48px; }
       .top-actions #resetProgressBtn { display: none; }
+      .mission-lab { padding: 48px 12px 14px; }
+      .scene-shell h3 { font-size: 20px; }
+      .scene-shell > p { margin-bottom: 8px; font-size: 11px; }
+      .scene-visual { min-height: 160px; }
+      .station-bot { width: 74px; height: 82px; border-width: 3px; }
+      .station-bot::before { left: 22px; width: 24px; }
+      .station-bot::after { left: 10px; right: 10px; top: 18px; height: 26px; font-size: 20px; line-height: 18px; }
+      .station-bot span { bottom: 7px; font-size: 10px; }
+      .console-window { min-height: 104px; padding: 9px 11px; font-size: 11px; }
+      .gate-scene { height: 150px; }
+      .gate-frame { width: 122px; height: 142px; border-width: 10px; }
+      .visitor { width: 64px; font-size: 10px; }
+      .fuel-scene { grid-template-columns: 1fr 76px 1fr; gap: 7px; }
+      .rocket-figure { font-size: 62px; }
+      .fuel-card { padding: 8px; font-size: 10px; }
+      .fuel-card strong { font-size: 17px; }
+      .circle-demo { gap: 18px; min-height: 135px; }
+      .demo-circle { width: 92px; height: 92px; border-width: 7px; }
+      .demo-arc { width: 104px; height: 54px; border-width: 7px; border-bottom: 0; }
+      .robot-preview { transform: scale(.75); margin: -22px auto; }
+      #missionLab[data-scene="robot"] .scene-visual,
+      #missionLab.free-studio .scene-visual { min-height: 112px; height: 112px; }
+      #missionLab[data-scene="robot"] .robot-preview,
+      #missionLab.free-studio .robot-preview { transform: scale(.5); transform-origin: center; margin: -53px auto; }
+      #missionLab.free-studio .scene-shell > p { display: none; }
+      .challenge-options { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -653,13 +772,13 @@
         <div class="brand-mark" aria-hidden="true"><svg class="ui-icon"><use href="#icon-turtle"></use></svg></div>
         <div>
           <h1>海龟代码大冒险</h1>
-          <p>点选 Python 指令卡，亲手带小海龟闯过 5 个奇妙世界</p>
+          <p>点选 Python 指令卡，亲手闯过 10 个奇妙编程世界</p>
         </div>
       </div>
       <div class="top-actions">
         <div class="score-pill" aria-label="获得的星星总数">
           <svg class="ui-icon" aria-hidden="true"><use href="#icon-star"></use></svg>
-          <span class="score-data"><span class="score-row"><strong id="totalStars">0</strong><span>/ 15</span><span class="score-label">冒险能量</span></span><span class="energy-track"><span class="energy-fill" id="energyFill"></span></span></span>
+          <span class="score-data"><span class="score-row"><strong id="totalStars">0</strong><span>/ 30</span><span class="score-label">冒险能量</span></span><span class="energy-track"><span class="energy-fill" id="energyFill"></span></span></span>
         </div>
         <button class="icon-btn" id="leaderboardBtn" type="button" title="查看排行榜" aria-label="查看排行榜"><svg class="ui-icon" aria-hidden="true"><use href="#icon-leaderboard"></use></svg></button>
         <button class="icon-btn" id="soundBtn" type="button" title="关闭声音" aria-label="关闭声音"><svg class="ui-icon" aria-hidden="true"><use href="#icon-volume"></use></svg></button>
@@ -684,6 +803,7 @@
         <div class="canvas-wrap" id="canvasWrap">
           <div class="mission-chip"><svg class="ui-icon" aria-hidden="true"><use href="#icon-target"></use></svg><span id="missionChip">任务：抵达终点</span></div>
           <canvas id="gameCanvas" width="900" height="700" aria-label="迷宫游戏区域"></canvas>
+          <section class="mission-lab hidden" id="missionLab" aria-label="编程任务场景"></section>
         </div>
         <footer class="status-bar">
           <div class="status-text"><span class="status-dot" id="statusDot"></span><span id="statusText">选择指令，帮小海龟走到终点吧！</span></div>
@@ -702,6 +822,7 @@
           <div class="knowledge-tags" id="knowledgeTags"></div>
           <code class="syntax-example" id="syntaxExample"></code>
         </section>
+        <section class="challenge-panel hidden" id="challengePanel" aria-live="polite"></section>
         <section class="parameter-lab hidden" id="parameterLab" aria-labelledby="parameterLabTitle">
           <div class="parameter-lab-head"><strong id="parameterLabTitle">调参实验台</strong><span id="parameterHint">点击 − 或 + 修改</span></div>
           <div class="parameter-grid" id="parameterGrid"></div>
@@ -732,7 +853,7 @@
       <div class="guide-steps">
         <div class="guide-step"><span class="guide-num">1</span><span>选择 <strong>forward</strong>、<strong>left</strong>、<strong>right</strong> 指令</span></div>
         <div class="guide-step"><span class="guide-num">2</span><span>像搭积木一样调整顺序，再启动冒险程序</span></div>
-        <div class="guide-step"><span class="guide-num">3</span><span>完成迷宫或绘图目标，用更少指令赢得三颗星</span></div>
+        <div class="guide-step"><span class="guide-num">3</span><span>完成迷宫、调试或绘图目标，用知识和测试赢得三颗星</span></div>
       </div>
       <button class="primary-btn" id="startGameBtn" type="button">带小海龟出发</button>
     </div></div>
@@ -836,7 +957,7 @@
   <script>
     "use strict";
 
-    // 老师只需要在这里修改五关口令和关卡内容。
+    // 老师只需要在这里修改十关口令和关卡内容。
     const GAME_CONFIG = {
       storageKey: "turtle-code-adventure-v1",
       playerStorageKey: "turtle-code-adventure-player-v1",
@@ -938,6 +1059,124 @@
           palette: { sky: "#dfe5f5", floor: "#eef4e3", wall: "#665d8d", wallTop: "#938ab8", accent: "#39b978" },
           maze: ["111111111","100010001","101010101","101000101","101110101","100000001","111111111"],
           start: { x: 1, y: 1, dir: 1 }, end: { x: 7, y: 1 }, collectibles: [{x:1,y:3},{x:4,y:5},{x:7,y:3}], maxCommands: 8, stars: [8, 6]
+        },
+        {
+          name: "星际通讯站", shortName: "通讯站", icon: "rocket", password: "1313", mode: "challenge",
+          goal: "让 input()、print() 和控制台完成一次真正对话", mission: "修复三台通讯机器人", course: "第 6 课",
+          knowledge: ["input() 输入", "print() 输出", "控制台", "fixed += 1", "对照调试"],
+          example: "name = input('请输入昵称：')\nprint(name)\nfixed += 1",
+          lesson: "input() 会在控制台提出问题并等待输入，输入内容会保存到变量；print() 把数据输出到控制台。fixed += 1 会让修复计数增加 1。调试时要比较实际效果和期望结果。",
+          debugTip: "先看期望控制台，再逐行比较实际代码：有没有接收 input()、有没有 print()、计数是否真的增加。",
+          hintLimit: 0, attemptLimit: 2, expectedTests: ["输入能保存到变量", "print 按顺序输出", "fixed 最终为 3"],
+          stages: [
+            { title: "建立通讯", scene: "robots", prompt: "先询问昵称，再把昵称打印到控制台。点击代码卡排出正确顺序。", code: "# 期望：控制台先提问，再显示玩家输入的昵称", hint: "input() 先执行并把结果交给 name，print(name) 才能输出刚才的内容。", rounds: [
+              { question: "排出两行程序并输入你的通讯昵称", mode: "sequence", requiresInput: true, placeholder: "输入 2～12 个字的通讯昵称", cards: [
+                {id:"print-first",label:"print(name)  # name 还没创建"},{id:"ask-name",label:"name = input('请输入昵称：')"},{id:"print-name",label:"print(name)"},{id:"loose-input",label:"input('请输入昵称：')"}
+              ], correct:["ask-name","print-name"], successConsole:"请输入昵称：{input}\n{input}\n通讯建立成功" }
+            ]},
+            { title: "回传暗号", scene: "console", prompt: "收到暗号后，先打印“暗号已收到”，再回显暗号内容。", code: "code = input('请输入暗号：')\n# 补全下面两行", hint: "固定提示文字要放在 print() 的引号里；变量 code 不加引号。", rounds: [
+              { question:"输入一个暗号，并排列两条输出指令", mode:"sequence", requiresInput:true, placeholder:"例如：星光出发", cards:[
+                {id:"echo",label:"print(code)"},{id:"received",label:"print('暗号已收到')"},{id:"wrong-code",label:"print('code')"},{id:"wrong-input",label:"input(code)"}
+              ], correct:["received","echo"], successConsole:"请输入暗号：{input}\n暗号已收到\n{input}" }
+            ]},
+            { title: "三机 Debug", scene: "robots", prompt: "依次修复接收、输出和自增错误。每修好一台，fixed 才会增加。", code: "fixed = 0\n# 对照实际效果与期望结果修复", hint: "第一台缺输出，第二台没有保存输入，第三台把 =+ 错写成了自增。", rounds: [
+              {question:"1 号机：变量里已有名字，但控制台没有显示",mode:"single",actual:"实际：控制台空白",expected:"期望：显示 小海龟",cards:[{id:"r1-ok",label:"print(name)"},{id:"r1-bad",label:"input(name)"},{id:"r1-text",label:"print('name')"}],correct:["r1-ok"],successConsole:"小海龟\nfixed = 1"},
+              {question:"2 号机：input() 问了暗号，但变量 code 仍是空的",mode:"single",actual:"实际：code 没有得到输入",expected:"期望：code 保存输入内容",cards:[{id:"r2-ok",label:"code = input('暗号：')"},{id:"r2-bad",label:"print('暗号：')"},{id:"r2-loose",label:"input('暗号：')"}],correct:["r2-ok"],successConsole:"code 已保存\nfixed = 2"},
+              {question:"3 号机：fixed 原来是 2，运行后却变成 1",mode:"single",actual:"实际：fixed = 1",expected:"期望：fixed = 3",cards:[{id:"r3-bad",label:"fixed =+ 1"},{id:"r3-ok",label:"fixed += 1"},{id:"r3-zero",label:"fixed = 1"}],correct:["r3-ok"],successConsole:"fixed = 3\n三台通讯机器人全部恢复"}
+            ]}
+          ],
+          palette:{sky:"#17223b",floor:"#d8eeff",wall:"#344968",wallTop:"#7896bd",accent:"#37c6a0"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
+        },
+        {
+          name: "真假徽章安检门", shortName: "安检门", icon: "castle", password: "1414", mode: "challenge",
+          goal: "看见条件的 True 和 False，控制单分支开门", mission: "让安检门只放行正确徽章", course: "第 7 课",
+          knowledge:["if 单分支", "== 与 =", "!=", "True / False", "print()"],
+          example:"if badge == '月亮':\n    print('允许通行')", lesson:"比较运算会得到 True 或 False。if 只在条件为 True 时执行缩进代码；== 表示比较是否相等，= 表示赋值，!= 表示不相等。",
+          debugTip:"先把条件读成一句话，再判断比较结果是 True 还是 False；不要把赋值符号 = 当成比较符号 ==。",
+          hintLimit:0, attemptLimit:2, expectedTests:["补全流程图", "区分 = == !=", "真假徽章测试"],
+          stages:[
+            {title:"补全分支地图",scene:"gate",prompt:"把“判断条件”和“条件成立后执行”放到正确顺序。",code:"开始 → 读取徽章 → ? → ? → 结束",hint:"程序要先判断，只有结果为 True 才执行开门和打印。",rounds:[
+              {question:"补全 if 单分支流程",mode:"sequence",cards:[{id:"action",label:"print('开门')"},{id:"condition",label:"badge == '月亮' ?"},{id:"input",label:"badge = '月亮'"}],correct:["condition","action"],successConsole:"badge == '月亮' → True\n执行 print('开门')"}
+            ]},
+            {title:"校准比较器",scene:"gate",prompt:"安检门要比较徽章，不是给变量重新赋值。",code:"if badge __ '月亮':\n    print('允许通行')",hint:"判断“相同”使用两个等号；判断“不相同”使用感叹号加等号。",rounds:[
+              {question:"选择“等于月亮”的比较运算符",mode:"single",cards:[{id:"assign",label:"="},{id:"equal",label:"=="},{id:"not",label:"!="}],correct:["equal"],successConsole:"'月亮' == '月亮' → True"},
+              {question:"备用通道要提示“不等于月亮”的徽章",mode:"single",cards:[{id:"not2",label:"!="},{id:"equal2",label:"=="},{id:"assign2",label:"="}],correct:["not2"],successConsole:"'流星' != '月亮' → True"}
+            ]},
+            {title:"连续通行测试",scene:"visitors",prompt:"条件固定为 badge == '月亮'。预测每次比较结果和程序行为。",code:"if badge == '月亮':\n    print('允许通行')",hint:"月亮比较结果为 True，会开门；其他徽章为 False，缩进代码不执行。",rounds:[
+              {question:"访客徽章：月亮",mode:"single",cards:[{id:"moon-true",label:"True · 打印并开门"},{id:"moon-false",label:"False · 跳过"}],correct:["moon-true"],successConsole:"'月亮' == '月亮' → True\n允许通行"},
+              {question:"访客徽章：流星",mode:"single",cards:[{id:"star-true",label:"True · 打印并开门"},{id:"star-false",label:"False · 不执行 if 内代码"}],correct:["star-false"],successConsole:"'流星' == '月亮' → False\n（没有打印）"},
+              {question:"访客徽章：太阳",mode:"single",cards:[{id:"sun-false",label:"False · 不执行 if 内代码"},{id:"sun-true",label:"True · 打印并开门"}],correct:["sun-false"],successConsole:"'太阳' == '月亮' → False\n所有测试通过"}
+            ]}
+          ],
+          palette:{sky:"#253b63",floor:"#fff0ba",wall:"#38567d",wallTop:"#7ca0cd",accent:"#ffc928"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
+        },
+        {
+          name:"月球补给发射场",shortName:"发射场",icon:"rocket",password:"1515",mode:"challenge",
+          goal:"转换数据类型，用公式和 if-else 做发射决策",mission:"算准燃料并安全发射",course:"第 8 课",
+          knowledge:["整数 / 浮点数 / 字符串", "float(input())", "数学公式", "if-else", ">"],
+          example:"fuel = float(input('现有燃料：'))\nif fuel > need:\n    print('发射')\nelse:\n    print('补给')",lesson:"input() 得到字符串，float() 能把数字字符串转换为浮点数。if-else 会在两条路线中选择一条。本任务要求燃料严格多于需求量，所以相等时也必须补给。",
+          debugTip:"先确认数据类型，再把题目中的数量代入公式；如果 input() 的结果要计算或比较，记得先用 float() 转换。",
+          hintLimit:0,attemptLimit:2,expectedTests:["三类数据", "float 与 input 组合", "大于和 if-else"],
+          stages:[
+            {title:"数据分类舱",scene:"data",prompt:"识别 Python 中整数、浮点数和字符串的外观。",code:"12    3.5    '月球'",hint:"没有小数点的数字是整数；带小数点的是浮点数；引号包住的是字符串。",rounds:[
+              {question:"数据 12 属于哪一种？",mode:"single",cards:[{id:"int",label:"整数 int"},{id:"float-w",label:"浮点数 float"},{id:"str-w",label:"字符串 str"}],correct:["int"],successConsole:"type(12) → int"},
+              {question:"数据 3.5 属于哪一种？",mode:"single",cards:[{id:"float",label:"浮点数 float"},{id:"int-w2",label:"整数 int"},{id:"str-w2",label:"字符串 str"}],correct:["float"],successConsole:"type(3.5) → float"},
+              {question:"数据 '月球' 属于哪一种？",mode:"single",cards:[{id:"str",label:"字符串 str"},{id:"float-w3",label:"浮点数 float"},{id:"int-w3",label:"整数 int"}],correct:["str"],successConsole:"type('月球') → str"}
+            ]},
+            {title:"读取小数重量",scene:"fuel",prompt:"货物重量可能有小数。输入一次重量，并选择能参与计算的写法。",code:"weight = ______\nneed = 12.5 * 2 + weight",hint:"input() 得到字符串；要和 12.5 计算，外面需要包一层 float()。",rounds:[
+              {question:"选择正确代码并输入一个小数重量",mode:"single",requiresInput:true,inputType:"number",placeholder:"例如 4.0",cards:[{id:"float-input",label:"float(input('货物重量：'))"},{id:"plain-input",label:"input('货物重量：')"},{id:"quoted",label:"'4.0'"}],correct:["float-input"],successConsole:"货物重量：{input}\nfloat('{input}') → {input}\n可以参与公式计算"}
+            ]},
+            {title:"发射决策",scene:"fuel",prompt:"距离 12.5，货物 4.0，所需燃料 need = 12.5 × 2 + 4.0 = 29.0。必须多于 29.0 才能发射。",code:"if fuel > 29.0:\n    print('发射')\nelse:\n    print('补给')",hint:"注意是严格大于。30.5 大于 29，29.0 与需求相等，28.0 更少。",rounds:[
+              {question:"现有燃料 30.5",mode:"single",cards:[{id:"launch",label:"True → 发射"},{id:"refill-w",label:"False → 补给"}],correct:["launch"],successConsole:"30.5 > 29.0 → True\n发射"},
+              {question:"现有燃料正好 29.0",mode:"single",cards:[{id:"equal-refill",label:"False → 补给"},{id:"equal-launch",label:"True → 发射"}],correct:["equal-refill"],successConsole:"29.0 > 29.0 → False\n补给"},
+              {question:"现有燃料 28.0",mode:"single",cards:[{id:"low-refill",label:"False → 补给"},{id:"low-launch",label:"True → 发射"}],correct:["low-refill"],successConsole:"28.0 > 29.0 → False\n三组测试全部正确"}
+            ]}
+          ],
+          palette:{sky:"#142c55",floor:"#e7f0ff",wall:"#556c91",wallTop:"#90a7ce",accent:"#ff7a30"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
+        },
+        {
+          name:"云霄飞车检票危机",shortName:"检票危机",icon:"balloon",password:"1616",mode:"challenge",
+          goal:"根据三种证据修复语法、异常和边界逻辑错误",mission:"让四名游客通过正确闸机",course:"第 9 课",
+          knowledge:["红色波浪线", "控制台报错", "逻辑错误", ">= 与 <=", "边界测试"],
+          example:"if height >= 120:\n    print('通过第一道闸机')\nif height <= 150:\n    print('允许乘坐')",lesson:"语法错误可以从编辑器标记中发现，运行异常要读控制台，逻辑错误则要比较实际结果和期望结果。>= 和 <= 包含边界值，> 和 < 不包含。",
+          debugTip:"先判断错误属于哪一种，再看对应证据。边界题一定要测试刚好等于 120 和 150 的情况。",
+          hintLimit:0,attemptLimit:2,expectedTests:["缺少冒号", "NameError", "119/120/150/151 边界"],
+          stages:[
+            {title:"修复语法错误",scene:"coaster",prompt:"编辑器在 if 行末画出了红色波浪线，程序无法启动。",code:"if height >= 120\n    print('通过第一道闸机')",hint:"Python 的 if 条件行要以英文冒号结束。",rounds:[
+              {question:"选择正确修复",mode:"single",cards:[{id:"colon",label:"if height >= 120:"},{id:"semicolon",label:"if height >= 120;"},{id:"no-if",label:"height >= 120:"}],correct:["colon"],successConsole:"语法检查通过\n程序可以运行"}
+            ]},
+            {title:"读取异常报错",scene:"coaster",prompt:"程序能启动，但控制台出现 NameError。",code:"height = 130\nprint(heigth)\n# NameError: name 'heigth' is not defined",hint:"比较变量第一次出现和报错行的拼写，字母顺序必须完全一致。",rounds:[
+              {question:"修复报错行",mode:"single",cards:[{id:"height",label:"print(height)"},{id:"heigth",label:"print(heigth)"},{id:"quoted-height",label:"print('height')"}],correct:["height"],successConsole:"130\n异常已修复"}
+            ]},
+            {title:"边界逻辑测试",scene:"tests",prompt:"第一道门要求至少 120 cm，第二道门要求不超过 150 cm。选择两个包含边界的条件。",code:"if height __ 120:\n    print('通过第一道门')\nif height __ 150:\n    print('允许乘坐')",hint:"“至少”包含 120，用 >=；“不超过”包含 150，用 <=。",rounds:[
+              {question:"依次选择第一道门和第二道门的比较条件",mode:"sequence",cards:[{id:"gte",label:"height >= 120"},{id:"gt",label:"height > 120"},{id:"lte",label:"height <= 150"},{id:"lt",label:"height < 150"}],correct:["gte","lte"],successConsole:"119 → 拒绝 ✓\n120 → 允许 ✓\n150 → 允许 ✓\n151 → 拒绝 ✓\n4 / 4 边界测试通过",testMatrix:true}
+            ]}
+          ],
+          palette:{sky:"#243c66",floor:"#fff1c7",wall:"#4d668d",wallTop:"#92abd0",accent:"#e94949"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
+        },
+        {
+          name:"AI 表情机器人实验室",shortName:"机器人实验室",icon:"turtle",password:"1717",mode:"challenge",
+          goal:"猜想验证 circle()，提出有效问题并创作机器人",mission:"完成规定表情后开启自由创作",course:"第 10 课",
+          knowledge:["circle()", "颜色盘", "猜想—验证", "有效提问", "课堂模拟 AI", "机器人表情"],
+          example:"turtle.circle(50)\nturtle.circle(50, 180)\n# 半径、角度决定圆弧",lesson:"circle(半径) 会画圆，第二个参数可以控制圆弧角度。遇到陌生代码时，先根据已知方法猜想，再运行实验验证。向 AI 提问时要说清目标、工具、形状和希望获得的帮助。",
+          debugTip:"先观察画出的形状，再只改变一个参数验证猜想；画机器人时移动位置前要 penup()，开始画线前再 pendown()。",
+          hintLimit:0,attemptLimit:2,expectedTests:["圆和半圆", "四要素有效提问", "头部眼睛嘴巴天线"],
+          stages:[
+            {title:"circle() 猜想实验",scene:"circle",prompt:"先猜形状，再运行代码实验验证。",code:"turtle.circle(50)\nturtle.circle(50, 180)",hint:"没有第二个参数时画完整 360°；180° 是完整圆的一半。半径越大，圆越大。",rounds:[
+              {question:"猜想：circle(50) 会画出什么？",mode:"single",cards:[{id:"full",label:"完整圆圈"},{id:"half-w",label:"半圆"},{id:"dot-w",label:"圆点"}],correct:["full"],successConsole:"实验结果：画出完整圆圈 ✓"},
+              {question:"猜想：circle(50, 180) 会画出什么？",mode:"single",cards:[{id:"half",label:"半圆弧"},{id:"full-w",label:"完整圆圈"},{id:"line-w",label:"直线"}],correct:["half"],successConsole:"实验结果：画出 180° 半圆弧 ✓"},
+              {question:"只把半径从 50 改为 80，会发生什么？",mode:"single",cards:[{id:"larger",label:"圆变大"},{id:"smaller",label:"圆变小"},{id:"same",label:"没有变化"}],correct:["larger"],successConsole:"控制变量实验：半径越大，圆越大"}
+            ]},
+            {title:"向模拟 AI 有效提问",scene:"ai",prompt:"这是离线课堂模拟 AI。写清目标、工具、形状或颜色，以及希望获得的帮助。",code:"有效问题 = 目标 + 工具 + 细节 + 请求",hint:"可以依次点击四张提示词卡，再根据需要修改成一句完整问题。",type:"prompt",promptChips:["使用 Python turtle", "画一个开心机器人", "圆形眼睛和半圆嘴巴", "请给出 circle() 参数和步骤"],rounds:[
+              {question:"向课堂模拟 AI 提出问题",mode:"prompt",placeholder:"例如：如何使用 Python turtle 画一个开心机器人……",successConsole:"模拟 AI：问题很具体。建议用 dot() 画眼睛，用 circle(40, 180) 画半圆嘴巴，并用 penup()/goto() 移动位置。"}
+            ]},
+            {title:"组装表情机器人",scene:"robot",prompt:"按绘制顺序选择五组代码：设置画笔、头部、眼睛、嘴巴、天线。",code:"# 目标：彩色头部 + 两只眼睛 + 半圆嘴巴 + 天线",hint:"先设置颜色和粗细，再画头；每次换部位先抬笔移动。天线用 forward() 伸出，再 backward() 回到原位。",rounds:[
+              {question:"排列五组 turtle 绘图代码",mode:"sequence",cards:[
+                {id:"setup",label:"pensize(5)\npencolor('蓝色')"},{id:"head",label:"pendown()\ncircle(80)"},{id:"eyes",label:"penup()\ngoto(左眼); dot()\ngoto(右眼); dot()"},{id:"mouth",label:"goto(嘴巴)\npendown(); circle(40, 180)"},{id:"antenna",label:"goto(天线)\npendown(); forward(35)\nbackward(35)"},{id:"bad-move",label:"goto(眼睛)\n# 没有 penup()"}
+              ],correct:["setup","head","eyes","mouth","antenna"],successConsole:"头部 ✓  眼睛 2/2 ✓\n半圆嘴巴 ✓  天线 ✓\n规定表情机器人完成"}
+            ]}
+          ],
+          palette:{sky:"#17223b",floor:"#e6f7ff",wall:"#405372",wallTop:"#8ba6c9",accent:"#39a8ff"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
         }
       ]
     };
@@ -972,15 +1211,20 @@
     let leaderboardBusy = false;
     let pendingCompletionModal = false;
     let nameEditMode = false;
+    let challengeState = createChallengeState();
 
     function defaultProgress() {
-      return { unlocked: [0], stars: [0,0,0,0,0], completed: [false,false,false,false,false], sound: true, guideSeen: false };
+      return { unlocked: [0], stars: Array(GAME_CONFIG.levels.length).fill(0), completed: Array(GAME_CONFIG.levels.length).fill(false), sound: true, guideSeen: false };
     }
     function loadProgress() {
       try {
         const saved = JSON.parse(localStorage.getItem(GAME_CONFIG.storageKey));
         if (!saved || !Array.isArray(saved.unlocked)) return defaultProgress();
-        return { ...defaultProgress(), ...saved };
+        const base = defaultProgress();
+        const stars = base.stars.map((_, index) => Math.max(0, Math.min(3, Number(saved.stars?.[index]) || 0)));
+        const completed = base.completed.map((_, index) => Boolean(saved.completed?.[index]));
+        const unlocked = [...new Set([0, ...saved.unlocked.map(Number)])].filter(index => Number.isInteger(index) && index >= 0 && index < GAME_CONFIG.levels.length);
+        return { ...base, ...saved, stars, completed, unlocked };
       } catch { return defaultProgress(); }
     }
     function saveProgress() {
@@ -1183,6 +1427,10 @@
       else showLeaderboard();
     }
     function level() { return GAME_CONFIG.levels[currentLevel]; }
+    function isChallengeLevel() { return level().mode === "challenge"; }
+    function createChallengeState() {
+      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy" };
+    }
     function commandLabel(cmd) {
       if (cmd.type === "drawStarLoop") return `for i in range(${levelParams.loops}): forward(size); right(${levelParams.angle})`;
       if (cmd.type === "growStars") return `for star in range(${levelParams.loops}): for edge in range(5); size += ${levelParams.increment}`;
@@ -1214,6 +1462,138 @@
     function collectedKey(x, y) { return `${x},${y}`; }
     function allCollected() { return collected.size === level().collectibles.length; }
     function requiredCommandsUsed() { return !level().requiredCommands || level().requiredCommands.every(type => usedSpecialCommands.has(type)); }
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
+    }
+    function challengeStage() { return level().stages[challengeState.stage]; }
+    function challengeRound() { return challengeStage().rounds[challengeState.round]; }
+    function selectedLabels(round = challengeRound()) {
+      return challengeState.selected.map(id => round.cards?.find(card => card.id === id)?.label).filter(Boolean);
+    }
+    function renderRobotPreview() {
+      return `<div class="robot-preview ${escapeHtml(challengeState.robotMood)}" style="--robot-color:${escapeHtml(challengeState.robotColor)}"><span class="robot-antenna"></span><span class="robot-head"></span><span class="robot-eye left"></span><span class="robot-eye right"></span><span class="robot-mouth"></span></div>`;
+    }
+    function renderChallengeScene() {
+      if (!isChallengeLevel()) return;
+      const lab = $("#missionLab");
+      const stage = challengeStage();
+      const round = challengeRound();
+      lab.dataset.scene = stage.scene;
+      lab.classList.toggle("free-studio", challengeState.freeMode);
+      const dots = level().stages.map((_, index) => `<span class="stage-dot${index < challengeState.stage ? " done" : index === challengeState.stage ? " active" : ""}"></span>`).join("");
+      let visual = "";
+      if (challengeState.freeMode) {
+        visual = renderRobotPreview();
+      } else if (stage.scene === "robots") {
+        visual = `<div class="robot-row">${[0,1,2].map(index => `<div class="station-bot${index < challengeState.fixed ? " fixed" : ""}"><span>${index < challengeState.fixed ? "已修复" : `${index + 1} 号机`}</span></div>`).join("")}</div>`;
+      } else if (stage.scene === "console" || stage.scene === "ai") {
+        visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || (stage.scene === "ai" ? "课堂模拟 AI 已就绪。\n请提出一个具体问题。" : "> 等待程序运行……"))}</div>`;
+      } else if (["gate","visitors"].includes(stage.scene)) {
+        const badges = stage.scene === "visitors" ? [["☾","月亮"],["✦","流星"],["☀","太阳"]] : [["☾","待检测"]];
+        visual = `<div class="gate-scene"><div class="gate-frame"><span class="gate-light"></span></div><div class="visitor-row" style="position:absolute;left:0;right:0;bottom:8px;justify-content:space-between">${badges.map(([icon,name]) => `<div class="visitor"><span class="badge">${icon}</span>${name}</div>`).join("")}</div></div>`;
+      } else if (stage.scene === "data") {
+        visual = `<div class="data-row"><div class="type-chip">12</div><div class="type-chip">3.5</div><div class="type-chip">'月球'</div></div>`;
+      } else if (stage.scene === "fuel") {
+        visual = `<div class="fuel-scene"><div class="fuel-card">所需燃料<strong>29.0</strong></div><div class="rocket-figure">🚀</div><div class="fuel-card">当前测试<strong>${challengeState.stage === 2 ? ["30.5","29.0","28.0"][challengeState.round] : "?"}</strong></div></div>`;
+      } else if (stage.scene === "tests") {
+        const tested = challengeState.roundPassed;
+        visual = `<table class="test-table" aria-label="边界测试结果"><tbody>${[[119,"拒绝"],[120,"允许"],[150,"允许"],[151,"拒绝"]].map(([height,result]) => `<tr><td>${height} cm</td><td>${result}</td><td class="${tested ? "test-pass" : ""}">${tested ? "通过 ✓" : "等待测试"}</td></tr>`).join("")}</tbody></table>`;
+      } else if (stage.scene === "circle") {
+        visual = `<div class="circle-demo"><span class="demo-circle" title="circle(50)"></span><span class="demo-arc" title="circle(50, 180)"></span></div>`;
+      } else if (stage.scene === "robot") {
+        visual = renderRobotPreview();
+      } else {
+        visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || "> 等待测试……")}</div>`;
+      }
+      const title = challengeState.freeMode ? "自由表情创作室" : stage.title;
+      const intro = challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : (round.question || stage.prompt);
+      lab.innerHTML = `<div class="scene-shell"><div class="scene-kicker">${escapeHtml(level().course)} · 阶段 ${challengeState.stage + 1} / ${level().stages.length}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(intro)}</p><div class="stage-dots">${dots}</div><div class="scene-visual">${visual}</div></div>`;
+    }
+    function renderFreeStudioPanel() {
+      const colors = ["#39a8ff","#f15c6d","#21b978","#ffc928","#7355d9"];
+      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>通关奖励 · 自由创作</span><span>星级已锁定</span></div><h3>机器人表情控制台</h3><p class="challenge-prompt">改变画笔颜色和嘴巴形状，观察同一组 turtle 方法怎样创作不同表情。</p><div class="studio-controls" aria-label="画笔颜色">${colors.map(color => `<button class="studio-swatch" type="button" data-studio-color="${color}" style="background:${color}" aria-label="选择颜色 ${color}"></button>`).join("")}</div><div class="studio-controls"><button class="studio-chip" type="button" data-studio-mood="happy">开心</button><button class="studio-chip" type="button" data-studio-mood="surprised">惊讶</button><button class="studio-chip" type="button" data-studio-mood="sleepy">平静</button></div><code class="challenge-code">pencolor(选择的颜色)\n# 用 circle() 改变嘴巴弧度\n# 用 goto() 调整五官位置</code><button class="challenge-run" type="button" data-studio-finish style="width:100%">查看十关冒险成绩</button></div>`;
+    }
+    function renderChallengePanel() {
+      if (!isChallengeLevel()) return;
+      if (challengeState.freeMode) { renderFreeStudioPanel(); renderChallengeScene(); return; }
+      const stage = challengeStage();
+      const round = challengeRound();
+      const cards = (round.cards || []).map(card => {
+        const selected = challengeState.selected.includes(card.id);
+        return `<button class="challenge-option${selected ? " selected" : ""}" type="button" data-challenge-card="${escapeHtml(card.id)}" ${challengeState.roundPassed ? "disabled" : ""}>${escapeHtml(card.label)}</button>`;
+      }).join("");
+      const chosen = selectedLabels(round);
+      const inputType = round.mode === "prompt" ? "textarea" : "input";
+      const input = round.requiresInput || round.mode === "prompt" ? (inputType === "textarea" ? `<textarea class="challenge-input" id="challengeInput" placeholder="${escapeHtml(round.placeholder)}">${escapeHtml(challengeState.inputValue)}</textarea>` : `<input class="challenge-input" id="challengeInput" type="${round.inputType === "number" ? "number" : "text"}" ${round.inputType === "number" ? "step=\"0.1\"" : "maxlength=\"30\""} value="${escapeHtml(challengeState.inputValue)}" placeholder="${escapeHtml(round.placeholder)}">`) : "";
+      const chips = round.mode === "prompt" ? `<div class="prompt-chips">${(stage.promptChips || []).map(text => `<button type="button" class="prompt-chip" data-prompt-chip="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join("")}</div>` : "";
+      const comparison = round.actual || round.expected ? `<div class="hint-output"><strong>${escapeHtml(round.actual || "")}</strong>${round.expected ? `<br>${escapeHtml(round.expected)}` : ""}</div>` : "";
+      const preview = round.mode === "sequence" ? `<div class="selection-preview">${chosen.length ? chosen.map((label,index) => `${index + 1}. ${escapeHtml(label)}`).join("<br>") : "按运行顺序点击代码卡"}</div>` : "";
+      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>阶段 ${challengeState.stage + 1} / 3 · 小题 ${challengeState.round + 1} / ${stage.rounds.length}</span><span>失败 ${challengeState.failedAttempts} 次</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run>${challengeState.roundPassed ? "继续下一步" : round.mode === "prompt" ? "向模拟 AI 提问" : "运行并验证"}</button></div></div>`;
+      renderChallengeScene();
+    }
+    function chooseChallengeCard(cardId) {
+      if (challengeState.roundPassed) return;
+      const round = challengeRound();
+      if (round.mode === "single") challengeState.selected = [cardId];
+      else {
+        const index = challengeState.selected.indexOf(cardId);
+        if (index >= 0) challengeState.selected.splice(index, 1);
+        else challengeState.selected.push(cardId);
+      }
+      renderChallengePanel();
+      playTone(520, .04);
+    }
+    function evaluatePrompt(value) {
+      const checks = [/(Python|turtle|海龟)/i, /(机器人|表情|开心|惊讶)/, /(圆|半圆|眼睛|嘴巴|颜色|circle)/i, /(参数|步骤|代码|方法|怎么|如何)/];
+      return checks.filter(pattern => pattern.test(value)).length;
+    }
+    function runChallengeRound() {
+      if (challengeState.roundPassed) { advanceChallenge(); return; }
+      const stage = challengeStage();
+      const round = challengeRound();
+      const inputEl = $("#challengeInput");
+      if (inputEl) challengeState.inputValue = inputEl.value.trim();
+      let success = false;
+      if (round.mode === "prompt") {
+        success = evaluatePrompt(challengeState.inputValue) === 4;
+      } else {
+        success = JSON.stringify(challengeState.selected) === JSON.stringify(round.correct);
+      }
+      if (success && round.requiresInput) {
+        if (!challengeState.inputValue) success = false;
+        if (round.inputType === "number" && !Number.isFinite(Number(challengeState.inputValue))) success = false;
+        if (!round.inputType && (challengeState.inputValue.length < 2 || challengeState.inputValue.length > 30)) success = false;
+      }
+      if (!success) {
+        challengeState.failedAttempts += 1;
+        if (round.mode === "prompt") challengeState.lastConsole = `模拟 AI：这个问题还不够具体，目前识别到 ${evaluatePrompt(challengeState.inputValue)} / 4 个要素。请补充目标、工具、形状细节和希望获得的帮助。`;
+        else if (currentLevel === 7 && challengeState.stage === 1 && challengeState.selected.includes("plain-input")) challengeState.lastConsole = "TypeError：字符串不能直接和浮点数进行计算。请先转换数据类型。";
+        else challengeState.lastConsole = `${round.actual || "实际结果与期望不一致。"}\n请检查代码卡和运行顺序。`;
+        challengeState.selected = [];
+        setStatus("测试没有通过。读取实际结果，修改后再运行。", true);
+        playTone(160, .18, "square");
+        renderChallengePanel();
+        return;
+      }
+      challengeState.roundPassed = true;
+      challengeState.lastConsole = String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
+      if (currentLevel === 5 && challengeState.stage === 2) challengeState.fixed = challengeState.round + 1;
+      setStatus("测试通过！观察效果，然后继续下一步。", false);
+      playSuccess();
+      renderChallengePanel();
+    }
+    function advanceChallenge() {
+      const stage = challengeStage();
+      if (challengeState.round < stage.rounds.length - 1) challengeState.round += 1;
+      else if (challengeState.stage < level().stages.length - 1) { challengeState.stage += 1; challengeState.round = 0; }
+      else { completeLevel(); return; }
+      challengeState.selected = [];
+      challengeState.roundPassed = false;
+      challengeState.lastConsole = "";
+      challengeState.inputValue = "";
+      setStatus(`进入阶段 ${challengeState.stage + 1}：${challengeStage().title}`);
+      renderChallengePanel();
+    }
 
     function renderCommandPalette() {
       const palette = $("#commandPalette");
@@ -1281,6 +1661,7 @@
       if (running) return;
       currentLevel = index;
       program = [];
+      challengeState = createChallengeState();
       initializeLevelParams();
       resetBoard(false);
       renderLevelMap();
@@ -1291,6 +1672,11 @@
 
     function renderLevelInfo() {
       const item = level();
+      const challenge = isChallengeLevel();
+      document.body.classList.toggle("challenge-active", challenge);
+      canvas.classList.toggle("hidden", challenge);
+      $("#missionLab").classList.toggle("hidden", !challenge);
+      $("#challengePanel").classList.toggle("hidden", !challenge);
       $("#themeIcon use").setAttribute("href", `#icon-${item.icon}`);
       document.body.dataset.level = String(currentLevel + 1);
       document.documentElement.style.setProperty("--theme-primary", item.palette.accent);
@@ -1301,14 +1687,15 @@
       $("#lessonNumber").textContent = item.course;
       $("#knowledgeTags").innerHTML = item.knowledge.map(tag => `<span class="knowledge-tag">${tag}</span>`).join("");
       $("#syntaxExample").textContent = item.example;
-      $("#panelTitle").textContent = item.drawing ? "海龟绘图实验台" : "冒险指令台";
-      $("#panelDescription").textContent = item.drawing ? "调整参数，运行循环，观察图形变化" : "像搭积木一样，排出小海龟的路线";
+      $("#panelTitle").textContent = challenge ? "编程任务实验台" : item.drawing ? "海龟绘图实验台" : "冒险指令台";
+      $("#panelDescription").textContent = challenge ? "选择代码、运行测试、根据证据完成调试" : item.drawing ? "调整参数，运行循环，观察图形变化" : "像搭积木一样，排出小海龟的路线";
       canvas.setAttribute("aria-label", item.drawing ? "海龟绘图区域" : "迷宫游戏区域");
       renderParameterLab();
       renderCommandPalette();
       $("#bestStars").textContent = "★".repeat(state.stars[currentLevel]) + "☆".repeat(3 - state.stars[currentLevel]);
       $("#bestStars").setAttribute("aria-label", `本关最高 ${state.stars[currentLevel]} 星`);
       updateCollectCount();
+      if (challenge) renderChallengePanel();
     }
 
     function resetBoard(showMessage = true) {
@@ -1325,12 +1712,14 @@
       running = false;
       clearProgramHighlights();
       setControls(false);
-      setStatus(showMessage ? "已重新开始，可以调整参数或程序再试一次。" : level().drawing ? "先观察默认参数，再运行循环看看会画出什么图形。" : "选择指令，帮小海龟走到终点吧！");
+      setStatus(showMessage ? "已重新开始，可以调整参数或程序再试一次。" : isChallengeLevel() ? "阅读任务，选择代码卡并运行测试。" : level().drawing ? "先观察默认参数，再运行循环看看会画出什么图形。" : "选择指令，帮小海龟走到终点吧！");
       updateCollectCount();
+      if (isChallengeLevel()) renderChallengePanel();
       draw();
     }
 
     function renderProgram() {
+      if (isChallengeLevel()) { renderChallengePanel(); return; }
       const list = $("#programList");
       list.innerHTML = "";
       program.forEach((cmd, index) => {
@@ -1375,6 +1764,7 @@
 
     async function runProgram() {
       if (running) return;
+      if (isChallengeLevel()) { runChallengeRound(); return; }
       if (!program.length) { setStatus("程序还是空的，请先添加至少一条指令。", true); return; }
       resetBoard(false);
       running = true;
@@ -1551,6 +1941,10 @@
       }
     }
     function updateCollectCount() {
+      if (isChallengeLevel()) {
+        $("#collectCount").textContent = challengeState.freeMode ? "自由创作中" : `阶段 ${challengeState.stage + 1} / ${level().stages.length}`;
+        return;
+      }
       if (level().drawing?.mode === "singleStar") {
         $("#collectCount").textContent = `循环 ${levelParams.loops} 次 · 转角 ${levelParams.angle}°`;
         return;
@@ -1590,12 +1984,13 @@
     function setStatus(message, error = false) {
       $("#statusText").textContent = message;
       $("#statusDot").classList.toggle("error", error);
-      $("#debugCoach").classList.toggle("hidden", !error);
+      $("#debugCoach").classList.toggle("hidden", !error || isChallengeLevel());
       $("#debugCoachText").textContent = level().debugTip;
     }
     function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
     function calculateStars() {
+      if (isChallengeLevel()) return 1 + (challengeState.hintUsed ? 0 : 1) + (challengeState.failedAttempts <= level().attemptLimit ? 1 : 0);
       const [oneStarMax, twoStarMax] = level().stars;
       if (program.length <= twoStarMax) return 3;
       if (program.length <= oneStarMax) return 2;
@@ -1603,25 +1998,25 @@
     }
     function completeLevel() {
       const earned = calculateStars();
-      setStatus(level().drawing ? "绘图成功！小海龟完成了本课图形挑战。" : "闯关成功！你已经把小海龟送到终点。", false);
+      setStatus(isChallengeLevel() ? "三阶段测试全部通过，本课编程任务完成！" : level().drawing ? "绘图成功！小海龟完成了本课图形挑战。" : "闯关成功！你已经把小海龟送到终点。", false);
       state.completed[currentLevel] = true;
       state.stars[currentLevel] = Math.max(state.stars[currentLevel], earned);
       saveProgress();
       renderLevelMap(); renderLevelInfo(); updateTotalStars();
       playSuccess(); launchConfetti();
       $("#completeIcon use").setAttribute("href", "#icon-trophy");
-      $("#completeTitle").textContent = currentLevel === 4 ? "五关全部完成！" : "闯关成功！";
+      $("#completeTitle").textContent = currentLevel === GAME_CONFIG.levels.length - 1 ? "十关全部完成！" : "闯关成功！";
       $("#completeStars").textContent = "★".repeat(earned) + "☆".repeat(3 - earned);
-      $("#completeMessage").textContent = level().drawing ? (currentLevel === 2 ? "参数调对了！五条线组成了一颗完整五角星。" : "变量自增生效！五角星正在一轮一轮变大。") : earned === 3 ? "三颗星到手！你的程序又短又准确。" : "小海龟安全抵达终点！再精简指令，还能点亮更多星星。";
-      const used = [...new Set(program.map(commandLabel))].map(label => `<code>${label}</code>`).join("、");
-      $("#codeUsed").innerHTML = `本关使用：${used}`;
+      $("#completeMessage").textContent = isChallengeLevel() ? (earned === 3 ? "三颗星到手！你没有依赖提示，并在两次失败内完成了调试。" : `任务完成！本关使用提示：${challengeState.hintUsed ? "是" : "否"}，失败运行：${challengeState.failedAttempts} 次。`) : level().drawing ? (currentLevel === 2 ? "参数调对了！五条线组成了一颗完整五角星。" : "变量自增生效！五角星正在一轮一轮变大。") : earned === 3 ? "三颗星到手！你的程序又短又准确。" : "小海龟安全抵达终点！再精简指令，还能点亮更多星星。";
+      const used = isChallengeLevel() ? level().knowledge.slice(0, 4).map(label => `<code>${escapeHtml(label)}</code>`).join("、") : [...new Set(program.map(commandLabel))].map(label => `<code>${label}</code>`).join("、");
+      $("#codeUsed").innerHTML = `本关掌握：${used}`;
       $("#knowledgeText").textContent = level().lesson;
       const last = currentLevel === GAME_CONFIG.levels.length - 1;
-      $("#nextHint").textContent = last ? "你已经完成五课知识挑战：方法、变量、循环、规律和坐标都成为了你的编程装备。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
+      $("#nextHint").textContent = last ? "你已经完成十课知识挑战。接下来可以进入自由创作室，继续设计自己的表情机器人。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
       $("#rewardCard").classList.add("earned");
       $("#rewardTitle").textContent = "本关通关奖励";
       $("#rewardText").textContent = "记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！";
-      $("#nextActionBtn").textContent = last ? "查看我的冒险成绩" : "看看下一张地图";
+      $("#nextActionBtn").textContent = last ? "进入自由表情创作" : "看看下一张地图";
       beginLeaderboardFlow(currentLevel + 1, state.stars[currentLevel]);
     }
 
@@ -1652,7 +2047,7 @@
     function updateTotalStars() {
       const total = state.stars.reduce((sum, n) => sum + n, 0);
       $("#totalStars").textContent = total;
-      $("#energyFill").style.width = `${total / 15 * 100}%`;
+      $("#energyFill").style.width = `${total / (GAME_CONFIG.levels.length * 3) * 100}%`;
     }
     function toggleSound() {
       state.sound = !state.sound; saveProgress(); updateSoundButton();
@@ -1706,6 +2101,7 @@
     function draw() {
       cancelAnimationFrame(animationFrame);
       animationFrame = requestAnimationFrame(() => {
+        if (isChallengeLevel()) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
         const item = level(), l = layout();
         ctx.clearRect(0,0,canvas.width,canvas.height);
         const grad = ctx.createLinearGradient(0,0,0,canvas.height);
@@ -1917,7 +2313,7 @@
       $("#leaderboardBtn").addEventListener("click", () => { pendingCompletionModal=false; showLeaderboard(); });
       $("#resetProgressBtn").addEventListener("click", () => $("#confirmModal").classList.remove("hidden"));
       $("#cancelResetBtn").addEventListener("click", () => $("#confirmModal").classList.add("hidden"));
-      $("#confirmResetBtn").addEventListener("click", () => { localStorage.removeItem(GAME_CONFIG.storageKey); playerProfile.pendingScores={}; savePlayerProfile(); state=defaultProgress(); currentLevel=0; program=[]; $("#confirmModal").classList.add("hidden"); renderAll(); resetBoard(); $("#guideModal").classList.remove("hidden"); });
+      $("#confirmResetBtn").addEventListener("click", () => { localStorage.removeItem(GAME_CONFIG.storageKey); playerProfile.pendingScores={}; savePlayerProfile(); state=defaultProgress(); currentLevel=0; program=[]; challengeState=createChallengeState(); $("#confirmModal").classList.add("hidden"); renderAll(); resetBoard(); $("#guideModal").classList.remove("hidden"); });
       $("#startGameBtn").addEventListener("click", () => { state.guideSeen=true; saveProgress(); $("#guideModal").classList.add("hidden"); playSuccess(); });
       $("#passwordForm").addEventListener("submit", submitPassword);
       $("#passwordInput").addEventListener("input", () => $("#passwordError").textContent="");
@@ -1932,12 +2328,30 @@
       $("#editNameBtn").addEventListener("click", () => openNameModal(Boolean(playerProfile.displayName)));
       $("#leaderboardResetBtn").addEventListener("click", () => { $("#leaderboardModal").classList.add("hidden"); $("#confirmModal").classList.remove("hidden"); });
       $("#closeLeaderboardBtn").addEventListener("click", closeLeaderboard);
-      $("#replayBtn").addEventListener("click", () => { $("#completeModal").classList.add("hidden"); program=[]; resetBoard(); renderProgram(); });
+      $("#replayBtn").addEventListener("click", () => { $("#completeModal").classList.add("hidden"); program=[]; challengeState=createChallengeState(); resetBoard(); renderProgram(); });
       $("#nextActionBtn").addEventListener("click", () => {
         $("#completeModal").classList.add("hidden");
         if(currentLevel < GAME_CONFIG.levels.length-1) {
           const next=currentLevel+1; state.unlocked.includes(next)?selectLevel(next):openPassword(next);
-        } else { showToast(`你一共获得了 ${state.stars.reduce((a,b)=>a+b,0)} 颗星！`); }
+        } else {
+          challengeState.freeMode=true;
+          setStatus("自由创作已开启，星级不会改变。选择颜色和表情继续实验。");
+          renderChallengePanel(); updateCollectCount();
+        }
+      });
+      $("#challengePanel").addEventListener("input", event => { if(event.target.id === "challengeInput") challengeState.inputValue=event.target.value; });
+      $("#challengePanel").addEventListener("click", event => {
+        const card=event.target.closest("[data-challenge-card]");
+        if(card){chooseChallengeCard(card.dataset.challengeCard);return;}
+        if(event.target.closest("[data-challenge-run]")){runChallengeRound();return;}
+        if(event.target.closest("[data-challenge-hint]")){challengeState.hintUsed=true;renderChallengePanel();setStatus("提示已打开。读完后回到代码和实际结果继续调试。");return;}
+        const chip=event.target.closest("[data-prompt-chip]");
+        if(chip){const input=$("#challengeInput");const base=(input?.value||challengeState.inputValue).trim();challengeState.inputValue=`${base}${base ? "，" : ""}${chip.dataset.promptChip}`;renderChallengePanel();setTimeout(()=>$("#challengeInput")?.focus(),0);return;}
+        const color=event.target.closest("[data-studio-color]");
+        if(color){challengeState.robotColor=color.dataset.studioColor;renderChallengePanel();playTone(620,.05);return;}
+        const mood=event.target.closest("[data-studio-mood]");
+        if(mood){challengeState.robotMood=mood.dataset.studioMood;renderChallengePanel();playTone(520,.05);return;}
+        if(event.target.closest("[data-studio-finish]")){pendingCompletionModal=false;showLeaderboard();}
       });
       window.addEventListener("resize", resizeCanvas);
       window.addEventListener("online", () => { if(playerProfile.displayName && Object.keys(playerProfile.pendingScores).length) flushPendingScores().catch(()=>{}); });
