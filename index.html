@@ -517,13 +517,13 @@
     .figure-leg { top: 72px; height: 45px; background: #080a0f; }
     .figure-leg.left { left: 28px; transform: rotate(25deg); } .figure-leg.right { left: 35px; transform: rotate(-25deg); }
     .battle-enemy .figure-arm, .battle-enemy .figure-leg { background: #b62f42; }
-    .battle-star { position: absolute; z-index: 6; left: 18%; bottom: 105px; color: #ffd532; font-size: 52px; line-height: 1; filter: drop-shadow(0 0 9px #ffdf55); animation: star-strike 3.4s ease-in-out both; }
+    .battle-shape { position: absolute; z-index: 6; left: 18%; bottom: 105px; color: #ffd532; font-size: 52px; line-height: 1; filter: drop-shadow(0 0 9px #ffdf55); animation: shape-strike 3.4s ease-in-out both; }
     .battle-impact { position: absolute; z-index: 7; right: 9%; top: 72px; color: #fff; font-size: 19px; font-weight: 1000; opacity: 0; transform: rotate(-8deg); text-shadow: 2px 2px 0 #d53f3f; animation: impact-pop 3.4s ease-out both; }
     .firework { position: absolute; z-index: 2; width: 8px; height: 8px; border-radius: 50%; opacity: 0; animation: firework-burst 3.4s ease-out both; }
     .firework::before { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #ffd532; box-shadow: 0 -30px #ff5d70, 22px -22px #52d99b, 30px 0 #52b9ff, 22px 22px #ff9a3d, 0 30px #b787ff, -22px 22px #52d99b, -30px 0 #ff5d70, -22px -22px #52b9ff; }
     .firework.one { left: 22%; top: 57px; } .firework.two { left: 52%; top: 43px; animation-delay: .18s; } .firework.three { right: 17%; top: 51px; animation-delay: .34s; }
     @keyframes hero-charge { 0%,25% { transform: translateX(0); } 55% { transform: translateX(150px); } 72%,100% { transform: translateX(105px); } }
-    @keyframes star-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.8); } 64% { transform: translate(365px,-14px) rotate(540deg) scale(1.25); } 72%,100% { transform: translate(365px,-14px) rotate(620deg) scale(0); } }
+    @keyframes shape-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.8); } 64% { transform: translate(365px,-14px) rotate(540deg) scale(1.25); } 72%,100% { transform: translate(365px,-14px) rotate(620deg) scale(0); } }
     @keyframes enemy-defeat { 0%,61% { transform: rotate(0); opacity: 1; } 76%,100% { transform: translate(24px,34px) rotate(82deg); opacity: .18; } }
     @keyframes impact-pop { 0%,60% { opacity: 0; transform: scale(.2) rotate(-8deg); } 68%,92% { opacity: 1; transform: scale(1.15) rotate(-8deg); } 100% { opacity: 0; } }
     @keyframes firework-burst { 0%,69% { opacity: 0; transform: scale(.1); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: .7; transform: scale(1.35); } }
@@ -750,11 +750,11 @@
       .battle-arena { height: 138px; }
       .battle-character { bottom: 25px; transform: scale(.72); transform-origin: bottom center; }
       .battle-hero { left: 2%; } .battle-enemy { right: 2%; }
-      .battle-star { left: 13%; bottom: 80px; font-size: 38px; }
+      .battle-shape { left: 13%; bottom: 80px; font-size: 38px; }
       .battle-impact { right: 2%; top: 51px; font-size: 13px; }
       .firework.one { left: 18%; top: 40px; } .firework.two { left: 50%; top: 30px; } .firework.three { right: 15%; top: 38px; }
       @keyframes hero-charge { 0%,25% { transform: translateX(0) scale(.72); } 55% { transform: translateX(88px) scale(.72); } 72%,100% { transform: translateX(65px) scale(.72); } }
-      @keyframes star-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.65); } 64% { transform: translate(210px,-8px) rotate(540deg) scale(1); } 72%,100% { transform: translate(210px,-8px) rotate(620deg) scale(0); } }
+      @keyframes shape-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.65); } 64% { transform: translate(210px,-8px) rotate(540deg) scale(1); } 72%,100% { transform: translate(210px,-8px) rotate(620deg) scale(0); } }
       .console-window { min-height: 104px; padding: 9px 11px; font-size: 11px; }
       .gate-scene { height: 150px; }
       .gate-frame { width: 122px; height: 142px; border-width: 10px; }
@@ -776,7 +776,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .battle-hero { animation-duration: .01ms; transform: translateX(105px); }
-      .battle-star { animation-duration: .01ms; opacity: 0; }
+      .battle-shape { animation-duration: .01ms; opacity: 0; }
       .battle-enemy { animation-duration: .01ms; opacity: .18; transform: translate(24px,34px) rotate(82deg); }
       .battle-impact, .firework { animation-duration: .01ms; opacity: 1; }
     }
@@ -1107,17 +1107,18 @@
         },
         {
           name: "星光勇士训练场", shortName: "星光勇士", icon: "rocket", password: "1313", mode: "challenge",
-          goal: "用 input() 输入姓名，再用 print('*') 打印五角星", mission: "输入姓名并打印星星，为小勇士注入力量", course: "第 6 课", singleFlow: true,
+          goal: "用 input() 输入姓名，按顺序用 print() 打印三角形", mission: "排好四行代码，打印三角形为小勇士注入力量", course: "第 6 课", singleFlow: true,
           knowledge: ["input() 输入", "print() 输出", "字符串", "控制台", "测试调试"],
-          example: "name = input('请输入你的姓名：')\nprint('*')",
-          lesson: "input() 会在控制台提示“请输入你的姓名”并等待输入，输入的姓名会保存到 name 变量。程序继续向下执行 print('*')，把引号中的星号打印到控制台。",
-          debugTip: "先确认已经输入姓名，再检查 print('*') 的括号、引号和星号是否完整。",
-          hintLimit: 0, attemptLimit: 2, expectedTests: ["姓名保存到 name", "控制台打印 *", "成功后触发战斗动画"],
+          example: "name = input('请输入你的姓名：')\nprint('*')\nprint('**')\nprint('****')",
+          lesson: "程序会从上到下执行。input() 先询问姓名并把输入保存到 name；接着三个 print() 分别打印 1、2、4 个星号，组成一个三角形。",
+          debugTip: "先找到保存姓名的 input() 代码，再按星号由少到多的顺序排列三个 print()；注意括号和引号。",
+          hintLimit: 0, attemptLimit: 2, expectedTests: ["姓名保存到 name", "四行代码顺序正确", "控制台打印三角形", "成功后触发战斗动画"],
           stages: [
-            { title: "输入姓名，打印五角星", scene: "console", prompt: "程序先询问你的姓名，再向控制台打印一个星号。", code: "name = input('请输入你的姓名：')\n______", hint: "程序会先执行 input()；输入姓名后，用 print('*') 打印引号中的星号。", rounds: [
-              { question: "输入你的姓名，选择正确的 print() 代码，然后一次运行完成任务。", mode: "single", requiresInput: true, placeholder: "请输入 2～12 个字的姓名", cards: [
-                {id:"print-star",label:"print('*')"},{id:"input-star",label:"input('*')"},{id:"bare-star",label:"print(*)"},{id:"print-hollow",label:"print('☆')"}
-              ], correct:["print-star"], successConsole:"请输入你的姓名：{input}\nname = '{input}'\n*\n五角星打印成功，星光勇士出击！" }
+            { title: "输入姓名，打印三角形", scene: "console", prompt: "从代码卡中选出四行正确代码，按程序的执行顺序排好。", code: "# 选择代码卡，组成完整程序\n______\n______\n______\n______", hint: "第 1 行要用 name = input(...) 保存姓名；后面的 print() 依次打印 1、2、4 个星号。", rounds: [
+              { question: "输入你的姓名，再按运行顺序点击四行正确代码。", mode: "sequence", requiresInput: true, placeholder: "请输入 2～12 个字的姓名", cards: [
+                {id:"print-four",label:"print('****')"},{id:"loose-input",label:"input('请输入你的姓名：')"},{id:"print-one",label:"print('*')"},{id:"ask-name",label:"name = input('请输入你的姓名：')"},
+                {id:"print-three",label:"print('***')"},{id:"print-two",label:"print('**')"},{id:"bare-stars",label:"print(****)"},{id:"print-space",label:"print('* *')"}
+              ], correct:["ask-name","print-one","print-two","print-four"], successConsole:"请输入你的姓名：{input}\nname = '{input}'\n*\n**\n****\n三角形打印成功，星光勇士出击！" }
             ]}
           ],
           palette:{sky:"#17223b",floor:"#d8eeff",wall:"#344968",wallTop:"#7896bd",accent:"#37c6a0"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
@@ -1524,7 +1525,7 @@
       const dots = level().singleFlow ? "" : level().stages.map((_, index) => `<span class="stage-dot${index < challengeState.stage ? " done" : index === challengeState.stage ? " active" : ""}"></span>`).join("");
       let visual = "";
       if (challengeState.battle) {
-        visual = `<div class="battle-arena" role="img" aria-label="黑色小勇士拿着五角星击败敌人，烟花绽放"><div class="battle-name">${escapeHtml(challengeState.studentName)}的星光勇士</div><span class="firework one"></span><span class="firework two"></span><span class="firework three"></span><div class="battle-character battle-hero"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><span class="battle-star">★</span><div class="battle-character battle-enemy"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><strong class="battle-impact">成功击败！</strong></div>`;
+        visual = `<div class="battle-arena" role="img" aria-label="黑色小勇士拿着发光三角形击败敌人，烟花绽放"><div class="battle-name">${escapeHtml(challengeState.studentName)}的星光勇士</div><span class="firework one"></span><span class="firework two"></span><span class="firework three"></span><div class="battle-character battle-hero"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><span class="battle-shape">▲</span><div class="battle-character battle-enemy"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><strong class="battle-impact">成功击败！</strong></div>`;
       } else if (challengeState.freeMode) {
         visual = renderRobotPreview();
       } else if (stage.scene === "robots") {
@@ -1548,8 +1549,8 @@
       } else {
         visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || "> 等待测试……")}</div>`;
       }
-      const title = challengeState.battle ? "五角星出击！" : challengeState.freeMode ? "自由表情创作室" : stage.title;
-      const intro = challengeState.battle ? `${challengeState.studentName}成功打印五角星，黑色小勇士获得星光力量！` : challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : (round.question || stage.prompt);
+      const title = challengeState.battle ? "三角形出击！" : challengeState.freeMode ? "自由表情创作室" : stage.title;
+      const intro = challengeState.battle ? `${challengeState.studentName}成功打印三角形，黑色小勇士获得星光力量！` : challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : (round.question || stage.prompt);
       const sceneProgress = level().singleFlow ? `${level().course} · 一次运行完成` : `${level().course} · 阶段 ${challengeState.stage + 1} / ${level().stages.length}`;
       lab.innerHTML = `<div class="scene-shell"><div class="scene-kicker">${escapeHtml(sceneProgress)}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(intro)}</p>${dots ? `<div class="stage-dots">${dots}</div>` : ""}<div class="scene-visual">${visual}</div></div>`;
     }
@@ -1595,7 +1596,7 @@
     }
     function startStarBattle() {
       challengeState.battle = true;
-      setStatus(`${challengeState.studentName}打印成功！五角星正在帮助小勇士击败敌人。`, false);
+      setStatus(`${challengeState.studentName}打印成功！发光三角形正在帮助小勇士击败敌人。`, false);
       renderChallengePanel();
       [660, 780, 920, 1100].forEach((note, index) => playTone(note, .12, "triangle", index * .22));
       setTimeout(() => {
