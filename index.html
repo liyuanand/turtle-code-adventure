@@ -481,6 +481,9 @@
     .scene-kicker { color: #a9d8ff; font-size: 12px; font-weight: 1000; letter-spacing: 0; }
     .scene-shell h3 { margin: 7px 0 5px; font-size: clamp(22px, 3.2vw, 34px); letter-spacing: 0; }
     .scene-shell > p { margin: 0 auto 16px; max-width: 590px; color: #c9d5e7; font-size: 13px; font-weight: 700; line-height: 1.55; }
+    .scene-task-brief { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: -5px auto 14px; }
+    .scene-task-brief span { padding: 5px 9px; border: 1px solid rgba(169,216,255,.4); border-radius: 5px; background: rgba(7,17,30,.58); color: #dcecff; font-size: 11px; font-weight: 900; }
+    .scene-task-brief strong { color: #ffd858; }
     .stage-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
     .stage-dot { width: 34px; height: 7px; border-radius: 4px; background: rgba(255,255,255,.2); }
     .stage-dot.done { background: #46d98b; }
@@ -492,6 +495,15 @@
       font: 800 14px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap;
     }
     .console-window::before { content: "控制台"; display: block; margin-bottom: 7px; color: #7ea0c9; font: 900 11px/1.2 ui-rounded, sans-serif; }
+    .runtime-console { white-space: normal; }
+    .runtime-prompt { margin: 0 0 10px; color: #78f2a6; font-size: 13px; line-height: 1.5; }
+    .runtime-input-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+    .runtime-input-field { min-width: 0; }
+    .runtime-input-label { display: block; margin-bottom: 5px; color: #dcecff; font: 900 12px/1.35 ui-rounded, "PingFang SC", sans-serif; }
+    .runtime-name-input { width: 100%; min-height: 48px; padding: 9px 11px; border: 2px solid #78f2a6; border-radius: 6px; background: #fff; color: #17223b; font-size: 16px; font-weight: 800; }
+    .runtime-name-input:focus { outline: 3px solid #ffc928; outline-offset: 2px; }
+    .runtime-continue-btn { min-height: 48px; padding: 9px 14px; border: 2px solid #fff; border-radius: 6px; background: #087b49; color: #fff; font-size: 14px; font-weight: 1000; cursor: pointer; touch-action: manipulation; }
+    .runtime-input-error { grid-column: 1 / -1; min-height: 18px; margin: 0; color: #ff9b9b; font: 900 12px/1.4 ui-rounded, "PingFang SC", sans-serif; }
     .robot-row, .visitor-row, .data-row { display: flex; align-items: flex-end; justify-content: center; gap: 16px; flex-wrap: wrap; }
     .station-bot {
       position: relative; width: 108px; height: 116px; border: 4px solid #0c1424; border-radius: 8px 8px 24px 24px;
@@ -756,6 +768,10 @@
       @keyframes hero-charge { 0%,25% { transform: translateX(0) scale(.72); } 55% { transform: translateX(88px) scale(.72); } 72%,100% { transform: translateX(65px) scale(.72); } }
       @keyframes shape-strike { 0%,30% { transform: translate(0,0) rotate(0) scale(.65); } 64% { transform: translate(210px,-8px) rotate(540deg) scale(1); } 72%,100% { transform: translate(210px,-8px) rotate(620deg) scale(0); } }
       .console-window { min-height: 104px; padding: 9px 11px; font-size: 11px; }
+      .scene-task-brief { gap: 5px; margin-bottom: 9px; }
+      .scene-task-brief span { padding: 4px 6px; font-size: 10px; }
+      .runtime-input-form { grid-template-columns: 1fr; }
+      .runtime-continue-btn { width: 100%; }
       .gate-scene { height: 150px; }
       .gate-frame { width: 122px; height: 142px; border-width: 10px; }
       .visitor { width: 64px; font-size: 10px; }
@@ -1114,8 +1130,8 @@
           debugTip: "先找到保存姓名的 input() 代码，再按星号由少到多的顺序排列三个 print()；注意括号和引号。",
           hintLimit: 0, attemptLimit: 2, expectedTests: ["姓名保存到 name", "四行代码顺序正确", "控制台打印三角形", "成功后触发战斗动画"],
           stages: [
-            { title: "输入姓名，打印三角形", scene: "console", prompt: "从代码卡中选出四行正确代码，按程序的执行顺序排好。", code: "# 选择代码卡，组成完整程序\n______\n______\n______\n______", hint: "第 1 行要用 name = input(...) 保存姓名；后面的 print() 依次打印 1、2、4 个星号。", rounds: [
-              { question: "输入你的姓名，再按运行顺序点击四行正确代码。", mode: "sequence", requiresInput: true, placeholder: "请输入 2～12 个字的姓名", cards: [
+            { title: "任务：用星号画一个三角形", scene: "console", prompt: "需要使用哪些代码？先排好 input() 和三行 print()，再点击运行。", code: "# 选择代码卡，组成完整程序\n______\n______\n______\n______", hint: "第 1 行要用 name = input(...) 保存姓名；后面的 print() 依次打印 1、2、4 个星号。", rounds: [
+              { question: "按运行顺序点击四行正确代码，写完后点击运行。", mode: "sequence", runtimeInput: true, minLength: 2, maxLength: 12, placeholder: "请输入 2～12 个字的姓名", cards: [
                 {id:"print-four",label:"print('****')"},{id:"loose-input",label:"input('请输入你的姓名：')"},{id:"print-one",label:"print('*')"},{id:"ask-name",label:"name = input('请输入你的姓名：')"},
                 {id:"print-three",label:"print('***')"},{id:"print-two",label:"print('**')"},{id:"bare-stars",label:"print(****)"},{id:"print-space",label:"print('* *')"}
               ], correct:["ask-name","print-one","print-two","print-four"], successConsole:"请输入你的姓名：{input}\nname = '{input}'\n*\n**\n****\n三角形打印成功，星光勇士出击！" }
@@ -1465,7 +1481,7 @@
     function level() { return GAME_CONFIG.levels[currentLevel]; }
     function isChallengeLevel() { return level().mode === "challenge"; }
     function createChallengeState() {
-      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy" };
+      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", awaitingInput: false, runtimeInputError: "", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy" };
     }
     function commandLabel(cmd) {
       if (cmd.type === "drawStarLoop") return `for i in range(${levelParams.loops}): forward(size); right(${levelParams.angle})`;
@@ -1498,8 +1514,9 @@
     function updateChallengeMobileRunButton() {
       if (!isChallengeLevel() || currentLevel !== 5 || challengeState.freeMode) return;
       const button = $("#mobileRunBtn");
-      button.disabled = challengeState.battle;
-      button.innerHTML = `${iconSvg(challengeState.battle ? "turtle" : "play")}<span>${challengeState.battle ? "星光战斗中…" : "运行程序 · 查看效果"}</span>`;
+      button.disabled = challengeState.battle || challengeState.awaitingInput;
+      const waiting = challengeState.awaitingInput;
+      button.innerHTML = `${iconSvg(challengeState.battle || waiting ? "turtle" : "play")}<span>${challengeState.battle ? "星光战斗中…" : waiting ? "程序暂停 · 请输入姓名" : "运行程序 · 查看效果"}</span>`;
     }
     function collectedKey(x, y) { return `${x},${y}`; }
     function allCollected() { return collected.size === level().collectibles.length; }
@@ -1528,6 +1545,8 @@
         visual = `<div class="battle-arena" role="img" aria-label="黑色小勇士拿着发光三角形击败敌人，烟花绽放"><div class="battle-name">${escapeHtml(challengeState.studentName)}的星光勇士</div><span class="firework one"></span><span class="firework two"></span><span class="firework three"></span><div class="battle-character battle-hero"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><span class="battle-shape">▲</span><div class="battle-character battle-enemy"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><strong class="battle-impact">成功击败！</strong></div>`;
       } else if (challengeState.freeMode) {
         visual = renderRobotPreview();
+      } else if (challengeState.awaitingInput) {
+        visual = `<div class="console-window runtime-console"><p class="runtime-prompt">&gt; name = input('请输入你的姓名：')<br>&gt; 程序暂停，正在等待你输入……</p><form class="runtime-input-form" data-runtime-input-form><div class="runtime-input-field"><label class="runtime-input-label" for="runtimeNameInput">请输入你的姓名</label><input class="runtime-name-input" id="runtimeNameInput" name="studentName" type="text" inputmode="text" enterkeyhint="done" autocomplete="name" maxlength="${round.maxLength || 30}" value="${escapeHtml(challengeState.inputValue)}" placeholder="${escapeHtml(round.placeholder || "例如：小明")}"></div><button class="runtime-continue-btn" type="submit">确认并继续运行</button><p class="runtime-input-error" id="runtimeInputError" role="alert">${escapeHtml(challengeState.runtimeInputError)}</p></form></div>`;
       } else if (stage.scene === "robots") {
         visual = `<div class="robot-row">${[0,1,2].map(index => `<div class="station-bot${index < challengeState.fixed ? " fixed" : ""}"><span>${index < challengeState.fixed ? "已修复" : `${index + 1} 号机`}</span></div>`).join("")}</div>`;
       } else if (stage.scene === "console" || stage.scene === "ai") {
@@ -1549,10 +1568,11 @@
       } else {
         visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || "> 等待测试……")}</div>`;
       }
-      const title = challengeState.battle ? "三角形出击！" : challengeState.freeMode ? "自由表情创作室" : stage.title;
-      const intro = challengeState.battle ? `${challengeState.studentName}成功打印三角形，黑色小勇士获得星光力量！` : challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : (round.question || stage.prompt);
+      const title = challengeState.battle ? "三角形出击！" : challengeState.freeMode ? "自由表情创作室" : challengeState.awaitingInput ? "程序运行到 input()" : stage.title;
+      const intro = challengeState.battle ? `${challengeState.studentName}成功打印三角形，黑色小勇士获得星光力量！` : challengeState.freeMode ? "通关后的创作不会改变星级。选择颜色和表情，继续进行 turtle 设计实验。" : challengeState.awaitingInput ? "代码顺序正确。输入姓名后，程序才会继续执行下面的 print()。" : (round.question || stage.prompt);
       const sceneProgress = level().singleFlow ? `${level().course} · 一次运行完成` : `${level().course} · 阶段 ${challengeState.stage + 1} / ${level().stages.length}`;
-      lab.innerHTML = `<div class="scene-shell"><div class="scene-kicker">${escapeHtml(sceneProgress)}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(intro)}</p>${dots ? `<div class="stage-dots">${dots}</div>` : ""}<div class="scene-visual">${visual}</div></div>`;
+      const taskBrief = currentLevel === 5 && !challengeState.battle ? `<div class="scene-task-brief" aria-label="完成任务需要使用的代码"><span><strong>需要使用</strong></span><span>input()</span><span>print()</span><span>字符串</span><span>顺序执行</span></div>` : "";
+      lab.innerHTML = `<div class="scene-shell"><div class="scene-kicker">${escapeHtml(sceneProgress)}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(intro)}</p>${taskBrief}${dots ? `<div class="stage-dots">${dots}</div>` : ""}<div class="scene-visual">${visual}</div></div>`;
     }
     function renderFreeStudioPanel() {
       const colors = ["#39a8ff","#f15c6d","#21b978","#ffc928","#7355d9"];
@@ -1565,7 +1585,7 @@
       const round = challengeRound();
       const cards = (round.cards || []).map(card => {
         const selected = challengeState.selected.includes(card.id);
-        return `<button class="challenge-option${selected ? " selected" : ""}" type="button" data-challenge-card="${escapeHtml(card.id)}" ${challengeState.roundPassed ? "disabled" : ""}>${escapeHtml(card.label)}</button>`;
+        return `<button class="challenge-option${selected ? " selected" : ""}" type="button" data-challenge-card="${escapeHtml(card.id)}" ${challengeState.roundPassed || challengeState.awaitingInput ? "disabled" : ""}>${escapeHtml(card.label)}</button>`;
       }).join("");
       const chosen = selectedLabels(round);
       const inputType = round.mode === "prompt" ? "textarea" : "input";
@@ -1574,12 +1594,12 @@
       const comparison = round.actual || round.expected ? `<div class="hint-output"><strong>${escapeHtml(round.actual || "")}</strong>${round.expected ? `<br>${escapeHtml(round.expected)}` : ""}</div>` : "";
       const preview = round.mode === "sequence" ? `<div class="selection-preview">${chosen.length ? chosen.map((label,index) => `${index + 1}. ${escapeHtml(label)}`).join("<br>") : "按运行顺序点击代码卡"}</div>` : "";
       const progressLabel = level().singleFlow ? "编程任务 · 一次运行完成" : `阶段 ${challengeState.stage + 1} / ${level().stages.length} · 小题 ${challengeState.round + 1} / ${stage.rounds.length}`;
-      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>${progressLabel}</span><span>失败 ${challengeState.failedAttempts} 次</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed || challengeState.battle ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run ${challengeState.battle ? "disabled" : ""}>${challengeState.battle ? "战斗动画播放中…" : challengeState.roundPassed ? "继续下一步" : round.mode === "prompt" ? "向模拟 AI 提问" : "运行并验证"}</button></div></div>`;
+      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>${progressLabel}</span><span>失败 ${challengeState.failedAttempts} 次</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed || challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run ${challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>${challengeState.battle ? "战斗动画播放中…" : challengeState.awaitingInput ? "等待输入姓名…" : challengeState.roundPassed ? "继续下一步" : round.mode === "prompt" ? "向模拟 AI 提问" : "运行并验证"}</button></div></div>`;
       renderChallengeScene();
       updateChallengeMobileRunButton();
     }
     function chooseChallengeCard(cardId) {
-      if (challengeState.roundPassed) return;
+      if (challengeState.roundPassed || challengeState.awaitingInput) return;
       const round = challengeRound();
       if (round.mode === "single") challengeState.selected = [cardId];
       else {
@@ -1603,8 +1623,37 @@
         if (currentLevel === 5 && challengeState.battle) completeLevel();
       }, prefersReducedMotion ? 900 : 3600);
     }
+    function finishChallengeRound(round) {
+      challengeState.roundPassed = true;
+      challengeState.lastConsole = String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
+      if (currentLevel === 5 && challengeState.stage === 0) challengeState.studentName = challengeState.inputValue;
+      setStatus("测试通过！观察效果，然后继续下一步。", false);
+      playSuccess();
+      if (currentLevel === 5 && challengeState.stage === level().stages.length - 1) { startStarBattle(); return; }
+      renderChallengePanel();
+    }
+    function submitRuntimeInput(rawValue) {
+      if (!challengeState.awaitingInput) return;
+      const round = challengeRound();
+      const value = String(rawValue || "").trim();
+      const minLength = round.minLength || 2;
+      const maxLength = round.maxLength || 30;
+      if (value.length < minLength || value.length > maxLength) {
+        challengeState.inputValue = value;
+        challengeState.runtimeInputError = `请输入 ${minLength}～${maxLength} 个字的姓名。`;
+        playTone(160, .14, "square");
+        renderChallengePanel();
+        setTimeout(() => $("#runtimeNameInput")?.focus(), 0);
+        return;
+      }
+      challengeState.inputValue = value;
+      challengeState.runtimeInputError = "";
+      challengeState.awaitingInput = false;
+      finishChallengeRound(round);
+    }
     function runChallengeRound() {
       if (challengeState.roundPassed) { advanceChallenge(); return; }
+      if (challengeState.awaitingInput) return;
       const stage = challengeStage();
       const round = challengeRound();
       const inputEl = $("#challengeInput");
@@ -1631,13 +1680,16 @@
         renderChallengePanel();
         return;
       }
-      challengeState.roundPassed = true;
-      challengeState.lastConsole = String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
-      if (currentLevel === 5 && challengeState.stage === 0) challengeState.studentName = challengeState.inputValue;
-      setStatus("测试通过！观察效果，然后继续下一步。", false);
-      playSuccess();
-      if (currentLevel === 5 && challengeState.stage === level().stages.length - 1) { startStarBattle(); return; }
-      renderChallengePanel();
+      if (round.runtimeInput) {
+        challengeState.awaitingInput = true;
+        challengeState.runtimeInputError = "";
+        challengeState.lastConsole = "> 代码顺序检查通过\n> 运行到 input()，程序暂停并等待输入……";
+        setStatus("程序已运行到 input()。请在主场景输入姓名，再继续执行。");
+        renderChallengePanel();
+        setTimeout(() => $("#runtimeNameInput")?.focus(), 0);
+        return;
+      }
+      finishChallengeRound(round);
     }
     function advanceChallenge() {
       const stage = challengeStage();
@@ -1823,7 +1875,7 @@
       if (running) return;
       if (isChallengeLevel()) {
         runChallengeRound();
-        if (currentLevel === 5 && challengeState.battle && matchMedia("(max-width: 900px)").matches) {
+        if (currentLevel === 5 && (challengeState.battle || challengeState.awaitingInput) && matchMedia("(max-width: 900px)").matches) {
           await wait(40);
           $("#missionLab").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
         }
@@ -2404,6 +2456,20 @@
         }
       });
       $("#challengePanel").addEventListener("input", event => { if(event.target.id === "challengeInput") challengeState.inputValue=event.target.value; });
+      $("#missionLab").addEventListener("input", event => {
+        if (event.target.id !== "runtimeNameInput") return;
+        challengeState.inputValue = event.target.value;
+        if (challengeState.runtimeInputError) {
+          challengeState.runtimeInputError = "";
+          const error = $("#runtimeInputError");
+          if (error) error.textContent = "";
+        }
+      });
+      $("#missionLab").addEventListener("submit", event => {
+        if (!event.target.matches("[data-runtime-input-form]")) return;
+        event.preventDefault();
+        submitRuntimeInput($("#runtimeNameInput")?.value);
+      });
       $("#challengePanel").addEventListener("click", event => {
         const card=event.target.closest("[data-challenge-card]");
         if(card){chooseChallengeCard(card.dataset.challengeCard);return;}
