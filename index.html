@@ -539,6 +539,83 @@
     @keyframes enemy-defeat { 0%,61% { transform: rotate(0); opacity: 1; } 76%,100% { transform: translate(24px,34px) rotate(82deg); opacity: .18; } }
     @keyframes impact-pop { 0%,60% { opacity: 0; transform: scale(.2) rotate(-8deg); } 68%,92% { opacity: 1; transform: scale(1.15) rotate(-8deg); } 100% { opacity: 0; } }
     @keyframes firework-burst { 0%,69% { opacity: 0; transform: scale(.1); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: .7; transform: scale(1.35); } }
+    .reward-story {
+      position: relative; width: min(650px, 100%); height: 218px; overflow: hidden; border: 3px solid rgba(255,255,255,.16); border-radius: 8px;
+      background: linear-gradient(#72c8f4 0 63%, #78c96d 63% 76%, #d5a669 76%); box-shadow: inset 0 -7px 0 rgba(91,58,29,.2);
+    }
+    .reward-story::before { content: ""; position: absolute; left: 7%; top: 20px; width: 46px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.86); box-shadow: 24px 5px 0 8px rgba(255,255,255,.86), 50px 0 0 1px rgba(255,255,255,.86); }
+    .reward-rule { position: absolute; z-index: 6; top: 11px; left: 50%; transform: translateX(-50%); min-width: 210px; padding: 7px 12px; border: 3px solid #17223b; border-radius: 7px; background: #fff7c8; color: #17223b; font: 1000 13px/1.25 ui-monospace, monospace; box-shadow: 4px 4px 0 rgba(23,34,59,.35); white-space: nowrap; }
+    .score-envelope { position: absolute; z-index: 4; left: 8%; bottom: 36px; display: grid; place-items: center; width: 86px; height: 66px; border: 4px solid #17223b; border-radius: 5px; background: #fff; color: #e94949; font-size: 25px; font-weight: 1000; transform: rotate(-4deg); box-shadow: 5px 5px 0 rgba(23,34,59,.28); }
+    .score-envelope::before { content: "成绩单"; position: absolute; top: 6px; color: #59657a; font-size: 10px; }
+    .reward-meal { position: absolute; z-index: 3; right: 8%; bottom: 34px; width: 84px; height: 91px; transform: translateY(4px); transition: filter .25s ease, transform .25s ease; }
+    .meal-box { position: absolute; left: 5px; bottom: 0; display: grid; place-items: center; width: 60px; height: 60px; border: 4px solid #17223b; border-radius: 5px; background: #e94949; color: #ffd534; font: 1000 32px/1 sans-serif; box-shadow: 5px 5px 0 rgba(23,34,59,.3); }
+    .meal-fries { position: absolute; right: 0; top: 0; width: 36px; height: 54px; border: 4px solid #17223b; border-radius: 4px 4px 12px 12px; background: repeating-linear-gradient(90deg,#ffd534 0 6px,#ffb51f 6px 10px); transform: rotate(7deg); }
+    .reward-kid { position: absolute; z-index: 5; left: 34%; bottom: 30px; width: 62px; height: 112px; transform-origin: 50% 100%; }
+    .reward-kid .figure-head { border-color: #17223b; background: #ffd8b5; }
+    .reward-kid .figure-body, .reward-kid .figure-arm, .reward-kid .figure-leg { background: #17223b; }
+    .story-dog { position: absolute; z-index: 5; left: 51%; bottom: 27px; width: 94px; height: 64px; transform-origin: 50% 100%; }
+    .dog-body { position: absolute; left: 25px; bottom: 13px; width: 51px; height: 31px; border: 4px solid #17223b; border-radius: 48% 50% 42% 45%; background: #f5b85c; }
+    .dog-head { position: absolute; left: 2px; bottom: 21px; width: 35px; height: 35px; border: 4px solid #17223b; border-radius: 48%; background: #f5b85c; }
+    .dog-head::before { content: ""; position: absolute; left: 6px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: #17223b; box-shadow: 16px 8px 0 -1px #17223b; }
+    .dog-ear { position: absolute; left: 5px; bottom: 42px; width: 14px; height: 23px; border: 4px solid #17223b; border-radius: 70% 30% 70% 35%; background: #9a632c; transform: rotate(-24deg); }
+    .dog-leg { position: absolute; bottom: 0; width: 7px; height: 22px; border-radius: 4px; background: #17223b; }
+    .dog-leg.one { left: 34px; } .dog-leg.two { left: 66px; }
+    .dog-tail { position: absolute; right: 2px; bottom: 33px; width: 31px; height: 9px; border-radius: 8px; background: #17223b; transform-origin: 0 50%; animation: dog-tail .35s ease-in-out infinite alternate; }
+    .dog-heart { position: absolute; z-index: 7; left: 61%; bottom: 92px; color: #e94949; font-size: 26px; opacity: 0; }
+    .reward-result { position: absolute; z-index: 7; left: 50%; bottom: 8px; transform: translateX(-50%); padding: 5px 9px; border-radius: 5px; background: #17223b; color: #fff; font-size: 12px; font-weight: 1000; white-space: nowrap; }
+    .reward-story:not(.passed) .reward-meal { filter: grayscale(.8); opacity: .5; }
+    .reward-story.passed[data-story-stage="1"] .reward-kid, .reward-story.passed[data-story-stage="2"] .reward-kid { animation: kid-cheer .65s ease-in-out 3; }
+    .reward-story.passed[data-story-stage="1"] .story-dog, .reward-story.passed[data-story-stage="2"] .story-dog { animation: dog-hop .48s ease-in-out 4; }
+    .reward-story.passed[data-story-stage="1"] .reward-meal { filter: none; opacity: 1; animation: meal-pop .55s ease-out both; }
+    .reward-story.passed[data-story-stage="2"] .dog-heart { animation: dog-heart 1.2s ease-out 2; }
+    @keyframes dog-tail { from { transform: rotate(-28deg); } to { transform: rotate(30deg); } }
+    @keyframes dog-hop { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-18px) rotate(-4deg); } }
+    @keyframes kid-cheer { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-16px) rotate(4deg); } }
+    @keyframes meal-pop { 0% { transform: translateY(25px) scale(.65) rotate(-8deg); } 70% { transform: translateY(-8px) scale(1.12) rotate(4deg); } 100% { transform: translateY(0) scale(1); } }
+    @keyframes dog-heart { 0% { opacity: 0; transform: translateY(8px) scale(.5); } 35% { opacity: 1; } 100% { opacity: 0; transform: translateY(-38px) scale(1.25); } }
+    .life-story-scene { position: relative; width: min(650px, 100%); height: 218px; overflow: hidden; border: 3px solid rgba(255,255,255,.18); border-radius: 8px; box-shadow: inset 0 -7px 0 rgba(23,34,59,.16); }
+    .life-badge { position: absolute; z-index: 8; top: 10px; left: 50%; transform: translateX(-50%); min-width: 112px; padding: 6px 10px; border: 3px solid #17223b; border-radius: 7px; background: #fff7c8; color: #17223b; font: 1000 13px/1.2 ui-monospace, monospace; box-shadow: 4px 4px 0 rgba(23,34,59,.3); white-space: nowrap; }
+    .life-result { position: absolute; z-index: 9; left: 50%; bottom: 8px; transform: translateX(-50%); max-width: 92%; padding: 5px 9px; overflow: hidden; border-radius: 5px; background: #17223b; color: #fff; font-size: 12px; font-weight: 1000; text-overflow: ellipsis; white-space: nowrap; }
+    .camp-story { background: linear-gradient(#284d72 0 61%, #6aa267 61% 78%, #c9975d 78%); }
+    .camp-story::before { content: "✦  ·  ✦  ·  ✦"; position: absolute; left: 8%; top: 20px; color: #ffe38a; font-size: 18px; letter-spacing: 14px; }
+    .camp-tent { position: absolute; z-index: 3; right: 7%; bottom: 27px; width: 0; height: 0; border-right: 64px solid transparent; border-bottom: 112px solid #f2c84b; border-left: 64px solid transparent; filter: drop-shadow(6px 6px 0 rgba(23,34,59,.35)); }
+    .camp-tent::after { content: ""; position: absolute; left: -17px; top: 57px; width: 34px; height: 55px; background: #9a5431; clip-path: polygon(50% 0,100% 100%,0 100%); }
+    .camp-meter { position: absolute; z-index: 5; left: 7%; bottom: 36px; display: grid; place-items: center; width: 84px; height: 69px; border: 4px solid #17223b; border-radius: 7px; background: #f4f7fb; color: #1766c2; font-size: 18px; font-weight: 1000; box-shadow: 5px 5px 0 rgba(23,34,59,.3); }
+    .camp-meter::before { content: "露营检查"; position: absolute; top: 5px; color: #59657a; font-size: 9px; }
+    .camp-car { position: absolute; z-index: 6; left: 34%; bottom: 35px; width: 118px; height: 51px; border: 4px solid #17223b; border-radius: 16px 25px 7px 7px; background: #e94949; box-shadow: inset 0 -8px rgba(0,0,0,.12); }
+    .camp-car::before { content: ""; position: absolute; left: 22px; top: -30px; width: 66px; height: 31px; border: 4px solid #17223b; border-bottom: 0; border-radius: 28px 28px 0 0; background: #9de1f2; }
+    .camp-wheel { position: absolute; bottom: -16px; width: 25px; height: 25px; border: 6px solid #17223b; border-radius: 50%; background: #d7e0eb; }
+    .camp-wheel.one { left: 15px; } .camp-wheel.two { right: 15px; }
+    .camp-story.passed[data-story-stage="1"] .camp-car { animation: camp-drive 1.5s ease-in-out both; }
+    .camp-story.passed[data-story-stage="2"] .camp-meter { animation: meter-pulse .55s ease-in-out 3; }
+    @keyframes camp-drive { 0% { transform: translateX(-35px); } 65% { transform: translateX(78px) rotate(-2deg); } 100% { transform: translateX(62px); } }
+    @keyframes meter-pulse { 50% { transform: scale(1.1) rotate(-3deg); background: #ffe0a3; } }
+    .park-story { background: linear-gradient(#7bcdf3 0 62%, #8bd374 62% 78%, #ffd87b 78%); }
+    .park-track { position: absolute; left: -20px; right: -20px; top: 72px; height: 55px; border-top: 8px solid #7355d9; border-radius: 50% 50% 0 0; transform: rotate(-3deg); }
+    .park-car { position: absolute; z-index: 3; left: 10%; top: 61px; width: 66px; height: 34px; border: 4px solid #17223b; border-radius: 6px 6px 15px 15px; background: #ff7a30; }
+    .park-gate { position: absolute; z-index: 6; right: 12%; bottom: 28px; width: 25px; height: 106px; border: 4px solid #17223b; border-radius: 6px; background: #2477dc; }
+    .park-arm { position: absolute; right: 17px; top: 24px; width: 105px; height: 15px; border: 4px solid #17223b; border-radius: 7px; background: repeating-linear-gradient(90deg,#fff 0 17px,#e94949 17px 34px); transform-origin: 100% 50%; transition: transform .5s ease; }
+    .park-ruler { position: absolute; z-index: 4; left: 9%; bottom: 28px; width: 85px; height: 111px; border: 4px solid #17223b; border-radius: 6px; background: repeating-linear-gradient(#fff 0 17px,#dcecff 17px 19px); color: #17223b; font-size: 13px; font-weight: 1000; padding-top: 48px; }
+    .park-kid { position: absolute; z-index: 5; left: 42%; bottom: 27px; width: 62px; height: 112px; transform-origin: 50% 100%; }
+    .park-kid .figure-head { border-color: #17223b; background: #ffd8b5; }
+    .park-kid .figure-body, .park-kid .figure-arm, .park-kid .figure-leg { background: #17223b; }
+    .park-story.passed[data-story-stage="1"] .park-arm { transform: rotate(-68deg); }
+    .park-story.passed[data-story-stage="1"] .park-kid { animation: park-walk 1.2s ease-in-out both; }
+    .park-story.passed[data-story-stage="2"] .park-gate { animation: gate-stop .5s ease-in-out 3; background: #e94949; }
+    .park-story.passed[data-story-stage="0"] .park-gate { background: #18a96b; box-shadow: 0 0 18px #57e69d; }
+    @keyframes park-walk { to { transform: translateX(105px); } }
+    @keyframes gate-stop { 50% { transform: translateX(-5px); } }
+    .party-story { background: linear-gradient(#405077 0 68%, #8057a7 68% 79%, #f0c85e 79%); }
+    .party-balloons { position: absolute; left: 8%; top: 31px; width: 53px; height: 64px; border: 4px solid #17223b; border-radius: 50%; background: #ff5d70; box-shadow: 49px 12px 0 -3px #52d99b, 49px 12px 0 1px #17223b; opacity: .32; }
+    .party-balloons::after { content: ""; position: absolute; left: 25px; top: 61px; width: 2px; height: 80px; background: #fff; box-shadow: 49px 13px #fff; }
+    .party-cake { position: absolute; z-index: 5; right: 8%; bottom: 29px; display: grid; place-items: center; width: 93px; height: 65px; border: 4px solid #17223b; border-radius: 9px 9px 5px 5px; background: #ff9eb5; color: #17223b; font-size: 28px; box-shadow: 6px 6px 0 rgba(23,34,59,.28); }
+    .party-cake::before { content: ""; position: absolute; top: -28px; width: 8px; height: 30px; border: 3px solid #17223b; background: #ffc928; }
+    .party-story .robot-preview { position: absolute; z-index: 6; left: 50%; bottom: 3px; margin: 0; transform: translateX(-50%) scale(.65); transform-origin: 50% 100%; }
+    .party-story.passed .party-balloons { opacity: 1; animation: balloon-float .7s ease-in-out 3 alternate; }
+    .party-story.passed[data-story-stage="1"] .robot-mouth { border-top: 0; border-bottom: 7px solid #17223b; }
+    .party-story.passed[data-story-stage="2"] .robot-preview { animation: robot-dance .55s ease-in-out 4; }
+    @keyframes balloon-float { to { transform: translateY(-13px) rotate(4deg); } }
+    @keyframes robot-dance { 0%,100% { transform: translateX(-50%) scale(.65) rotate(-4deg); } 50% { transform: translateX(-50%) translateY(-13px) scale(.65) rotate(5deg); } }
     .gate-scene { position: relative; width: min(630px, 100%); height: 205px; }
     .gate-frame { position: absolute; left: 50%; bottom: 0; width: 170px; height: 190px; transform: translateX(-50%); border: 14px solid #324b6c; border-bottom: 0; border-radius: 16px 16px 0 0; box-shadow: inset 0 0 0 4px #7892b4; }
     .gate-light { position: absolute; left: 50%; top: 8px; width: 24px; height: 24px; transform: translateX(-50%); border: 3px solid #10192a; border-radius: 50%; background: #ffc928; }
@@ -773,6 +850,36 @@
       .runtime-input-form { grid-template-columns: 1fr; }
       .runtime-continue-btn { width: 100%; }
       .gate-scene { height: 150px; }
+      .reward-story { height: 150px; }
+      .reward-rule { top: 6px; min-width: 174px; padding: 5px 8px; font-size: 11px; }
+      .score-envelope { left: 3%; bottom: 19px; width: 67px; height: 52px; font-size: 20px; }
+      .reward-kid { left: 30%; bottom: 12px; transform: scale(.72); }
+      .story-dog { left: 49%; bottom: 12px; transform: scale(.72); }
+      .reward-meal { right: 3%; bottom: 15px; transform: scale(.72); }
+      .reward-result { top: 38px; bottom: auto; max-width: 92%; overflow: hidden; text-overflow: ellipsis; font-size: 10px; }
+      .reward-story.passed[data-story-stage="1"] .reward-kid, .reward-story.passed[data-story-stage="2"] .reward-kid { animation-name: kid-cheer-mobile; }
+      .reward-story.passed[data-story-stage="1"] .story-dog, .reward-story.passed[data-story-stage="2"] .story-dog { animation-name: dog-hop-mobile; }
+      @keyframes kid-cheer-mobile { 0%,100% { transform: scale(.72) translateY(0); } 50% { transform: scale(.72) translateY(-18px) rotate(4deg); } }
+      @keyframes dog-hop-mobile { 0%,100% { transform: scale(.72) translateY(0); } 50% { transform: scale(.72) translateY(-20px) rotate(-4deg); } }
+      .life-story-scene { height: 150px; }
+      .life-badge { top: 5px; min-width: 92px; padding: 4px 7px; font-size: 10px; }
+      .life-result { top: 37px; bottom: auto; width: 90%; padding: 4px 6px; overflow: visible; font-size: 9px; line-height: 1.25; text-overflow: clip; white-space: normal; }
+      .camp-story::before { left: 2%; font-size: 12px; letter-spacing: 5px; }
+      .camp-meter { left: 2%; bottom: 18px; transform: scale(.72); transform-origin: bottom left; }
+      .camp-car { left: 31%; bottom: 21px; transform: scale(.72); transform-origin: bottom left; }
+      .camp-tent { right: -3%; bottom: 17px; transform: scale(.65); transform-origin: bottom right; }
+      .camp-story.passed[data-story-stage="1"] .camp-car { animation-name: camp-drive-mobile; }
+      @keyframes camp-drive-mobile { 0% { transform: scale(.72) translateX(-22px); } 65% { transform: scale(.72) translateX(54px) rotate(-2deg); } 100% { transform: scale(.72) translateX(43px); } }
+      .park-ruler { left: 1%; bottom: 17px; transform: scale(.7); transform-origin: bottom left; }
+      .park-kid { left: 37%; bottom: 13px; transform: scale(.7); }
+      .park-gate { right: 7%; bottom: 16px; transform: scale(.75); transform-origin: bottom right; }
+      .park-story.passed[data-story-stage="1"] .park-kid { animation-name: park-walk-mobile; }
+      @keyframes park-walk-mobile { to { transform: scale(.7) translateX(72px); } }
+      .party-story .robot-preview { bottom: -12px; transform: translateX(-50%) scale(.45); }
+      .party-balloons { left: 3%; top: 28px; transform: scale(.72); transform-origin: top left; }
+      .party-cake { right: 2%; bottom: 17px; transform: scale(.72); transform-origin: bottom right; }
+      .party-story.passed[data-story-stage="2"] .robot-preview { animation-name: robot-dance-mobile; }
+      @keyframes robot-dance-mobile { 0%,100% { transform: translateX(-50%) scale(.45) rotate(-4deg); } 50% { transform: translateX(-50%) translateY(-13px) scale(.45) rotate(5deg); } }
       .gate-frame { width: 122px; height: 142px; border-width: 10px; }
       .visitor { width: 64px; font-size: 10px; }
       .fuel-scene { grid-template-columns: 1fr 76px 1fr; gap: 7px; }
@@ -1140,92 +1247,81 @@
           palette:{sky:"#17223b",floor:"#d8eeff",wall:"#344968",wallTop:"#7896bd",accent:"#37c6a0"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
         },
         {
-          name: "真假徽章安检门", shortName: "安检门", icon: "castle", password: "1414", mode: "challenge",
-          goal: "看见条件的 True 和 False，控制单分支开门", mission: "让安检门只放行正确徽章", course: "第 7 课",
-          knowledge:["if 单分支", "== 与 =", "!=", "True / False", "print()"],
-          example:"if badge == '月亮':\n    print('允许通行')", lesson:"比较运算会得到 True 或 False。if 只在条件为 True 时执行缩进代码；== 表示比较是否相等，= 表示赋值，!= 表示不相等。",
-          debugTip:"先把条件读成一句话，再判断比较结果是 True 还是 False；不要把赋值符号 = 当成比较符号 ==。",
-          hintLimit:0, attemptLimit:2, expectedTests:["补全流程图", "区分 = == !=", "真假徽章测试"],
+          name: "周末奖励小剧场", shortName: "奖励剧场", icon: "balloon", password: "1414", mode: "challenge", lifeStory: true,
+          goal: "把生活约定变成 if 条件，看懂 True 和 False", mission: "陪小狗一起打开周末惊喜", course: "第 7 课",
+          knowledge:["if 单分支", ">= 大于等于", "True / False", "缩进", "print()"],
+          example:"if score >= 90:\n    print('周末吃麦当劳！')", lesson:"if 像生活里的“如果”：先判断 score 是否达到 90 分。条件为 True 时才执行缩进的奖励代码；条件为 False 时会跳过，但小狗会陪你继续加油。>= 表示大于或等于，所以 90 分也能触发奖励。",
+          debugTip:"把代码读成一句生活约定：“如果分数大于或等于 90，就执行奖励。”再看成绩单会让条件变成 True 还是 False。",
+          hintLimit:0, attemptLimit:2, expectedTests:["写下 90 分奖励约定", "96 分触发奖励", "86 分跳过奖励"],
           stages:[
-            {title:"补全分支地图",scene:"gate",prompt:"把“判断条件”和“条件成立后执行”放到正确顺序。",code:"开始 → 读取徽章 → ? → ? → 结束",hint:"程序要先判断，只有结果为 True 才执行开门和打印。",rounds:[
-              {question:"补全 if 单分支流程",mode:"sequence",cards:[{id:"action",label:"print('开门')"},{id:"condition",label:"badge == '月亮' ?"},{id:"input",label:"badge = '月亮'"}],correct:["condition","action"],successConsole:"badge == '月亮' → True\n执行 print('开门')"}
+            {title:"写下周末奖励约定",scene:"reward-story",score:"90+",prompt:"妈妈说：“如果考到 90 分或以上，周末就去吃麦当劳。”帮小狗选出最贴近这句话的代码。",code:"score = 成绩单上的分数\n# 选择一条生活约定",hint:"“90 分或以上”包括 90，要使用 >=。if 后面的冒号也不能少。",rounds:[
+              {question:"哪一行代码能表达这个约定？",mode:"single",cards:[{id:"reward-90",label:"if score >= 90:"},{id:"reward-100",label:"if score == 100:"},{id:"assign-90",label:"score = 90"}],correct:["reward-90"],successConsole:"奖励约定保存成功：score >= 90\n90 分也算达成！"}
             ]},
-            {title:"校准比较器",scene:"gate",prompt:"安检门要比较徽章，不是给变量重新赋值。",code:"if badge __ '月亮':\n    print('允许通行')",hint:"判断“相同”使用两个等号；判断“不相同”使用感叹号加等号。",rounds:[
-              {question:"选择“等于月亮”的比较运算符",mode:"single",cards:[{id:"assign",label:"="},{id:"equal",label:"=="},{id:"not",label:"!="}],correct:["equal"],successConsole:"'月亮' == '月亮' → True"},
-              {question:"备用通道要提示“不等于月亮”的徽章",mode:"single",cards:[{id:"not2",label:"!="},{id:"equal2",label:"=="},{id:"assign2",label:"="}],correct:["not2"],successConsole:"'流星' != '月亮' → True"}
+            {title:"打开 96 分成绩袋",scene:"reward-story",score:"96",prompt:"成绩袋里是 96 分！点击运行，让 if 判断来决定周末惊喜，小朋友和小狗会用动画告诉你结果。",code:"score = 96\nif score >= 90:\n    print('周末吃麦当劳！')",hint:"96 大于 90，所以条件会得到 True，缩进的 print() 会运行。",rounds:[
+              {question:"把 96 分成绩单交给小狗检查",mode:"single",cards:[{id:"run-96",label:"🐾 运行这张 96 分成绩单"}],correct:["run-96"],successConsole:"96 >= 90 → True\n周末吃麦当劳！\n小狗开心得跳起来啦！"}
             ]},
-            {title:"连续通行测试",scene:"visitors",prompt:"条件固定为 badge == '月亮'。预测每次比较结果和程序行为。",code:"if badge == '月亮':\n    print('允许通行')",hint:"月亮比较结果为 True，会开门；其他徽章为 False，缩进代码不执行。",rounds:[
-              {question:"访客徽章：月亮",mode:"single",cards:[{id:"moon-true",label:"True · 打印并开门"},{id:"moon-false",label:"False · 跳过"}],correct:["moon-true"],successConsole:"'月亮' == '月亮' → True\n允许通行"},
-              {question:"访客徽章：流星",mode:"single",cards:[{id:"star-true",label:"True · 打印并开门"},{id:"star-false",label:"False · 不执行 if 内代码"}],correct:["star-false"],successConsole:"'流星' == '月亮' → False\n（没有打印）"},
-              {question:"访客徽章：太阳",mode:"single",cards:[{id:"sun-false",label:"False · 不执行 if 内代码"},{id:"sun-true",label:"True · 打印并开门"}],correct:["sun-false"],successConsole:"'太阳' == '月亮' → False\n所有测试通过"}
+            {title:"小狗的加油时间",scene:"reward-story",score:"86",prompt:"再打开一张 86 分成绩单。没有达到约定也没关系，看看 if 会怎么做，小狗仍然会送上鼓励。",code:"score = 86\nif score >= 90:\n    print('周末吃麦当劳！')",hint:"86 小于 90，条件是 False，所以缩进的奖励代码不会运行。",rounds:[
+              {question:"让小狗陪你运行 86 分成绩单",mode:"single",cards:[{id:"run-86",label:"🐾 运行并看看小狗的反应"}],correct:["run-86"],successConsole:"86 >= 90 → False\n跳过奖励代码\n小狗：这次没触发，下次继续加油！"}
             ]}
           ],
-          palette:{sky:"#253b63",floor:"#fff0ba",wall:"#38567d",wallTop:"#7ca0cd",accent:"#ffc928"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
+          palette:{sky:"#72c8f4",floor:"#d5a669",wall:"#4e8f47",wallTop:"#86cf73",accent:"#e94949"}, commands:[], maze:["000"], start:{x:0,y:0,dir:1}, end:{x:0,y:0}, collectibles:[], maxCommands:0, stars:[0,0]
         },
         {
-          name:"月球补给发射场",shortName:"发射场",icon:"rocket",password:"1515",mode:"challenge",
-          goal:"转换数据类型，用公式和 if-else 做发射决策",mission:"算准燃料并安全发射",course:"第 8 课",
-          knowledge:["整数 / 浮点数 / 字符串", "float(input())", "数学公式", "if-else", ">"],
-          example:"fuel = float(input('现有燃料：'))\nif fuel > need:\n    print('发射')\nelse:\n    print('补给')",lesson:"input() 得到字符串，float() 能把数字字符串转换为浮点数。if-else 会在两条路线中选择一条。本任务要求燃料严格多于需求量，所以相等时也必须补给。",
-          debugTip:"先确认数据类型，再把题目中的数量代入公式；如果 input() 的结果要计算或比较，记得先用 float() 转换。",
-          hintLimit:0,attemptLimit:2,expectedTests:["三类数据", "float 与 input 组合", "大于和 if-else"],
+          name:"家庭露营出发日",shortName:"露营出发",icon:"rocket",password:"1515",mode:"challenge",lifeStory:true,
+          goal:"转换小数输入，用 if-else 决定出发或补给",mission:"装好背包，开车去看星星",course:"第 8 课",
+          knowledge:["float(input())", "浮点数", "数学公式", "if-else", ">"],
+          example:"fuel = float(input('当前油量：'))\nif fuel > need:\n    print('出发露营')\nelse:\n    print('先去加油')",lesson:"input() 得到的是字符串，float() 能把小数文本变成可计算的数字。if-else 像出门前的两条路线：油量严格多于所需量就出发，否则先补给；刚好相等也会走 else。",
+          debugTip:"先把输入转换成 float，再计算需要的油量；最后读清楚条件是“大于”还是“大于等于”。",
+          hintLimit:0,attemptLimit:2,expectedTests:["小数输入转换", "34.5 油量出发", "29.0 油量先补给"],
           stages:[
-            {title:"数据分类舱",scene:"data",prompt:"识别 Python 中整数、浮点数和字符串的外观。",code:"12    3.5    '月球'",hint:"没有小数点的数字是整数；带小数点的是浮点数；引号包住的是字符串。",rounds:[
-              {question:"数据 12 属于哪一种？",mode:"single",cards:[{id:"int",label:"整数 int"},{id:"float-w",label:"浮点数 float"},{id:"str-w",label:"字符串 str"}],correct:["int"],successConsole:"type(12) → int"},
-              {question:"数据 3.5 属于哪一种？",mode:"single",cards:[{id:"float",label:"浮点数 float"},{id:"int-w2",label:"整数 int"},{id:"str-w2",label:"字符串 str"}],correct:["float"],successConsole:"type(3.5) → float"},
-              {question:"数据 '月球' 属于哪一种？",mode:"single",cards:[{id:"str",label:"字符串 str"},{id:"float-w3",label:"浮点数 float"},{id:"int-w3",label:"整数 int"}],correct:["str"],successConsole:"type('月球') → str"}
+            {title:"称一称露营背包",scene:"camp-story",badge:"4.5 kg",waiting:"背包秤等待读数",result:"float() 转换成功，可以计算总重量",prompt:"电子秤显示 4.5 kg。选一行代码，把 input() 得到的文字变成能参与计算的小数。",code:"weight = ______\nneed = 12.5 * 2 + weight",hint:"input() 得到字符串；小数重量要用 float() 转换。",rounds:[
+              {question:"把电子秤读数交给露营程序",mode:"single",cards:[{id:"camp-float",label:"float(input('背包重量：'))"},{id:"camp-text",label:"input('背包重量：')"},{id:"camp-quote",label:"'4.5'"}],correct:["camp-float"],successConsole:"背包重量：4.5\nfloat('4.5') → 4.5\n露营清单计算完成"}
             ]},
-            {title:"读取小数重量",scene:"fuel",prompt:"货物重量可能有小数。输入一次重量，并选择能参与计算的写法。",code:"weight = ______\nneed = 12.5 * 2 + weight",hint:"input() 得到字符串；要和 12.5 计算，外面需要包一层 float()。",rounds:[
-              {question:"选择正确代码并输入一个小数重量",mode:"single",requiresInput:true,inputType:"number",placeholder:"例如 4.0",cards:[{id:"float-input",label:"float(input('货物重量：'))"},{id:"plain-input",label:"input('货物重量：')"},{id:"quoted",label:"'4.0'"}],correct:["float-input"],successConsole:"货物重量：{input}\nfloat('{input}') → {input}\n可以参与公式计算"}
+            {title:"油量充足，开往营地",scene:"camp-story",badge:"34.5 L",waiting:"汽车正在检查油量",result:"True：油量充足，汽车开往星空营地",prompt:"这次需要 29.0 L，油箱里有 34.5 L。点火运行 if-else，看看汽车会去哪里。",code:"fuel = 34.5\nif fuel > 29.0:\n    print('出发露营')\nelse:\n    print('先去加油')",hint:"34.5 大于 29.0，条件为 True。",rounds:[
+              {question:"和家人一起按下汽车启动键",mode:"single",cards:[{id:"camp-go",label:"启动汽车，看看路线"}],correct:["camp-go"],successConsole:"34.5 > 29.0 → True\n出发露营！\n汽车正在开往星空营地"}
             ]},
-            {title:"发射决策",scene:"fuel",prompt:"距离 12.5，货物 4.0，所需燃料 need = 12.5 × 2 + 4.0 = 29.0。必须多于 29.0 才能发射。",code:"if fuel > 29.0:\n    print('发射')\nelse:\n    print('补给')",hint:"注意是严格大于。30.5 大于 29，29.0 与需求相等，28.0 更少。",rounds:[
-              {question:"现有燃料 30.5",mode:"single",cards:[{id:"launch",label:"True → 发射"},{id:"refill-w",label:"False → 补给"}],correct:["launch"],successConsole:"30.5 > 29.0 → True\n发射"},
-              {question:"现有燃料正好 29.0",mode:"single",cards:[{id:"equal-refill",label:"False → 补给"},{id:"equal-launch",label:"True → 发射"}],correct:["equal-refill"],successConsole:"29.0 > 29.0 → False\n补给"},
-              {question:"现有燃料 28.0",mode:"single",cards:[{id:"low-refill",label:"False → 补给"},{id:"low-launch",label:"True → 发射"}],correct:["low-refill"],successConsole:"28.0 > 29.0 → False\n三组测试全部正确"}
+            {title:"刚好相等，先去加油",scene:"camp-story",badge:"29.0 L",waiting:"再检查一次油量",result:"False：刚好相等不算更多，先去加油",prompt:"回程需要 29.0 L，油箱也正好是 29.0 L。运行后看看为什么汽车先拐进加油站。",code:"fuel = 29.0\nif fuel > 29.0:\n    print('直接回家')\nelse:\n    print('先去加油')",hint:"条件是严格大于；29.0 不大于 29.0，所以进入 else。",rounds:[
+              {question:"让汽车自己选择安全路线",mode:"single",cards:[{id:"camp-refuel",label:"运行回程安全检查"}],correct:["camp-refuel"],successConsole:"29.0 > 29.0 → False\n先去加油\n安全比赶时间更重要！"}
             ]}
           ],
           palette:{sky:"#142c55",floor:"#e7f0ff",wall:"#556c91",wallTop:"#90a7ce",accent:"#ff7a30"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
         },
         {
-          name:"云霄飞车检票危机",shortName:"检票危机",icon:"balloon",password:"1616",mode:"challenge",
-          goal:"根据三种证据修复语法、异常和边界逻辑错误",mission:"让四名游客通过正确闸机",course:"第 9 课",
-          knowledge:["红色波浪线", "控制台报错", "逻辑错误", ">= 与 <=", "边界测试"],
-          example:"if height >= 120:\n    print('通过第一道闸机')\nif height <= 150:\n    print('允许乘坐')",lesson:"语法错误可以从编辑器标记中发现，运行异常要读控制台，逻辑错误则要比较实际结果和期望结果。>= 和 <= 包含边界值，> 和 < 不包含。",
-          debugTip:"先判断错误属于哪一种，再看对应证据。边界题一定要测试刚好等于 120 和 150 的情况。",
-          hintLimit:0,attemptLimit:2,expectedTests:["缺少冒号", "NameError", "119/120/150/151 边界"],
+          name:"游乐园身高通行证",shortName:"游乐园",icon:"balloon",password:"1616",mode:"challenge",lifeStory:true,
+          goal:"修好 if 程序，看懂身高边界条件",mission:"帮助一家人安全进入游乐园",course:"第 9 课",
+          knowledge:["if 语法", "英文冒号", "True / False", ">= 与 <=", "边界测试"],
+          example:"if height >= 120:\n    print('通过第一道闸机')\nif height <= 150:\n    print('允许乘坐')",lesson:"if 条件行末要有英文冒号。>= 和 <= 都包含刚好等于的边界：至少 120 cm 会放行 120 cm，不超过 150 cm 会放行 150 cm，但 151 cm 必须被安全拦停。",
+          debugTip:"先检查 if 行末的冒号，再把“至少”和“不超过”翻译成包含等号的比较条件。",
+          hintLimit:0,attemptLimit:2,expectedTests:["修好缺少的冒号", "120 cm 边界放行", "151 cm 安全拦停"],
           stages:[
-            {title:"修复语法错误",scene:"coaster",prompt:"编辑器在 if 行末画出了红色波浪线，程序无法启动。",code:"if height >= 120\n    print('通过第一道闸机')",hint:"Python 的 if 条件行要以英文冒号结束。",rounds:[
-              {question:"选择正确修复",mode:"single",cards:[{id:"colon",label:"if height >= 120:"},{id:"semicolon",label:"if height >= 120;"},{id:"no-if",label:"height >= 120:"}],correct:["colon"],successConsole:"语法检查通过\n程序可以运行"}
+            {title:"修好打不开的检票机",scene:"park-story",badge:"维修中",waiting:"检票机正在等待一枚冒号",result:"语法修好，绿色通道亮起来了",prompt:"一家人到了游乐园，检票机却因为 if 后面少了符号无法启动。帮它装回正确符号。",code:"if height >= 120\n    print('绿色通道')",hint:"Python 的 if 条件行要以英文冒号结束。",rounds:[
+              {question:"选择能让检票机重新启动的一行",mode:"single",cards:[{id:"park-colon",label:"if height >= 120:"},{id:"park-semicolon",label:"if height >= 120;"},{id:"park-no-if",label:"height >= 120:"}],correct:["park-colon"],successConsole:"Syntax check → 通过\n检票机恢复工作"}
             ]},
-            {title:"读取异常报错",scene:"coaster",prompt:"程序能启动，但控制台出现 NameError。",code:"height = 130\nprint(heigth)\n# NameError: name 'heigth' is not defined",hint:"比较变量第一次出现和报错行的拼写，字母顺序必须完全一致。",rounds:[
-              {question:"修复报错行",mode:"single",cards:[{id:"height",label:"print(height)"},{id:"heigth",label:"print(heigth)"},{id:"quoted-height",label:"print('height')"}],correct:["height"],successConsole:"130\n异常已修复"}
+            {title:"刚好 120 cm 的第一次过关",scene:"park-story",badge:"120 cm",waiting:"小朋友站上身高尺",result:"True：120 也包含在“至少 120”里，闸门打开",prompt:"小朋友刚好 120 cm。“至少 120 cm”会不会把边界算进去？运行程序看闸门动画。",code:"height = 120\nif height >= 120:\n    print('闸门打开')",hint:">= 包含等于，所以 120 cm 可以通过。",rounds:[
+              {question:"把 120 cm 身高卡放到检票机上",mode:"single",cards:[{id:"park-120",label:"刷卡并运行边界判断"}],correct:["park-120"],successConsole:"120 >= 120 → True\n闸门打开\n刚好达到也可以通过！"}
             ]},
-            {title:"边界逻辑测试",scene:"tests",prompt:"第一道门要求至少 120 cm，第二道门要求不超过 150 cm。选择两个包含边界的条件。",code:"if height __ 120:\n    print('通过第一道门')\nif height __ 150:\n    print('允许乘坐')",hint:"“至少”包含 120，用 >=；“不超过”包含 150，用 <=。",rounds:[
-              {question:"依次选择第一道门和第二道门的比较条件",mode:"sequence",cards:[{id:"gte",label:"height >= 120"},{id:"gt",label:"height > 120"},{id:"lte",label:"height <= 150"},{id:"lt",label:"height < 150"}],correct:["gte","lte"],successConsole:"119 → 拒绝 ✓\n120 → 允许 ✓\n150 → 允许 ✓\n151 → 拒绝 ✓\n4 / 4 边界测试通过",testMatrix:true}
+            {title:"151 cm 转去更合适的项目",scene:"park-story",badge:"151 cm",waiting:"第二道安全尺正在检查",result:"False：超过 150 cm，安全闸门保持关闭",prompt:"另一个项目要求不超过 150 cm。151 cm 只多一点点，但安全边界必须严格执行。",code:"height = 151\nif height <= 150:\n    print('允许乘坐')",hint:"151 不小于或等于 150，条件为 False。",rounds:[
+              {question:"运行安全尺，让程序做决定",mode:"single",cards:[{id:"park-151",label:"启动 151 cm 安全检查"}],correct:["park-151"],successConsole:"151 <= 150 → False\n闸门保持关闭\n工作人员推荐了更合适的项目"}
             ]}
           ],
           palette:{sky:"#243c66",floor:"#fff1c7",wall:"#4d668d",wallTop:"#92abd0",accent:"#e94949"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
         },
         {
-          name:"AI 表情机器人实验室",shortName:"机器人实验室",icon:"turtle",password:"1717",mode:"challenge",
-          goal:"猜想验证 circle()，提出有效问题并创作机器人",mission:"完成规定表情后开启自由创作",course:"第 10 课",
-          knowledge:["circle()", "颜色盘", "猜想—验证", "有效提问", "课堂模拟 AI", "机器人表情"],
-          example:"turtle.circle(50)\nturtle.circle(50, 180)\n# 半径、角度决定圆弧",lesson:"circle(半径) 会画圆，第二个参数可以控制圆弧角度。遇到陌生代码时，先根据已知方法猜想，再运行实验验证。向 AI 提问时要说清目标、工具、形状和希望获得的帮助。",
-          debugTip:"先观察画出的形状，再只改变一个参数验证猜想；画机器人时移动位置前要 penup()，开始画线前再 pendown()。",
-          hintLimit:0,attemptLimit:2,expectedTests:["圆和半圆", "四要素有效提问", "头部眼睛嘴巴天线"],
+          name:"机器人生日派对",shortName:"生日派对",icon:"turtle",password:"1717",mode:"challenge",lifeStory:true,
+          goal:"用 circle() 画气球和笑脸，让机器人参加派对",mission:"完成派对装饰并启动机器人舞蹈",course:"第 10 课",
+          knowledge:["circle()", "半径参数", "180° 半圆", "顺序执行", "机器人表情"],
+          example:"turtle.circle(50)\nturtle.circle(40, 180)\n# 完整圆气球 + 半圆微笑",lesson:"circle(半径) 会画完整圆，适合画气球和机器人头部；第二个参数控制圆弧角度，180° 会画半圆。按大轮廓、眼睛、嘴巴、天线的顺序运行，就能组合出完整机器人。",
+          debugTip:"先观察需要完整圆还是半圆，再检查 circle() 的半径和角度；组合机器人时按从大轮廓到小部件的顺序运行。",
+          hintLimit:0,attemptLimit:2,expectedTests:["完整圆气球", "180° 微笑嘴巴", "生日机器人舞蹈"],
           stages:[
-            {title:"circle() 猜想实验",scene:"circle",prompt:"先猜形状，再运行代码实验验证。",code:"turtle.circle(50)\nturtle.circle(50, 180)",hint:"没有第二个参数时画完整 360°；180° 是完整圆的一半。半径越大，圆越大。",rounds:[
-              {question:"猜想：circle(50) 会画出什么？",mode:"single",cards:[{id:"full",label:"完整圆圈"},{id:"half-w",label:"半圆"},{id:"dot-w",label:"圆点"}],correct:["full"],successConsole:"实验结果：画出完整圆圈 ✓"},
-              {question:"猜想：circle(50, 180) 会画出什么？",mode:"single",cards:[{id:"half",label:"半圆弧"},{id:"full-w",label:"完整圆圈"},{id:"line-w",label:"直线"}],correct:["half"],successConsole:"实验结果：画出 180° 半圆弧 ✓"},
-              {question:"只把半径从 50 改为 80，会发生什么？",mode:"single",cards:[{id:"larger",label:"圆变大"},{id:"smaller",label:"圆变小"},{id:"same",label:"没有变化"}],correct:["larger"],successConsole:"控制变量实验：半径越大，圆越大"}
+            {title:"吹起第一只生日气球",scene:"party-story",badge:"气球",waiting:"机器人拿着一根空绳子",result:"circle(50) 画出完整圆，气球吹起来了",prompt:"派对缺一只圆圆的气球。帮机器人选出能画完整圆圈的 turtle 代码。",code:"# 画一只半径 50 的圆气球",hint:"circle(50) 没有第二个角度参数，会画完整圆。",rounds:[
+              {question:"选择气球的画法",mode:"single",cards:[{id:"party-circle",label:"turtle.circle(50)"},{id:"party-half",label:"turtle.circle(50, 180)"},{id:"party-dot",label:"turtle.dot(5)"}],correct:["party-circle"],successConsole:"circle(50) → 完整圆\n第一只生日气球完成！"}
             ]},
-            {title:"向模拟 AI 有效提问",scene:"ai",prompt:"这是离线课堂模拟 AI。写清目标、工具、形状或颜色，以及希望获得的帮助。",code:"有效问题 = 目标 + 工具 + 细节 + 请求",hint:"可以依次点击四张提示词卡，再根据需要修改成一句完整问题。",type:"prompt",promptChips:["使用 Python turtle", "画一个开心机器人", "圆形眼睛和半圆嘴巴", "请给出 circle() 参数和步骤"],rounds:[
-              {question:"向课堂模拟 AI 提出问题",mode:"prompt",placeholder:"例如：如何使用 Python turtle 画一个开心机器人……",successConsole:"模拟 AI：问题很具体。建议用 dot() 画眼睛，用 circle(40, 180) 画半圆嘴巴，并用 penup()/goto() 移动位置。"}
+            {title:"给机器人画上微笑",scene:"party-story",badge:"笑脸",waiting:"机器人还没有嘴巴",result:"180° 半圆变成微笑，机器人开心了",prompt:"气球准备好了，机器人还想要一个弯弯的笑脸。运行 180° 圆弧看看效果。",code:"turtle.circle(40, 180)\n# 180° 是完整圆的一半",hint:"第二个参数 180 控制只画半圈。",rounds:[
+              {question:"按下表情绘制按钮",mode:"single",cards:[{id:"party-smile",label:"运行 circle(40, 180)"}],correct:["party-smile"],successConsole:"circle(40, 180) → 半圆弧\n机器人获得开心笑脸！"}
             ]},
-            {title:"组装表情机器人",scene:"robot",prompt:"按绘制顺序选择五组代码：设置画笔、头部、眼睛、嘴巴、天线。",code:"# 目标：彩色头部 + 两只眼睛 + 半圆嘴巴 + 天线",hint:"先设置颜色和粗细，再画头；每次换部位先抬笔移动。天线用 forward() 伸出，再 backward() 回到原位。",rounds:[
-              {question:"排列五组 turtle 绘图代码",mode:"sequence",cards:[
-                {id:"setup",label:"pensize(5)\npencolor('蓝色')"},{id:"head",label:"pendown()\ncircle(80)"},{id:"eyes",label:"penup()\ngoto(左眼); dot()\ngoto(右眼); dot()"},{id:"mouth",label:"goto(嘴巴)\npendown(); circle(40, 180)"},{id:"antenna",label:"goto(天线)\npendown(); forward(35)\nbackward(35)"},{id:"bad-move",label:"goto(眼睛)\n# 没有 penup()"}
-              ],correct:["setup","head","eyes","mouth","antenna"],successConsole:"头部 ✓  眼睛 2/2 ✓\n半圆嘴巴 ✓  天线 ✓\n规定表情机器人完成"}
+            {title:"生日派对正式开始",scene:"party-story",badge:"派对",waiting:"灯光、蛋糕和机器人都准备好了",result:"绘图顺序完成，机器人开始生日舞蹈",prompt:"最后把圆形头部、眼睛、半圆嘴巴和天线按顺序运行，启动机器人的生日舞蹈。",code:"circle(80)       # 头部\ndot(); dot()      # 眼睛\ncircle(40, 180)   # 微笑\nforward(35)       # 天线",hint:"从大轮廓到小部件，最后画天线。",rounds:[
+              {question:"按下派对启动按钮",mode:"single",cards:[{id:"party-dance",label:"启动生日机器人"}],correct:["party-dance"],successConsole:"头部 ✓  眼睛 ✓  微笑 ✓  天线 ✓\n生日机器人开始跳舞！"}
             ]}
           ],
           palette:{sky:"#17223b",floor:"#e6f7ff",wall:"#405372",wallTop:"#8ba6c9",accent:"#39a8ff"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
@@ -1529,8 +1625,8 @@
     function selectedLabels(round = challengeRound()) {
       return challengeState.selected.map(id => round.cards?.find(card => card.id === id)?.label).filter(Boolean);
     }
-    function renderRobotPreview() {
-      return `<div class="robot-preview ${escapeHtml(challengeState.robotMood)}" style="--robot-color:${escapeHtml(challengeState.robotColor)}"><span class="robot-antenna"></span><span class="robot-head"></span><span class="robot-eye left"></span><span class="robot-eye right"></span><span class="robot-mouth"></span></div>`;
+    function renderRobotPreview(mood = challengeState.robotMood, color = challengeState.robotColor) {
+      return `<div class="robot-preview ${escapeHtml(mood)}" style="--robot-color:${escapeHtml(color)}"><span class="robot-antenna"></span><span class="robot-head"></span><span class="robot-eye left"></span><span class="robot-eye right"></span><span class="robot-mouth"></span></div>`;
     }
     function renderChallengeScene() {
       if (!isChallengeLevel()) return;
@@ -1551,6 +1647,17 @@
         visual = `<div class="robot-row">${[0,1,2].map(index => `<div class="station-bot${index < challengeState.fixed ? " fixed" : ""}"><span>${index < challengeState.fixed ? "已修复" : `${index + 1} 号机`}</span></div>`).join("")}</div>`;
       } else if (stage.scene === "console" || stage.scene === "ai") {
         visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || (stage.scene === "ai" ? "课堂模拟 AI 已就绪。\n请提出一个具体问题。" : "> 等待程序运行……"))}</div>`;
+      } else if (stage.scene === "reward-story") {
+        const passed = challengeState.roundPassed;
+        const result = !passed ? "小狗正在等你运行代码" : challengeState.stage === 2 ? "False：不执行奖励，小狗陪你继续加油" : challengeState.stage === 1 ? "True：奖励触发，周末出发！" : "生活约定已经写进程序";
+        visual = `<div class="reward-story${passed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="小朋友和摇尾巴的小狗一起运行成绩奖励程序"><div class="reward-rule">if score &gt;= 90:</div><div class="score-envelope">${escapeHtml(stage.score)}</div><div class="reward-kid"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><div class="story-dog"><span class="dog-tail"></span><span class="dog-body"></span><span class="dog-head"></span><span class="dog-ear"></span><span class="dog-leg one"></span><span class="dog-leg two"></span></div><span class="dog-heart">♥</span><div class="reward-meal" aria-hidden="true"><span class="meal-fries"></span><span class="meal-box">M</span></div><strong class="reward-result">${escapeHtml(result)}</strong></div>`;
+      } else if (stage.scene === "camp-story") {
+        visual = `<div class="life-story-scene camp-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="家庭露营汽车根据程序检查结果选择路线"><div class="life-badge">${escapeHtml(stage.badge)}</div><div class="camp-meter">${escapeHtml(stage.badge)}</div><div class="camp-car"><span class="camp-wheel one"></span><span class="camp-wheel two"></span></div><div class="camp-tent"></div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
+      } else if (stage.scene === "park-story") {
+        visual = `<div class="life-story-scene park-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="小朋友在游乐园身高尺和安全闸门前运行边界判断"><div class="life-badge">${escapeHtml(stage.badge)}</div><div class="park-track"></div><div class="park-car"></div><div class="park-ruler">${escapeHtml(stage.badge)}</div><div class="park-kid"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><div class="park-gate"><span class="park-arm"></span></div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
+      } else if (stage.scene === "party-story") {
+        const partyMood = challengeState.stage === 1 && !challengeState.roundPassed ? "sleepy" : "happy";
+        visual = `<div class="life-story-scene party-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="机器人用 turtle 圆形和半圆弧完成生日派对"><div class="life-badge">${escapeHtml(stage.badge)}</div><span class="party-balloons"></span>${renderRobotPreview(partyMood, "#39a8ff")}<div class="party-cake">★</div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
       } else if (["gate","visitors"].includes(stage.scene)) {
         const badges = stage.scene === "visitors" ? [["☾","月亮"],["✦","流星"],["☀","太阳"]] : [["☾","待检测"]];
         visual = `<div class="gate-scene"><div class="gate-frame"><span class="gate-light"></span></div><div class="visitor-row" style="position:absolute;left:0;right:0;bottom:8px;justify-content:space-between">${badges.map(([icon,name]) => `<div class="visitor"><span class="badge">${icon}</span>${name}</div>`).join("")}</div></div>`;
@@ -1593,8 +1700,9 @@
       const chips = round.mode === "prompt" ? `<div class="prompt-chips">${(stage.promptChips || []).map(text => `<button type="button" class="prompt-chip" data-prompt-chip="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join("")}</div>` : "";
       const comparison = round.actual || round.expected ? `<div class="hint-output"><strong>${escapeHtml(round.actual || "")}</strong>${round.expected ? `<br>${escapeHtml(round.expected)}` : ""}</div>` : "";
       const preview = round.mode === "sequence" ? `<div class="selection-preview">${chosen.length ? chosen.map((label,index) => `${index + 1}. ${escapeHtml(label)}`).join("<br>") : "按运行顺序点击代码卡"}</div>` : "";
-      const progressLabel = level().singleFlow ? "编程任务 · 一次运行完成" : `阶段 ${challengeState.stage + 1} / ${level().stages.length} · 小题 ${challengeState.round + 1} / ${stage.rounds.length}`;
-      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>${progressLabel}</span><span>失败 ${challengeState.failedAttempts} 次</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed || challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run ${challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>${challengeState.battle ? "战斗动画播放中…" : challengeState.awaitingInput ? "等待输入姓名…" : challengeState.roundPassed ? "继续下一步" : round.mode === "prompt" ? "向模拟 AI 提问" : "运行并验证"}</button></div></div>`;
+      const progressLabel = level().singleFlow ? "编程任务 · 一次运行完成" : level().lifeStory ? `生活小剧场 ${challengeState.stage + 1} / ${level().stages.length}` : `阶段 ${challengeState.stage + 1} / ${level().stages.length} · 小题 ${challengeState.round + 1} / ${stage.rounds.length}`;
+      const runLabel = challengeState.battle ? "战斗动画播放中…" : challengeState.awaitingInput ? "等待输入姓名…" : challengeState.roundPassed ? (level().lifeStory ? "故事继续" : "继续下一步") : round.mode === "prompt" ? "向模拟 AI 提问" : level().lifeStory ? "看看会发生什么" : "运行并验证";
+      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>${progressLabel}</span><span>${level().lifeStory ? "完成生活故事" : `失败 ${challengeState.failedAttempts} 次`}</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed || challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run ${challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>${runLabel}</button></div></div>`;
       renderChallengeScene();
       updateChallengeMobileRunButton();
     }
@@ -1627,7 +1735,7 @@
       challengeState.roundPassed = true;
       challengeState.lastConsole = String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
       if (currentLevel === 5 && challengeState.stage === 0) challengeState.studentName = challengeState.inputValue;
-      setStatus("测试通过！观察效果，然后继续下一步。", false);
+      setStatus(level().lifeStory ? "故事运行成功！看看场景发生了什么。" : "测试通过！观察效果，然后继续下一步。", false);
       playSuccess();
       if (currentLevel === 5 && challengeState.stage === level().stages.length - 1) { startStarBattle(); return; }
       renderChallengePanel();
