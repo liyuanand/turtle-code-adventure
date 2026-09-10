@@ -1055,7 +1055,7 @@
       <div class="next-hint" id="nextHint">下一关口令会在直播课结束时公布，记得来上课哦！</div>
       <div class="reward-card earned" id="rewardCard">
         <span class="reward-egg" aria-hidden="true"><svg class="ui-icon"><use href="#icon-star"></use></svg></span>
-        <div class="reward-copy"><strong id="rewardTitle">本关通关奖励</strong><p id="rewardText">记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！</p></div>
+        <div class="reward-copy"><strong id="rewardTitle">本关通关奖励</strong><p id="rewardText">记得截图发给老师，你获得一颗4500积分赤星源码蛋哦！</p></div>
       </div>
       <button class="primary-btn" id="nextActionBtn" type="button">继续冒险</button>
       <button class="secondary-btn" id="replayBtn" type="button">再玩一次</button>
@@ -2239,7 +2239,7 @@
       $("#nextHint").textContent = last ? "你已经完成十课知识挑战。接下来可以进入自由创作室，继续设计自己的表情机器人。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
       $("#rewardCard").classList.add("earned");
       $("#rewardTitle").textContent = "本关通关奖励";
-      $("#rewardText").textContent = "记得截图发给原子老师，你获得一颗4500积分赤星源码蛋哦！";
+      $("#rewardText").textContent = "记得截图发给老师，你获得一颗4500积分赤星源码蛋哦！";
       $("#nextActionBtn").textContent = last ? "进入自由表情创作" : "看看下一张地图";
       beginLeaderboardFlow(currentLevel + 1, state.stars[currentLevel]);
     }
