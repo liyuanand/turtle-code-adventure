@@ -2104,7 +2104,30 @@
     function level() { return GAME_CONFIG.levels[currentLevel]; }
     function isChallengeLevel() { return level().mode === "challenge"; }
     function createChallengeState() {
-      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", awaitingInput: false, runtimeInputError: "", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy", rpgHit: "" };
+      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", awaitingInput: false, runtimeInputError: "", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy", rpgHit: "", cardOrders: {}, answerPositions: shuffleChoices([0, 1, 2]) };
+    }
+    function shuffleChoices(cards) {
+      const shuffled = [...cards];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+    function challengeCards(round) {
+      if (!level().rpg) return round.cards || [];
+      const key = `${challengeState.stage}:${challengeState.round}`;
+      if (!challengeState.cardOrders[key]) {
+        let cards = shuffleChoices(round.cards || []);
+        // Each three-stage boss uses all three answer positions, in a fresh random order.
+        if (round.mode === "single" && cards.length === 3 && round.correct.length === 1) {
+          const correct = cards.find(card => card.id === round.correct[0]);
+          cards = cards.filter(card => card !== correct);
+          cards.splice(challengeState.answerPositions[challengeState.stage % 3], 0, correct);
+        }
+        challengeState.cardOrders[key] = cards;
+      }
+      return challengeState.cardOrders[key];
     }
     function commandLabel(cmd) {
       if (cmd.type === "drawStarLoop") return `for i in range(${levelParams.loops}): forward(size); right(${levelParams.angle})`;
@@ -2161,8 +2184,9 @@
     }
     function focusChallengeScene() {
       if (matchMedia("(max-width: 900px)").matches) {
-        // Jump before rendering the result so the whole attack is visible on phones.
-        $("#missionLab .scene-visual")?.scrollIntoView({ behavior: "instant", block: "center" });
+        // Both the task button and the mobile toolbar use this same result target.
+        const target = challengeState.awaitingInput ? $("#missionLab .runtime-console") : $("#missionLab .scene-visual");
+        target?.scrollIntoView({ behavior: "instant", block: "center" });
       }
     }
     const lessonArtworkCache = new Map();
@@ -2310,7 +2334,7 @@
       const stage = challengeStage();
       const round = challengeRound();
       const multilineCards = (round.cards || []).some(card => card.label.includes("\n"));
-      const cards = (round.cards || []).map(card => {
+      const cards = challengeCards(round).map(card => {
         const selected = challengeState.selected.includes(card.id);
         return `<button class="challenge-option${selected ? " selected" : ""}" type="button" data-challenge-card="${escapeHtml(card.id)}" ${challengeState.roundPassed || challengeState.awaitingInput ? "disabled" : ""}><code>${escapeHtml(card.label)}</code></button>`;
       }).join("");
@@ -2348,6 +2372,7 @@
       challengeState.battle = true;
       setStatus(`${challengeState.studentName}打印成功！发光三角形正在帮助小勇士击败敌人。`, false);
       renderChallengePanel();
+      focusChallengeScene();
       [660, 780, 920, 1100].forEach((note, index) => playTone(note, .12, "triangle", index * .22));
       setTimeout(() => {
         if (currentLevel === 5 && challengeState.battle) completeLevel();
@@ -2363,6 +2388,7 @@
       if (level().rpg?.artKey === "microbit" && challengeState.stage >= 1) playTone(440, .2, "sine", .4);
       if (currentLevel === 5 && challengeState.stage === level().stages.length - 1) { startStarBattle(); return; }
       renderChallengePanel();
+      focusChallengeScene();
     }
     function submitRuntimeInput(rawValue) {
       if (!challengeState.awaitingInput) return;
@@ -2375,7 +2401,7 @@
         challengeState.runtimeInputError = `请输入 ${minLength}～${maxLength} 个字的姓名。`;
         playTone(160, .14, "square");
         renderChallengePanel();
-        setTimeout(() => $("#runtimeNameInput")?.focus(), 0);
+        setTimeout(() => { $("#runtimeNameInput")?.focus({ preventScroll: true }); focusChallengeScene(); }, 0);
         return;
       }
       challengeState.inputValue = value;
@@ -2385,8 +2411,8 @@
     }
     async function runChallengeRound() {
       if (challengeState.presenting) return;
-      if (challengeState.roundPassed) { advanceChallenge(); if (level().rpg) focusChallengeScene(); return; }
-      if (level().rpg && matchMedia("(max-width: 900px)").matches) {
+      if (challengeState.roundPassed) { advanceChallenge(); focusChallengeScene(); return; }
+      if (matchMedia("(max-width: 900px)").matches) {
         const activeState = challengeState;
         activeState.presenting = true;
         focusChallengeScene();
@@ -2428,7 +2454,7 @@
         challengeState.lastConsole = "> 代码顺序检查通过\n> 运行到 input()，程序暂停并等待输入……";
         setStatus("程序已运行到 input()。请在主场景输入姓名，再继续执行。");
         renderChallengePanel();
-        setTimeout(() => $("#runtimeNameInput")?.focus(), 0);
+        setTimeout(() => { $("#runtimeNameInput")?.focus({ preventScroll: true }); focusChallengeScene(); }, 0);
         return;
       }
       finishChallengeRound(round);
@@ -2633,10 +2659,6 @@
       if (running) return;
       if (isChallengeLevel()) {
         await runChallengeRound();
-        if (currentLevel === 5 && (challengeState.battle || challengeState.awaitingInput) && matchMedia("(max-width: 900px)").matches) {
-          await wait(40);
-          $("#missionLab").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
-        }
         return;
       }
       if (!program.length) { setStatus("程序还是空的，请先添加至少一条指令。", true); return; }
@@ -2644,8 +2666,8 @@
       running = true;
       setControls(true);
       if (matchMedia("(max-width: 900px)").matches) {
-        $("#canvasWrap").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
-        await wait(prefersReducedMotion ? 20 : 360);
+        $("#canvasWrap").scrollIntoView({ behavior: currentLevel === 4 ? "instant" : prefersReducedMotion ? "auto" : "smooth", block: "center" });
+        await wait(currentLevel === 4 ? 80 : prefersReducedMotion ? 20 : 360);
       }
       setStatus("程序正在从上往下运行…");
       for (let index = 0; index < program.length; index++) {
