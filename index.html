@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fff5c9">
-  <meta name="description" content="点选 Python 指令卡，带小海龟闯过十六个输入、分支、循环、运算与绘图世界。">
+  <meta name="description" content="点选 Python 指令卡，探索 21 个输入、分支、循环、绘图与列表操作主题世界。">
   <title>海龟代码大冒险</title>
   <style>
     :root {
@@ -1087,6 +1087,34 @@
     .lesson-console-stack .console-window { width: min(650px,100%); }
     @keyframes lesson-art-reveal { from { opacity: .4; transform: scale(1.025); } to { opacity: 1; transform: none; } }
     @media (prefers-reduced-motion: reduce) { .lesson-painting.passed img { animation: none; } }
+
+    .mission-lab.free-studio .scene-visual { height: auto; min-height: 0; }
+    .list-quest { width: min(650px,100%); display: grid; gap: 10px; text-align: left; }
+    .quest-progress { display: grid; grid-template-columns: 1fr auto; gap: 7px; color: #e4f4ff; font-size: 12px; }
+    .quest-progress .rpg-hp-track { grid-column: 1 / -1; }
+    .quest-art-frame { overflow: hidden; border: 2px solid #708399; border-radius: 10px; background: #0c172a; }
+    .quest-art-frame img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 538; }
+    .list-task-panel { background: #0d1b30; border: 1px solid #587389; padding: 12px; border-radius: 10px; display: grid; gap: 12px; min-width: 0; }
+    .list-snapshot > strong { font-size: 12px; color: #d3e8f8; }
+    .list-cells { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .list-cell { padding: 7px 9px; border: 1px solid #57738d; border-radius: 7px; display: grid; gap: 4px; background: #20364d; min-width: 65px; }
+    .list-cell.selected { background: #194b46; border: 2px solid #70e8c0; }
+    .list-index { color: #b0c8dc; font: 11px/1.3 ui-monospace,monospace; }
+    .list-value { color: #fff3b6; font: 700 13px/1.5 ui-monospace,monospace; overflow-wrap: anywhere; }
+    .list-cell small { color: #c3d8e9; font-size: 10px; }
+    .list-empty, .quest-waiting { color: #bbd2e4; font-size: 12px; margin: 5px 0 0; }
+    .quest-result-code { margin: 0; padding: 9px; border-radius: 6px; background: #081424; color: #a9f5cf; font: 12px/1.65 ui-monospace,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .quest-trace { margin: 0; padding-left: 23px; color: #d9edfb; font: 12px/1.7 ui-monospace,monospace; overflow-wrap: anywhere; }
+    .quest-runtime-form { display: grid; gap: 9px; border-top: 1px solid #57738d; padding-top: 12px; }
+    .quest-runtime-form > strong { color: #fff3b6; font-size: 13px; }
+    .quest-input-label { display: grid; gap: 4px; color: #c3d8e9; font-size: 12px; }
+    .quest-runtime-form .challenge-input { margin: 0; }
+    .quest-runtime-error { color: #ffb7ae; font-size: 12px; margin: 0; line-height: 1.6; }
+    .quest-firework { width: 150px; max-width: 100%; justify-self: center; }
+    .quest-arcs { display: flex; justify-content: center; gap: 12px; color: #c3edff; text-align: center; font-size: 12px; }
+    .quest-arcs > div { width: min(140px,45%); }
+    .quest-download { color: #a9d9ff; font-size: 12px; min-height: 32px; }
+    .quest-theme-blocks .list-cell, .quest-theme-blocks .quest-art-frame { border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -1330,7 +1358,7 @@
   <script>
     "use strict";
 
-    // 老师只需要在这里修改十六关口令和关卡内容。
+    // 老师只需要在这里修改 21 关口令和关卡内容。
     const GAME_CONFIG = {
       storageKey: "turtle-code-adventure-v1",
       playerStorageKey: "turtle-code-adventure-player-v1",
@@ -1837,6 +1865,1074 @@
             ]}
           ],
           palette:{sky:"#263c63",floor:"#dfeef1",wall:"#40556f",wallTop:"#7f9ab2",accent:"#36c488"},commands:[],maze:["000"],start:{x:0,y:0,dir:1},end:{x:0,y:0},collectibles:[],maxCommands:0,stars:[0,0]
+        },
+        {
+          "name": "三角洲·补给撤离行动",
+          "shortName": "三角洲补给",
+          "icon": "star",
+          "password": null,
+          "mode": "challenge",
+          "lifeStory": true,
+          "listQuest": true,
+          "course": "第 17 课",
+          "goal": "创建列表、识别数据类型，用整数索引取值",
+          "mission": "整理物资箱，按索引找到撤离补给",
+          "knowledge": [
+            "列表创建 []",
+            "字符串 / 整数 / 浮点数 / 布尔值",
+            "索引从 0 开始",
+            "列表[索引]",
+            "int(input())"
+          ],
+          "example": "supplies = ['医疗包', '电池', '地图']\nindex = int(input('输入索引 0～2：'))\nprint(supplies[index])",
+          "lesson": "列表用方括号创建，元素之间用逗号分隔，可以保存字符串、整数、浮点数、布尔值等数据。索引从 0 开始；列表索引需要整数，input() 得到的是字符串，要用 int() 转换。本关有 3 件物资，可用索引是 0、1、2。",
+          "debugTip": "先读列表与索引，再预测代码结果；运行后对照数据变化，检查边界、类型和缩进。",
+          "hintLimit": 0,
+          "attemptLimit": 2,
+          "expectedTests": [
+            "建立混合补给清单",
+            "索引 0 对应第一件物资",
+            "输入索引，提取撤离补给"
+          ],
+          "stages": [
+            {
+              "title": "建立混合补给清单",
+              "scene": "quest-world",
+              "prompt": "哪一行创建了包含文字、整数、浮点数和布尔值的列表？",
+              "code": "# 把不同类型的数据放进同一份清单",
+              "hint": "列表外层用 []；字符串有引号，数字和 True 不加引号。",
+              "rounds": [
+                {
+                  "question": "哪一行创建了包含文字、整数、浮点数和布尔值的列表？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "delta-create",
+                      "label": "supplies = ['医疗包', 3, 2.5, True]"
+                    },
+                    {
+                      "id": "delta-tuple",
+                      "label": "supplies = ('医疗包', 3, 2.5, True)"
+                    },
+                    {
+                      "id": "delta-text",
+                      "label": "supplies = \"医疗包, 3, 2.5, True\""
+                    }
+                  ],
+                  "correct": [
+                    "delta-create"
+                  ],
+                  "successConsole": "补给列表创建成功",
+                  "listTask": {
+                    "op": "create",
+                    "name": "supplies",
+                    "values": [
+                      "医疗包",
+                      3,
+                      2.5,
+                      true
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "索引 0 对应第一件物资",
+              "scene": "quest-world",
+              "prompt": "要取出第一件物资“医疗包”，应使用哪行代码？",
+              "code": "supplies = ['医疗包', '电池', '地图']",
+              "hint": "第 1 个元素的索引是 0；第 3 个元素的索引是 2。",
+              "rounds": [
+                {
+                  "question": "要取出第一件物资“医疗包”，应使用哪行代码？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "delta-zero",
+                      "label": "print(supplies[0])"
+                    },
+                    {
+                      "id": "delta-one",
+                      "label": "print(supplies[1])"
+                    },
+                    {
+                      "id": "delta-three",
+                      "label": "print(supplies[3])"
+                    }
+                  ],
+                  "correct": [
+                    "delta-zero"
+                  ],
+                  "successConsole": "医疗包",
+                  "listTask": {
+                    "op": "index",
+                    "name": "supplies",
+                    "values": [
+                      "医疗包",
+                      "电池",
+                      "地图"
+                    ],
+                    "index": 0
+                  }
+                }
+              ]
+            },
+            {
+              "title": "输入索引，提取撤离补给",
+              "scene": "quest-world",
+              "prompt": "选择能把输入转换为整数再取物资的代码，随后亲自输入 0～2。",
+              "code": "supplies = ['医疗包', '电池', '地图']\n# 输入你想提取的物资索引",
+              "hint": "input() 返回字符串；用 int() 转换，并确认索引没有超出范围。",
+              "rounds": [
+                {
+                  "question": "选择能把输入转换为整数再取物资的代码，随后亲自输入 0～2。",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "delta-input",
+                      "label": "index = int(input('索引：'))\nprint(supplies[index])"
+                    },
+                    {
+                      "id": "delta-string",
+                      "label": "index = input('索引：')\nprint(supplies[index])"
+                    },
+                    {
+                      "id": "delta-float",
+                      "label": "index = float(input('索引：'))\nprint(supplies[index])"
+                    }
+                  ],
+                  "correct": [
+                    "delta-input"
+                  ],
+                  "successConsole": "物资提取成功",
+                  "listTask": {
+                    "op": "index",
+                    "input": "index",
+                    "name": "supplies",
+                    "values": [
+                      "医疗包",
+                      "电池",
+                      "地图"
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "rpg": {
+            "chapter": "三角洲·补给撤离行动",
+            "boss": "任务终端",
+            "artKey": "delta",
+            "bossKind": "quest",
+            "hero": "补给队员",
+            "forms": [
+              "建立混合补给清单",
+              "索引 0 对应第一件物资",
+              "输入索引，提取撤离补给"
+            ],
+            "skill": "列表指令",
+            "cutscene": [
+              {
+                "speaker": "行动终端",
+                "text": "列表把不同类型的补给信息整理在一起，撤离通道已经接通！",
+                "shot": "boss"
+              },
+              {
+                "speaker": "补给队员",
+                "text": "索引从 0 开始。输入先变成整数，才能准确取出指定物资。",
+                "shot": "hero"
+              },
+              {
+                "speaker": "撤离广播",
+                "text": "补给已送达！记住：列表有 3 项时，最后一项的索引是 2。",
+                "shot": "victory"
+              }
+            ]
+          },
+          "palette": {
+            "sky": "#243d52",
+            "floor": "#e8efdc",
+            "wall": "#455c70",
+            "wallTop": "#729ca5",
+            "accent": "#40b999"
+          },
+          "commands": [],
+          "maze": [
+            "000"
+          ],
+          "start": {
+            "x": 0,
+            "y": 0,
+            "dir": 1
+          },
+          "end": {
+            "x": 0,
+            "y": 0
+          },
+          "collectibles": [],
+          "maxCommands": 0,
+          "stars": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "我的世界·切片造桥工坊",
+          "shortName": "方块切片",
+          "icon": "castle",
+          "password": null,
+          "mode": "challenge",
+          "lifeStory": true,
+          "listQuest": true,
+          "course": "第 18 课",
+          "goal": "掌握切片起点、终点、步长与默认步长 1",
+          "mission": "选出合适的方块子列表，修好三段桥梁",
+          "knowledge": [
+            "列表切片",
+            "[开始:结束]",
+            "[开始:结束:步长]",
+            "包含开始、不含结束",
+            "默认步长 1"
+          ],
+          "example": "blocks = ['木块', '石块', '铁块', '金块', '钻石', '红石']\nprint(blocks[1:4])\nprint(blocks[0:6:2])\nprint(blocks[1:4:1])",
+          "lesson": "切片从列表中截取多个元素，并返回一个新的子列表。列表[开始:结束] 包含开始索引、不包含结束索引；第三个参数步长表示每次索引增加多少。省略步长时默认是 1，最后一个冒号也可以一起省略，例如 blocks[1:4] 与 blocks[1:4:1] 相同。",
+          "debugTip": "先读列表与索引，再预测代码结果；运行后对照数据变化，检查边界、类型和缩进。",
+          "hintLimit": 0,
+          "attemptLimit": 2,
+          "expectedTests": [
+            "截取连续三块桥面材料",
+            "每隔一块挑选装饰材料",
+            "找出省略步长的等价写法"
+          ],
+          "stages": [
+            {
+              "title": "截取连续三块桥面材料",
+              "scene": "quest-world",
+              "prompt": "需要索引 1、2、3 的石块、铁块、金块，应选哪个切片？",
+              "code": "blocks = ['木块', '石块', '铁块', '金块', '钻石', '红石']",
+              "hint": "切片包含开始的 1，不包含结束的 4。",
+              "rounds": [
+                {
+                  "question": "需要索引 1、2、3 的石块、铁块、金块，应选哪个切片？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "blocks-continuous",
+                      "label": "blocks[1:4]"
+                    },
+                    {
+                      "id": "blocks-short",
+                      "label": "blocks[1:3]"
+                    },
+                    {
+                      "id": "blocks-shift",
+                      "label": "blocks[0:3]"
+                    }
+                  ],
+                  "correct": [
+                    "blocks-continuous"
+                  ],
+                  "successConsole": "['石块', '铁块', '金块']",
+                  "listTask": {
+                    "op": "slice",
+                    "name": "blocks",
+                    "values": [
+                      "木块",
+                      "石块",
+                      "铁块",
+                      "金块",
+                      "钻石",
+                      "红石"
+                    ],
+                    "start": 1,
+                    "end": 4,
+                    "step": 1
+                  }
+                }
+              ]
+            },
+            {
+              "title": "每隔一块挑选装饰材料",
+              "scene": "quest-world",
+              "prompt": "从索引 0 开始，每次索引增加 2，取出木块、铁块、钻石。",
+              "code": "# 目标索引：0、2、4\n# 结束索引 6 不包含在切片里",
+              "hint": "步长 2 表示每次索引 +2，中间跳过 1 个元素。",
+              "rounds": [
+                {
+                  "question": "从索引 0 开始，每次索引增加 2，取出木块、铁块、钻石。",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "blocks-step",
+                      "label": "blocks[0:6:2]"
+                    },
+                    {
+                      "id": "blocks-all",
+                      "label": "blocks[0:6]"
+                    },
+                    {
+                      "id": "blocks-two",
+                      "label": "blocks[0:2:6]"
+                    }
+                  ],
+                  "correct": [
+                    "blocks-step"
+                  ],
+                  "successConsole": "['木块', '铁块', '钻石']",
+                  "listTask": {
+                    "op": "slice",
+                    "name": "blocks",
+                    "values": [
+                      "木块",
+                      "石块",
+                      "铁块",
+                      "金块",
+                      "钻石",
+                      "红石"
+                    ],
+                    "start": 0,
+                    "end": 6,
+                    "step": 2
+                  }
+                }
+              ]
+            },
+            {
+              "title": "找出省略步长的等价写法",
+              "scene": "quest-world",
+              "prompt": "哪一项与 blocks[1:4] 得到完全相同的子列表？",
+              "code": "# blocks[1:4] 的默认步长是多少？",
+              "hint": "省略步长相当于写 1，最后一个冒号也可省略。",
+              "rounds": [
+                {
+                  "question": "哪一项与 blocks[1:4] 得到完全相同的子列表？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "blocks-default",
+                      "label": "blocks[1:4:1]"
+                    },
+                    {
+                      "id": "blocks-gap",
+                      "label": "blocks[1:4:2]"
+                    },
+                    {
+                      "id": "blocks-extra",
+                      "label": "blocks[1:5:1]"
+                    }
+                  ],
+                  "correct": [
+                    "blocks-default"
+                  ],
+                  "successConsole": "默认步长是 1，两种写法得到相同列表",
+                  "listTask": {
+                    "op": "slice",
+                    "name": "blocks",
+                    "values": [
+                      "木块",
+                      "石块",
+                      "铁块",
+                      "金块",
+                      "钻石",
+                      "红石"
+                    ],
+                    "start": 1,
+                    "end": 4,
+                    "step": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "rpg": {
+            "chapter": "我的世界·切片造桥工坊",
+            "boss": "任务终端",
+            "artKey": "blocks",
+            "bossKind": "quest",
+            "hero": "方块建造师",
+            "forms": [
+              "截取连续三块桥面材料",
+              "每隔一块挑选装饰材料",
+              "找出省略步长的等价写法"
+            ],
+            "skill": "列表指令",
+            "cutscene": [
+              {
+                "speaker": "方块工坊",
+                "text": "连续选材用 [开始:结束]，桥面已经拼接完成！",
+                "shot": "boss"
+              },
+              {
+                "speaker": "方块建造师",
+                "text": "间隔选材加上步长。记住包含起点，不包含终点。",
+                "shot": "hero"
+              },
+              {
+                "speaker": "世界广播",
+                "text": "方块城堡开放！省略步长就是 1，原来的材料列表也没有被切片修改。",
+                "shot": "victory"
+              }
+            ]
+          },
+          "palette": {
+            "sky": "#243d52",
+            "floor": "#e8efdc",
+            "wall": "#455c70",
+            "wallTop": "#729ca5",
+            "accent": "#70b94c"
+          },
+          "commands": [],
+          "maze": [
+            "000"
+          ],
+          "start": {
+            "x": 0,
+            "y": 0,
+            "dir": 1
+          },
+          "end": {
+            "x": 0,
+            "y": 0
+          },
+          "collectibles": [],
+          "maxCommands": 0,
+          "stars": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "王者荣耀·阵容焕新与烟花",
+          "shortName": "王者阵容",
+          "icon": "star",
+          "password": null,
+          "mode": "challenge",
+          "lifeStory": true,
+          "listQuest": true,
+          "course": "第 19 课",
+          "goal": "使用索引赋值修改列表，结合输入和随机库",
+          "mission": "修改阵容位置，释放随机色彩庆祝烟花",
+          "knowledge": [
+            "列表[索引] = 新值",
+            "修改前后对照",
+            "input() 自选内容",
+            "拆解步骤",
+            "random.choice()",
+            "turtle.pencolor()"
+          ],
+          "example": "heroes = ['战士', '射手', '法师']\nindex = int(input('位置 0～2：'))\nheroes[index] = input('新英雄：')\nprint(heroes)",
+          "lesson": "修改列表用 列表[索引] = 新值，只替换指定位置，其他元素保持不变。可以拆成“输入位置 → 转成整数 → 输入新值 → 按索引修改 → 展示结果”。random.choice(colors) 会从颜色列表中随机选择一个元素，可配合 turtle.pencolor() 绘制不同颜色的烟花线条。",
+          "debugTip": "先读列表与索引，再预测代码结果；运行后对照数据变化，检查边界、类型和缩进。",
+          "hintLimit": 0,
+          "attemptLimit": 2,
+          "expectedTests": [
+            "把射手位置换成辅助",
+            "自己决定换谁、换成谁",
+            "从颜色列表随机选择烟花颜色"
+          ],
+          "stages": [
+            {
+              "title": "把射手位置换成辅助",
+              "scene": "quest-world",
+              "prompt": "要把索引 1 的“射手”换成“辅助”，哪行代码正确？",
+              "code": "heroes = ['战士', '射手', '法师']",
+              "hint": "赋值用一个等号；heroes[1] 表示第二个位置。",
+              "rounds": [
+                {
+                  "question": "要把索引 1 的“射手”换成“辅助”，哪行代码正确？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "arena-replace",
+                      "label": "heroes[1] = '辅助'"
+                    },
+                    {
+                      "id": "arena-equal",
+                      "label": "heroes[1] == '辅助'"
+                    },
+                    {
+                      "id": "arena-wrong",
+                      "label": "heroes[0] = '辅助'"
+                    }
+                  ],
+                  "correct": [
+                    "arena-replace"
+                  ],
+                  "successConsole": "第二个位置已替换，列表仍有 3 个元素",
+                  "listTask": {
+                    "op": "replace",
+                    "name": "heroes",
+                    "values": [
+                      "战士",
+                      "射手",
+                      "法师"
+                    ],
+                    "index": 1,
+                    "newValue": "辅助"
+                  }
+                }
+              ]
+            },
+            {
+              "title": "自己决定换谁、换成谁",
+              "scene": "quest-world",
+              "prompt": "先选出完整的修改步骤，再输入位置与新英雄名称。",
+              "code": "heroes = ['战士', '射手', '法师']\n# 输入位置 → 整数索引 → 新名称 → 修改 → 展示",
+              "hint": "列表索引必须是整数；输入的新名称是字符串，可直接放进列表。",
+              "rounds": [
+                {
+                  "question": "先选出完整的修改步骤，再输入位置与新英雄名称。",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "arena-custom",
+                      "label": "index = int(input('位置：'))\nnew_hero = input('新英雄：')\nheroes[index] = new_hero\nprint(heroes)"
+                    },
+                    {
+                      "id": "arena-text",
+                      "label": "index = input('位置：')\nnew_hero = input('新英雄：')\nheroes[index] = new_hero"
+                    },
+                    {
+                      "id": "arena-reverse",
+                      "label": "index = int(input('位置：'))\nnew_hero = input('新英雄：')\nnew_hero = heroes[index]"
+                    }
+                  ],
+                  "correct": [
+                    "arena-custom"
+                  ],
+                  "successConsole": "自选阵容已更新",
+                  "listTask": {
+                    "op": "replace",
+                    "input": "replace",
+                    "name": "heroes",
+                    "values": [
+                      "战士",
+                      "射手",
+                      "法师"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "从颜色列表随机选择烟花颜色",
+              "scene": "quest-world",
+              "prompt": "六条烟花线每次都从 colors 中随机选色，应补入哪行？",
+              "code": "import random\nimport turtle\ncolors = ['red', 'gold', 'cyan']\nfor ray in range(6):\n    color = ______\n    turtle.pencolor(color)\n    turtle.forward(40)\n    turtle.backward(40)\n    turtle.right(60)",
+              "hint": "random.choice(colors) 返回列表中的一个颜色；随机选择允许重复，并不保证每次不同。",
+              "rounds": [
+                {
+                  "question": "六条烟花线每次都从 colors 中随机选色，应补入哪行？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "arena-random",
+                      "label": "random.choice(colors)"
+                    },
+                    {
+                      "id": "arena-fixed",
+                      "label": "colors[0]"
+                    },
+                    {
+                      "id": "arena-number",
+                      "label": "random.randint(0, 2)"
+                    }
+                  ],
+                  "correct": [
+                    "arena-random"
+                  ],
+                  "successConsole": "烟花已按本次随机选出的颜色绘制",
+                  "listTask": {
+                    "op": "random",
+                    "name": "colors",
+                    "values": [
+                      "red",
+                      "gold",
+                      "cyan"
+                    ],
+                    "count": 6
+                  }
+                }
+              ]
+            }
+          ],
+          "rpg": {
+            "chapter": "王者荣耀·阵容焕新与烟花",
+            "boss": "任务终端",
+            "artKey": "arena",
+            "bossKind": "quest",
+            "hero": "阵容指挥官",
+            "forms": [
+              "把射手位置换成辅助",
+              "自己决定换谁、换成谁",
+              "从颜色列表随机选择烟花颜色"
+            ],
+            "skill": "列表指令",
+            "cutscene": [
+              {
+                "speaker": "水晶终端",
+                "text": "索引赋值只替换一个位置，阵容调整成功！",
+                "shot": "boss"
+              },
+              {
+                "speaker": "阵容指挥官",
+                "text": "先拆解步骤，再输入位置和新英雄，列表变化就清清楚楚。",
+                "shot": "hero"
+              },
+              {
+                "speaker": "竞技场广播",
+                "text": "水晶点亮！庆祝烟花来自颜色列表的随机选择；同一种颜色可以重复出现。",
+                "shot": "victory"
+              }
+            ]
+          },
+          "palette": {
+            "sky": "#243d52",
+            "floor": "#e8efdc",
+            "wall": "#455c70",
+            "wallTop": "#729ca5",
+            "accent": "#658de8"
+          },
+          "commands": [],
+          "maze": [
+            "000"
+          ],
+          "start": {
+            "x": 0,
+            "y": 0,
+            "dir": 1
+          },
+          "end": {
+            "x": 0,
+            "y": 0
+          },
+          "collectibles": [],
+          "maxCommands": 0,
+          "stars": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "蛋仔派对·积分收集赛",
+          "shortName": "蛋仔积分",
+          "icon": "trophy",
+          "password": null,
+          "mode": "challenge",
+          "lifeStory": true,
+          "listQuest": true,
+          "course": "第 20 课",
+          "goal": "用 append() 添加数据，用 for 遍历列表",
+          "mission": "建立积分列表，按顺序跑过全部赛道",
+          "knowledge": [
+            "空列表 []",
+            "append() 追加",
+            "for 元素 in 列表",
+            "for i in range()",
+            "int() 与整数字符串",
+            "input()"
+          ],
+          "example": "scores = []\nfor i in range(3):\n    score = int(input('输入整数积分：'))\n    scores.append(score)\nfor score in scores:\n    print(score)",
+          "lesson": "[] 创建空列表，append(新元素) 会把元素添加到列表末尾。for item in items 会将列表中的元素依次赋值给循环变量 item。input() 返回字符串；int(\"12\")、int(\"-3\") 可以转换，int(\"3.5\") 和 int(\"蛋仔\") 会报错。这里讨论的是字符串转换：int() 也能接收浮点数，例如 int(3.5) 得到 3。",
+          "debugTip": "先读列表与索引，再预测代码结果；运行后对照数据变化，检查边界、类型和缩进。",
+          "hintLimit": 0,
+          "attemptLimit": 2,
+          "expectedTests": [
+            "收集三次输入的整数积分",
+            "遍历列表，依次通过赛道",
+            "修好积分转换器"
+          ],
+          "stages": [
+            {
+              "title": "收集三次输入的整数积分",
+              "scene": "quest-world",
+              "prompt": "哪段代码能创建空列表，再把三次输入转换为整数并追加到末尾？选好后亲自输入。",
+              "code": "# 输入 3 次 → 转成整数 → 依次追加到 scores",
+              "hint": "append() 加在末尾；int(input()) 先输入文字，再转换为整数。",
+              "rounds": [
+                {
+                  "question": "哪段代码能创建空列表，再把三次输入转换为整数并追加到末尾？选好后亲自输入。",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "eggs-append",
+                      "label": "scores = []\nfor i in range(3):\n    score = int(input('积分：'))\n    scores.append(score)"
+                    },
+                    {
+                      "id": "eggs-reset",
+                      "label": "for i in range(3):\n    scores = []\n    score = int(input('积分：'))\n    scores.append(score)"
+                    },
+                    {
+                      "id": "eggs-string",
+                      "label": "scores = []\nfor i in range(3):\n    score = input('积分：')\n    scores.append(score)"
+                    }
+                  ],
+                  "correct": [
+                    "eggs-append"
+                  ],
+                  "successConsole": "三个整数已经按输入顺序追加",
+                  "listTask": {
+                    "op": "append",
+                    "input": "append",
+                    "name": "scores",
+                    "values": [],
+                    "count": 3
+                  }
+                }
+              ]
+            },
+            {
+              "title": "遍历列表，依次通过赛道",
+              "scene": "quest-world",
+              "prompt": "想依次输出彩虹门、弹跳板、终点，哪段代码会遍历每个列表元素？",
+              "code": "checkpoints = ['彩虹门', '弹跳板', '终点']",
+              "hint": "for point in checkpoints 会依次把每一个元素赋值给 point。",
+              "rounds": [
+                {
+                  "question": "想依次输出彩虹门、弹跳板、终点，哪段代码会遍历每个列表元素？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "eggs-traverse",
+                      "label": "for point in checkpoints:\n    print(point)"
+                    },
+                    {
+                      "id": "eggs-index",
+                      "label": "for point in range(3):\n    print(point)"
+                    },
+                    {
+                      "id": "eggs-whole",
+                      "label": "print(checkpoints)"
+                    }
+                  ],
+                  "correct": [
+                    "eggs-traverse"
+                  ],
+                  "successConsole": "彩虹门\n弹跳板\n终点",
+                  "listTask": {
+                    "op": "traverse",
+                    "name": "checkpoints",
+                    "values": [
+                      "彩虹门",
+                      "弹跳板",
+                      "终点"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "修好积分转换器",
+              "scene": "quest-world",
+              "prompt": "下面哪个字符串能够直接被 int() 转成整数？",
+              "code": "# int() 转换字符串时，文字内容要能表示整数",
+              "hint": "\"12\" 是整数字符串；\"3.5\" 带小数点，不能直接用 int() 转换。",
+              "rounds": [
+                {
+                  "question": "下面哪个字符串能够直接被 int() 转成整数？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "eggs-int",
+                      "label": "int(\"12\")"
+                    },
+                    {
+                      "id": "eggs-decimal",
+                      "label": "int(\"3.5\")"
+                    },
+                    {
+                      "id": "eggs-word",
+                      "label": "int(\"蛋仔\")"
+                    }
+                  ],
+                  "correct": [
+                    "eggs-int"
+                  ],
+                  "successConsole": "字符串 \"12\" → 整数 12",
+                  "listTask": {
+                    "op": "convert",
+                    "name": "积分输入",
+                    "values": [
+                      "12",
+                      "3.5",
+                      "蛋仔"
+                    ],
+                    "index": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rpg": {
+            "chapter": "蛋仔派对·积分收集赛",
+            "boss": "任务终端",
+            "artKey": "eggs",
+            "bossKind": "quest",
+            "hero": "蛋仔领跑员",
+            "forms": [
+              "收集三次输入的整数积分",
+              "遍历列表，依次通过赛道",
+              "修好积分转换器"
+            ],
+            "skill": "列表指令",
+            "cutscene": [
+              {
+                "speaker": "积分终端",
+                "text": "append() 把每次输入的整数加入列表末尾，积分收集完成！",
+                "shot": "boss"
+              },
+              {
+                "speaker": "蛋仔领跑员",
+                "text": "遍历列表时，循环变量拿到的是每一个元素，赛道顺序没有漏掉。",
+                "shot": "hero"
+              },
+              {
+                "speaker": "派对广播",
+                "text": "冲线成功！整数字符串可以转换，小数字符串要先想清楚应该如何处理。",
+                "shot": "victory"
+              }
+            ]
+          },
+          "palette": {
+            "sky": "#243d52",
+            "floor": "#e8efdc",
+            "wall": "#455c70",
+            "wallTop": "#729ca5",
+            "accent": "#ee98c4"
+          },
+          "commands": [],
+          "maze": [
+            "000"
+          ],
+          "start": {
+            "x": 0,
+            "y": 0,
+            "dir": 1
+          },
+          "end": {
+            "x": 0,
+            "y": 0
+          },
+          "collectibles": [],
+          "maxCommands": 0,
+          "stars": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "保卫萝卜·炮塔列表守卫战",
+          "shortName": "萝卜守卫",
+          "icon": "star",
+          "password": null,
+          "mode": "challenge",
+          "lifeStory": true,
+          "listQuest": true,
+          "course": "第 21 课",
+          "goal": "使用 len()、pop()、负向索引与 turtle 圆弧",
+          "mission": "统计、调整炮塔列表，画出半圆防护罩",
+          "knowledge": [
+            "len() 元素个数",
+            "pop() 删除并返回",
+            "负向索引 -1",
+            "列表遍历",
+            "circle(半径, 角度)",
+            "bgpic() 背景图片",
+            "print() 与算术"
+          ],
+          "example": "import turtle\ntowers = ['瓶子炮', '太阳花', '冰冻星']\nprint(len(towers))\nremoved = towers.pop(-1)\nprint(removed)\nturtle.bgpic('garden.gif')  # 图片需与程序放在同一目录\nturtle.left(90)\nx = -120\nfor tower in towers:\n    print(tower)\n    turtle.penup()\n    turtle.goto(x, 0)\n    turtle.pendown()\n    turtle.circle(60, 180)\n    turtle.right(180)\n    x += 160\nprint(len(towers) * 2)  # 每座消耗 2 点能量",
+          "lesson": "len(列表) 返回元素个数。负向索引 -1 表示最后一项、-2 表示倒数第二项。pop(索引) 删除并返回指定元素；不写参数的 pop() 默认删除最后一项。turtle.circle(半径, 角度) 可画圆弧，180° 是半圆；bgpic() 可设置已准备好的背景图片。遍历列表可依次处理每座炮塔，算术运算可以计算所需能量。",
+          "debugTip": "先读列表与索引，再预测代码结果；运行后对照数据变化，检查边界、类型和缩进。",
+          "hintLimit": 0,
+          "attemptLimit": 2,
+          "expectedTests": [
+            "清点炮塔：个数不是最后索引",
+            "用负向索引撤下末尾炮塔",
+            "遍历两座炮塔，画半圆防护"
+          ],
+          "stages": [
+            {
+              "title": "清点炮塔：个数不是最后索引",
+              "scene": "quest-world",
+              "prompt": "列表里有三座炮塔，哪条代码输出炮塔个数 3？",
+              "code": "towers = ['瓶子炮', '太阳花', '冰冻星']",
+              "hint": "len(towers) 是 3，而最后一个正向索引是 2。",
+              "rounds": [
+                {
+                  "question": "列表里有三座炮塔，哪条代码输出炮塔个数 3？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "carrot-len",
+                      "label": "print(len(towers))"
+                    },
+                    {
+                      "id": "carrot-last",
+                      "label": "print(towers[2])"
+                    },
+                    {
+                      "id": "carrot-minus",
+                      "label": "print(len(towers) - 1)"
+                    }
+                  ],
+                  "correct": [
+                    "carrot-len"
+                  ],
+                  "successConsole": "3",
+                  "listTask": {
+                    "op": "count",
+                    "name": "towers",
+                    "values": [
+                      "瓶子炮",
+                      "太阳花",
+                      "冰冻星"
+                    ],
+                    "negative": true
+                  }
+                }
+              ]
+            },
+            {
+              "title": "用负向索引撤下末尾炮塔",
+              "scene": "quest-world",
+              "prompt": "要删除并得到最后一座“冰冻星”，哪行代码正确？",
+              "code": "towers = ['瓶子炮', '太阳花', '冰冻星']\nremoved = ______",
+              "hint": "-1 是最后一个元素。pop(-1) 与不带参数的 pop() 都会删除并返回最后一项。",
+              "rounds": [
+                {
+                  "question": "要删除并得到最后一座“冰冻星”，哪行代码正确？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "carrot-pop",
+                      "label": "towers.pop(-1)"
+                    },
+                    {
+                      "id": "carrot-read",
+                      "label": "towers[-1]"
+                    },
+                    {
+                      "id": "carrot-first",
+                      "label": "towers.pop(0)"
+                    }
+                  ],
+                  "correct": [
+                    "carrot-pop"
+                  ],
+                  "successConsole": "取回冰冻星，剩下两座炮塔",
+                  "listTask": {
+                    "op": "pop",
+                    "name": "towers",
+                    "values": [
+                      "瓶子炮",
+                      "太阳花",
+                      "冰冻星"
+                    ],
+                    "index": -1,
+                    "negative": true
+                  }
+                }
+              ]
+            },
+            {
+              "title": "遍历两座炮塔，画半圆防护",
+              "scene": "quest-world",
+              "prompt": "已剩下两座炮塔。要每座画一个半径 60 的半圆，应在循环中填入哪行？",
+              "code": "import turtle\ntowers = ['瓶子炮', '太阳花']\nturtle.bgpic('garden.gif')  # 图片需与程序放在同一目录\nturtle.left(90)\nx = -120\nfor tower in towers:\n    print(tower)\n    turtle.penup()\n    turtle.goto(x, 0)\n    turtle.pendown()\n    ______\n    turtle.right(180)\n    x += 160\nprint(len(towers) * 2)  # 每座消耗 2 点能量",
+              "hint": "circle(60, 180) 画半圆；循环执行 2 次，总能量是 2 × 2 = 4。运行真实 turtle 代码前，需准备同目录的 garden.gif。",
+              "rounds": [
+                {
+                  "question": "已剩下两座炮塔。要每座画一个半径 60 的半圆，应在循环中填入哪行？",
+                  "mode": "single",
+                  "cards": [
+                    {
+                      "id": "carrot-arc",
+                      "label": "turtle.circle(60, 180)"
+                    },
+                    {
+                      "id": "carrot-circle",
+                      "label": "turtle.circle(60)"
+                    },
+                    {
+                      "id": "carrot-swap",
+                      "label": "turtle.circle(180, 60)"
+                    }
+                  ],
+                  "correct": [
+                    "carrot-arc"
+                  ],
+                  "successConsole": "瓶子炮\n太阳花\n画出 2 个半圆，总能量 4",
+                  "listTask": {
+                    "op": "arc",
+                    "name": "towers",
+                    "values": [
+                      "瓶子炮",
+                      "太阳花"
+                    ],
+                    "radius": 60,
+                    "angle": 180,
+                    "negative": true
+                  }
+                }
+              ]
+            }
+          ],
+          "rpg": {
+            "chapter": "保卫萝卜·炮塔列表守卫战",
+            "boss": "任务终端",
+            "artKey": "carrot",
+            "bossKind": "quest",
+            "hero": "萝卜守护者",
+            "forms": [
+              "清点炮塔：个数不是最后索引",
+              "用负向索引撤下末尾炮塔",
+              "遍历两座炮塔，画半圆防护"
+            ],
+            "skill": "列表指令",
+            "cutscene": [
+              {
+                "speaker": "花园终端",
+                "text": "len() 清点数量，pop(-1) 撤下最后一座炮塔，列表调整完成！",
+                "shot": "boss"
+              },
+              {
+                "speaker": "萝卜守护者",
+                "text": "遍历剩下的两座炮塔，各画一个 180° 半圆，总共消耗 4 点能量。",
+                "shot": "hero"
+              },
+              {
+                "speaker": "花园广播",
+                "text": "萝卜安全啦！你已完成列表创建、索引、切片、修改、添加、遍历和删除的整条冒险。",
+                "shot": "victory"
+              }
+            ]
+          },
+          "palette": {
+            "sky": "#243d52",
+            "floor": "#e8efdc",
+            "wall": "#455c70",
+            "wallTop": "#729ca5",
+            "accent": "#ed9c42"
+          },
+          "commands": [],
+          "maze": [
+            "000"
+          ],
+          "start": {
+            "x": 0,
+            "y": 0,
+            "dir": 1
+          },
+          "end": {
+            "x": 0,
+            "y": 0
+          },
+          "collectibles": [],
+          "maxCommands": 0,
+          "stars": [
+            0,
+            0
+          ]
         }
       ]
     };
@@ -2104,7 +3200,7 @@
     function level() { return GAME_CONFIG.levels[currentLevel]; }
     function isChallengeLevel() { return level().mode === "challenge"; }
     function createChallengeState() {
-      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", awaitingInput: false, runtimeInputError: "", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy", rpgHit: "", cardOrders: {}, answerPositions: shuffleChoices([0, 1, 2]) };
+      return { stage: 0, round: 0, selected: [], failedAttempts: 0, hintUsed: false, roundPassed: false, lastConsole: "", inputValue: "", studentName: "小勇士", awaitingInput: false, runtimeInputError: "", battle: false, fixed: 0, freeMode: false, robotColor: "#39a8ff", robotMood: "happy", rpgHit: "", cardOrders: {}, answerPositions: shuffleChoices([0, 1, 2]), questResult: null, questFields: {}, questInputError: "" };
     }
     function shuffleChoices(cards) {
       const shuffled = [...cards];
@@ -2185,7 +3281,7 @@
     function focusChallengeScene() {
       if (matchMedia("(max-width: 900px)").matches) {
         // Both the task button and the mobile toolbar use this same result target.
-        const target = challengeState.awaitingInput ? $("#missionLab .runtime-console") : $("#missionLab .scene-visual");
+        const target = challengeState.awaitingInput ? $("#missionLab .quest-runtime-form, #missionLab .runtime-console") : $("#missionLab .scene-visual");
         target?.scrollIntoView({ behavior: "instant", block: "center" });
       }
     }
@@ -2204,6 +3300,106 @@
     function renderLessonPainting(key, caption, badge = "", passed = false) {
       return `<figure class="lesson-painting${passed ? " passed" : ""}">${badge ? `<div class="lesson-painting-badge">${escapeHtml(badge)}</div>` : ""}<div class="lesson-painting-frame"><img src="${lessonArtworkUrl(key)}" width="1200" height="538" alt="${escapeHtml(caption)}">${currentLevel === 5 && passed ? '<span class="firework one"></span><span class="firework two"></span><span class="firework three"></span>' : ""}</div><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
     }
+    function pythonValue(value) {
+      if (Array.isArray(value)) return `[${value.map(pythonValue).join(', ')}]`;
+      if (typeof value === 'string') return `'${value.replaceAll('\\', '\\\\').replaceAll("'", "\\'").replaceAll('\n', '\\n')}'`;
+      if (typeof value === 'boolean') return value ? 'True' : 'False';
+      return String(value);
+    }
+    function questInteger(raw, label, minimum, maximum) {
+      const text = String(raw ?? '').trim();
+      if (!/^[+-]?\d+$/.test(text)) throw new Error(`${label}需要整数字符串，例如 0、1 或 -3；空白、文字和带小数点的字符串不能直接用 int() 转换。`);
+      const number = Number(text);
+      if (!Number.isSafeInteger(number) || number < minimum || number > maximum) throw new Error(`${label}超出本任务范围：请输入 ${minimum}～${maximum}。`);
+      return number;
+    }
+    function executeListTask(task, fields = {}) {
+      const before = [...task.values], after = [...before];
+      const result = { before, after, indices: [], trace: [], output: '', colors: [], arcs: 0 };
+      if (task.op === 'create') {
+        result.output = `${task.name} = ${pythonValue(after)}\n类型依次为：字符串、整数、浮点数、布尔值`;
+      } else if (task.op === 'index') {
+        const index = task.input ? questInteger(fields.index, '索引', 0, before.length - 1) : task.index;
+        result.indices = [index];
+        result.output = `${task.name}[${index}] → ${pythonValue(before[index])}`;
+      } else if (task.op === 'slice') {
+        result.after = before.filter((_, i) => i >= task.start && i < task.end && (i - task.start) % task.step === 0);
+        result.indices = before.map((_, i) => i).filter(i => i >= task.start && i < task.end && (i - task.start) % task.step === 0);
+        result.output = `${task.name}[${task.start}:${task.end}:${task.step}] → ${pythonValue(result.after)}\n开始 ${task.start} 包含，结束 ${task.end} 不包含；每次索引 +${task.step}\n原列表保持不变`;
+      } else if (task.op === 'replace') {
+        const index = task.input ? questInteger(fields.index, '索引', 0, before.length - 1) : task.index;
+        const value = task.input ? String(fields.value ?? '').trim() : task.newValue;
+        if (!value || value.length > 12) throw new Error('新英雄名称请输入 1～12 个字。');
+        result.after[index] = value; result.indices = [index];
+        result.output = `${task.name}[${index}] = ${pythonValue(value)}\n修改后：${pythonValue(result.after)}`;
+      } else if (task.op === 'random') {
+        result.colors = Array.from({ length: task.count }, () => before[Math.floor(Math.random() * before.length)]);
+        result.trace = result.colors.map((color, i) => `第 ${i + 1} 条：${color}`);
+        result.output = `本次 random.choice() 结果：${pythonValue(result.colors)}\n随机颜色可以重复；每个结果都来自 colors。`;
+      } else if (task.op === 'append') {
+        result.after = [];
+        for (let i = 0; i < task.count; i++) {
+          const value = questInteger(fields[`entry${i}`], `第 ${i + 1} 次输入`, -999, 999);
+          result.after.push(value);
+          result.trace.push(`i = ${i}：append(${value}) → ${pythonValue(result.after)}`);
+        }
+        result.output = `${task.name} = ${pythonValue(result.after)}\n每个元素都是整数，添加顺序与输入顺序一致。`;
+      } else if (task.op === 'traverse') {
+        result.trace = before.map((value, i) => `第 ${i + 1} 轮：point = ${pythonValue(value)}`);
+        result.output = before.join('\n');
+      } else if (task.op === 'convert') {
+        const value = questInteger(before[task.index], '积分', -999, 999);
+        result.indices = [task.index]; result.output = `int(${pythonValue(before[task.index])}) → ${value}\n输入类型：str；输出类型：int`;
+      } else if (task.op === 'count') {
+        result.output = `len(${task.name}) → ${before.length}\n最后一个正向索引：${before.length - 1}；最后一个负向索引：-1`;
+      } else if (task.op === 'pop') {
+        const index = task.index < 0 ? before.length + task.index : task.index;
+        result.removed = result.after.splice(index, 1)[0]; result.indices = [index];
+        result.output = `removed = ${task.name}.pop(${task.index})\n返回：${pythonValue(result.removed)}\n剩下：${pythonValue(result.after)}\n不写参数的 pop() 也会删除最后一项。`;
+      } else if (task.op === 'arc') {
+        result.arcs = before.length;
+        result.trace = before.map(value => `${value}：circle(${task.radius}, ${task.angle})`);
+        result.output = `${before.join('\n')}\n${before.length} 个半圆；总能量 ${before.length} × 2 = ${before.length * 2}`;
+      }
+      return result;
+    }
+    function renderListValues(values, task, selected = []) {
+      if (!values.length) return '<div class="list-empty">[] 空列表</div>';
+      return `<div class="list-cells">${values.map((value, i) => `<div class="list-cell${selected.includes(i) ? ' selected' : ''}"><span class="list-index">索引 ${i}${task.negative ? ` / ${i - values.length}` : ''}</span><code class="list-value">${escapeHtml(pythonValue(value))}</code>${currentLevel === 16 ? `<small>${typeof value === 'string' ? 'str 字符串' : typeof value === 'boolean' ? 'bool 布尔值' : Number.isInteger(value) ? 'int 整数' : 'float 浮点数'}</small>` : ''}</div>`).join('')}</div>`;
+    }
+    function renderQuestInput(task) {
+      const field = (name, label, placeholder) => `<label class="quest-input-label">${label}<input class="challenge-input" data-quest-field="${name}" name="${name}" type="text" autocomplete="off" maxlength="${name === 'value' ? 12 : 16}" value="${escapeHtml(challengeState.questFields[name] || '')}" placeholder="${placeholder}"></label>`;
+      const fields = task.input === 'append' ? Array.from({ length: task.count }, (_, i) => field(`entry${i}`, `第 ${i + 1} 次 input()`, '整数积分，例如 12')).join('') : field('index', `输入索引 0～${task.values.length - 1}`, '例如 1') + (task.input === 'replace' ? field('value', '输入新英雄名称', '例如 辅助') : '');
+      return `<form class="quest-runtime-form" data-quest-input-form><strong>程序运行到 input()，请提供数据</strong>${fields}<p class="quest-runtime-error" role="alert">${escapeHtml(challengeState.questInputError)}</p><button class="runtime-continue-btn" type="submit">确认输入，继续运行</button></form>`;
+    }
+    function renderListQuest(stage, round) {
+      const task = round.listTask, result = challengeState.questResult, passed = challengeState.roundPassed;
+      const count = challengeState.stage + (passed ? 1 : 0);
+      const comparison = result && ['replace', 'pop', 'append', 'slice'].includes(task.op);
+      const source = `<section class="list-snapshot" data-kind="before"><strong>${escapeHtml(task.name)}${comparison ? ' · 运行前' : ''}</strong>${renderListValues(task.values, task, result?.indices || [])}</section>`;
+      const after = comparison ? `<section class="list-snapshot" data-kind="after"><strong>${task.op === 'slice' ? '切片得到的新列表' : '运行后'}</strong>${renderListValues(result.after, task, task.op === 'replace' ? result.indices : [])}</section>` : '';
+      const fireworks = result?.colors.length ? `<svg class="quest-firework" viewBox="0 0 180 180" role="img" aria-label="用本次随机颜色绘制的六条烟花线">${result.colors.map((color, i) => { const a = i * Math.PI / 3; return `<line x1="90" y1="90" x2="${90 + Math.cos(a) * 68}" y2="${90 + Math.sin(a) * 68}" stroke="${color}" stroke-width="7" stroke-linecap="round"/>`; }).join('')}</svg>` : '';
+      const arcs = result?.arcs ? `<div class="quest-arcs">${result.after.map(value => `<div><svg viewBox="0 0 140 90" role="img" aria-label="半径 60，角度 180 度的半圆"><path d="M 10 72 A 60 60 0 0 1 130 72" fill="none" stroke="#70eadc" stroke-width="5"/><text x="70" y="66" text-anchor="middle" fill="white" font-size="14">180°</text></svg><span>${escapeHtml(value)}</span></div>`).join('')}</div>` : '';
+      const progress = `<div class="quest-progress"><span>${escapeHtml(level().rpg.hero)}</span><strong>任务完成 ${count} / 3</strong><div class="rpg-hp-track"><span class="rpg-hp-fill" style="--hp:${count / 3 * 100}%"></span></div></div>`;
+      return `<div class="list-quest quest-theme-${level().rpg.artKey}">${progress}<div class="quest-art-frame"><img src="${rpgArtworkUrl()}" width="1200" height="538" alt="${escapeHtml(level().name)}：${passed ? '任务完成后的场景' : escapeHtml(stage.title)}"></div><div class="list-task-panel">${source}${after}${result ? `<pre class="quest-result-code">${escapeHtml(result.output)}</pre>${result.trace.length ? `<ol class="quest-trace">${result.trace.map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ol>` : ''}${fireworks}${arcs}` : '<p class="quest-waiting">先预测列表会发生什么变化，再选择代码运行。</p>'}${challengeState.awaitingInput ? renderQuestInput(task) : ''}${task.op === 'arc' ? '<a class="quest-download" href="assets/rpg/garden.gif" download="garden.gif">下载 garden.gif 示例背景</a>' : ''}</div></div>`;
+    }
+    function submitQuestInput() {
+      if (!challengeState.awaitingInput || !challengeRound().listTask) return;
+      const form = $('[data-quest-input-form]');
+      const fields = Object.fromEntries(new FormData(form));
+      challengeState.questFields = fields;
+      try {
+        const result = executeListTask(challengeRound().listTask, fields);
+        challengeState.questInputError = '';
+        challengeState.awaitingInput = false;
+        finishChallengeRound(challengeRound(), result);
+      } catch (error) {
+        challengeState.questInputError = error.message;
+        renderChallengePanel();
+        focusChallengeScene();
+      }
+    }
+
     function renderChallengeScene() {
       if (!isChallengeLevel()) return;
       const lab = $("#missionLab");
@@ -2216,8 +3412,8 @@
       if (challengeState.battle) {
         visual = renderLessonPainting("level-6-victory", `${challengeState.studentName}的星光勇士：三角形出击，成功击败！`, "", true);
       } else if (challengeState.freeMode) {
-        visual = `<div class="lesson-quest-scene passed" style="--quest-position:100%" role="img" aria-label="小海龟走完整张十一至十六课冒险地图"><span class="quest-badge">15 关知识地图</span><span class="quest-object">🏆</span><strong class="quest-result">多分支、逻辑、除法、range 和嵌套循环全部通关</strong></div>`;
-      } else if (challengeState.awaitingInput) {
+        visual = `<figure class="lesson-painting"><div class="lesson-painting-frame"><img src="${rpgArtworkUrl(2)}" width="1200" height="538" alt="21 课主题冒险通关庆典"></div><figcaption>海龟绘图 · 条件判断 · 循环 · micro:bit · 列表操作<br>21 关知识地图已点亮</figcaption></figure>`;
+      } else if (challengeState.awaitingInput && !round.listTask) {
         visual = `<div class="console-window runtime-console"><p class="runtime-prompt">&gt; name = input('请输入你的姓名：')<br>&gt; 程序暂停，正在等待你输入……</p><form class="runtime-input-form" data-runtime-input-form><div class="runtime-input-field"><label class="runtime-input-label" for="runtimeNameInput">请输入你的姓名</label><input class="runtime-name-input" id="runtimeNameInput" name="studentName" type="text" inputmode="text" enterkeyhint="done" autocomplete="name" maxlength="${round.maxLength || 30}" value="${escapeHtml(challengeState.inputValue)}" placeholder="${escapeHtml(round.placeholder || "例如：小明")}"></div><button class="runtime-continue-btn" type="submit">确认并继续运行</button><p class="runtime-input-error" id="runtimeInputError" role="alert">${escapeHtml(challengeState.runtimeInputError)}</p></form></div>`;
       } else if (stage.scene === "robots") {
         visual = `<div class="robot-row">${[0,1,2].map(index => `<div class="station-bot${index < challengeState.fixed ? " fixed" : ""}"><span>${index < challengeState.fixed ? "已修复" : `${index + 1} 号机`}</span></div>`).join("")}</div>`;
@@ -2229,6 +3425,8 @@
         visual = renderLessonPainting(`level-7-${challengeState.stage}-${passed ? 'passed' : 'ready'}`, result, `if score >= 90: · ${stage.score}`, passed);
       } else if (["camp-story", "park-story", "party-story"].includes(stage.scene)) {
         visual = renderLessonPainting(`level-${currentLevel + 1}-${challengeState.stage}-${challengeState.roundPassed ? 'passed' : 'ready'}`, challengeState.roundPassed ? stage.result : stage.waiting, stage.badge, challengeState.roundPassed);
+      } else if (stage.scene === "quest-world" && level().listQuest) {
+        visual = renderListQuest(stage, round);
       } else if (stage.scene === "quest-world" && level().rpg) {
         const rpg = level().rpg;
         const artwork = rpgArtworkUrl();
@@ -2262,8 +3460,8 @@
       if (currentLevel === 5 && !challengeState.battle) {
         visual = `<div class="lesson-console-stack">${renderLessonPainting("level-6-ready", "星光勇士等待你的三角形程序")}${visual}</div>`;
       }
-      const title = challengeState.battle ? "三角形出击！" : challengeState.freeMode ? "十六关知识地图" : challengeState.awaitingInput ? "程序运行到 input()" : stage.title;
-      const intro = challengeState.battle ? `${challengeState.studentName}成功打印三角形，黑色小勇士获得星光力量！` : challengeState.freeMode ? "从海龟绘图、micro:bit 到嵌套循环，你已经完成整条 Python 冒险路线。" : challengeState.awaitingInput ? "代码顺序正确。输入姓名后，程序才会继续执行下面的 print()。" : (round.question || stage.prompt);
+      const title = challengeState.battle ? "三角形出击！" : challengeState.freeMode ? "21 关知识地图" : challengeState.awaitingInput ? "程序运行到 input()" : stage.title;
+      const intro = challengeState.battle ? `${challengeState.studentName}成功打印三角形，黑色小勇士获得星光力量！` : challengeState.freeMode ? "从海龟绘图、micro:bit 到列表操作，你已经完成整条 Python 冒险路线。" : challengeState.awaitingInput ? (round.listTask ? "代码选择正确。输入数据后，观察列表的实际运行结果。" : "代码顺序正确。输入姓名后，程序才会继续执行下面的 print()。") : (round.question || stage.prompt);
       const sceneProgress = level().singleFlow ? `${level().course} · 一次运行完成` : `${level().course} · 阶段 ${challengeState.stage + 1} / ${level().stages.length}`;
       const taskBrief = currentLevel === 5 && !challengeState.battle ? `<div class="scene-task-brief" aria-label="完成任务需要使用的代码"><span><strong>需要使用</strong></span><span>input()</span><span>print()</span><span>字符串</span><span>顺序执行</span></div>` : "";
       lab.innerHTML = `<div class="scene-shell"><div class="scene-kicker">${escapeHtml(sceneProgress)}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(intro)}</p>${taskBrief}${dots ? `<div class="stage-dots">${dots}</div>` : ""}<div class="scene-visual">${visual}</div></div>`;
@@ -2326,7 +3524,7 @@
       done?.();
     }
     function renderFreeStudioPanel() {
-      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>十六关全部完成</span><span>星级已锁定</span></div><h3>Python 知识地图已点亮</h3><p class="challenge-prompt">你已经从海龟绘图走到micro:bit、多分支、逻辑运算、除法、range() 和 for 嵌套 if。打开排行榜查看完整冒险成绩。</p><code class="challenge-code">if ready:\n    skills += 6\n    print('继续用代码解决新问题！')</code><button class="challenge-run" type="button" data-studio-finish style="width:100%">查看十六关冒险成绩</button></div>`;
+      $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>21 关全部完成</span><span>星级已锁定</span></div><h3>Python 知识地图已点亮</h3><p class="challenge-prompt">你已经从海龟绘图走到micro:bit、条件循环和列表操作。打开排行榜查看完整冒险成绩。</p><code class="challenge-code">if ready:\n    skills += 5\n    print('继续用代码解决新问题！')</code><button class="challenge-run" type="button" data-studio-finish style="width:100%">查看 21 关冒险成绩</button></div>`;
     }
     function renderChallengePanel() {
       if (!isChallengeLevel()) return;
@@ -2344,9 +3542,9 @@
       const chips = round.mode === "prompt" ? `<div class="prompt-chips">${(stage.promptChips || []).map(text => `<button type="button" class="prompt-chip" data-prompt-chip="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join("")}</div>` : "";
       const comparison = round.actual || round.expected ? `<div class="hint-output"><strong>${escapeHtml(round.actual || "")}</strong>${round.expected ? `<br>${escapeHtml(round.expected)}` : ""}</div>` : "";
       const preview = round.mode === "sequence" ? `<div class="selection-preview">${chosen.length ? chosen.map((label,index) => `${index + 1}. ${escapeHtml(label)}`).join("<br>") : "按运行顺序点击代码卡"}</div>` : "";
-      const progressLabel = level().singleFlow ? "编程任务 · 一次运行完成" : level().rpg ? `${level().rpg.chapter} · 战斗 ${challengeState.stage + 1} / ${level().stages.length}` : level().lifeStory ? `生活小剧场 ${challengeState.stage + 1} / ${level().stages.length}` : `阶段 ${challengeState.stage + 1} / ${level().stages.length} · 小题 ${challengeState.round + 1} / ${stage.rounds.length}`;
-      const runLabel = challengeState.battle ? "战斗动画播放中…" : challengeState.awaitingInput ? "等待输入姓名…" : challengeState.roundPassed ? (level().rpg ? "继续追击" : level().lifeStory ? "故事继续" : "继续下一步") : round.mode === "prompt" ? "向模拟 AI 提问" : level().rpg ? `施放${level().rpg.skill}` : level().lifeStory ? "看看会发生什么" : "运行并验证";
-      const progressStatus = level().rpg ? `挑战 ${escapeHtml(level().rpg.boss)}` : level().lifeStory ? "完成生活故事" : `失败 ${challengeState.failedAttempts} 次`;
+      const progressLabel = level().singleFlow ? "编程任务 · 一次运行完成" : level().rpg ? `${level().rpg.chapter} · ${level().listQuest ? "任务" : "战斗"} ${challengeState.stage + 1} / ${level().stages.length}` : level().lifeStory ? `生活小剧场 ${challengeState.stage + 1} / ${level().stages.length}` : `阶段 ${challengeState.stage + 1} / ${level().stages.length} · 小题 ${challengeState.round + 1} / ${stage.rounds.length}`;
+      const runLabel = challengeState.battle ? "战斗动画播放中…" : challengeState.awaitingInput ? (round.listTask ? "等待输入数据…" : "等待输入姓名…") : challengeState.roundPassed ? (level().listQuest ? "继续下个任务" : level().rpg ? "继续追击" : level().lifeStory ? "故事继续" : "继续下一步") : round.mode === "prompt" ? "向模拟 AI 提问" : level().listQuest ? "运行列表指令" : level().rpg ? `施放${level().rpg.skill}` : level().lifeStory ? "看看会发生什么" : "运行并验证";
+      const progressStatus = level().listQuest ? "列表主题任务" : level().rpg ? `挑战 ${escapeHtml(level().rpg.boss)}` : level().lifeStory ? "完成生活故事" : `失败 ${challengeState.failedAttempts} 次`;
       $("#challengePanel").innerHTML = `<div class="challenge-card"><div class="challenge-progress"><span>${progressLabel}</span><span>${progressStatus}</span></div><h3>${escapeHtml(stage.title)}</h3><p class="challenge-prompt">${escapeHtml(round.question)}</p><code class="challenge-code">${escapeHtml(stage.code)}</code>${comparison}${input}${chips}${cards ? `<div class="challenge-options${multilineCards ? " multiline" : ""}">${cards}</div>` : ""}${preview}${challengeState.lastConsole ? `<div class="console-window" style="width:100%;min-height:78px;margin-top:9px">${escapeHtml(challengeState.lastConsole)}</div>` : ""}${challengeState.hintUsed ? `<p class="hint-output">提示：${escapeHtml(stage.hint)}</p>` : ""}<div class="challenge-actions"><button class="hint-btn" type="button" data-challenge-hint ${challengeState.roundPassed || challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>查看提示</button><button class="challenge-run" type="button" data-challenge-run ${challengeState.battle || challengeState.awaitingInput ? "disabled" : ""}>${runLabel}</button></div></div>`;
       renderChallengeScene();
       updateChallengeMobileRunButton();
@@ -2378,12 +3576,13 @@
         if (currentLevel === 5 && challengeState.battle) completeLevel();
       }, prefersReducedMotion ? 900 : 3600);
     }
-    function finishChallengeRound(round) {
+    function finishChallengeRound(round, questResult = null) {
+      if (round.listTask) challengeState.questResult = questResult || executeListTask(round.listTask);
       challengeState.roundPassed = true;
       if (level().rpg) challengeState.rpgHit = "boss";
-      challengeState.lastConsole = String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
+      challengeState.lastConsole = round.listTask ? challengeState.questResult.output : String(round.successConsole || "测试通过").replaceAll("{input}", challengeState.inputValue);
       if (currentLevel === 5 && challengeState.stage === 0) challengeState.studentName = challengeState.inputValue;
-      setStatus(level().rpg ? `${level().rpg.skill}命中！${level().rpg.boss}的核心正在变弱。` : level().lifeStory ? "故事运行成功！看看场景发生了什么。" : "测试通过！观察效果，然后继续下一步。", false);
+      setStatus(level().listQuest ? "列表指令运行成功！对照数据和场景查看变化。" : level().rpg ? `${level().rpg.skill}命中！${level().rpg.boss}的核心正在变弱。` : level().lifeStory ? "故事运行成功！看看场景发生了什么。" : "测试通过！观察效果，然后继续下一步。", false);
       playSuccess();
       if (level().rpg?.artKey === "microbit" && challengeState.stage >= 1) playTone(440, .2, "sine", .4);
       if (currentLevel === 5 && challengeState.stage === level().stages.length - 1) { startStarBattle(); return; }
@@ -2443,9 +3642,17 @@
         else if (currentLevel === 7 && challengeState.stage === 1 && challengeState.selected.includes("plain-input")) challengeState.lastConsole = "TypeError：字符串不能直接和浮点数进行计算。请先转换数据类型。";
         else challengeState.lastConsole = `${round.actual || "实际结果与期望不一致。"}\n请检查代码卡和运行顺序。`;
         challengeState.selected = [];
-        setStatus(level().rpg ? `${level().rpg.boss}发动反击！读取线索，修正代码再施放技能。` : "测试没有通过。读取实际结果，修改后再运行。", true);
+        setStatus(level().listQuest ? "指令还不正确。检查索引、数据类型和操作顺序后再试。" : level().rpg ? `${level().rpg.boss}发动反击！读取线索，修正代码再施放技能。` : "测试没有通过。读取实际结果，修改后再运行。", true);
         playTone(160, .18, "square");
         renderChallengePanel();
+        return;
+      }
+      if (round.listTask?.input) {
+        challengeState.awaitingInput = true;
+        challengeState.questInputError = "";
+        setStatus("程序运行到 input()，请在主场景输入任务数据。");
+        renderChallengePanel();
+        focusChallengeScene();
         return;
       }
       if (round.runtimeInput) {
@@ -2467,9 +3674,12 @@
       challengeState.selected = [];
       challengeState.roundPassed = false;
       challengeState.lastConsole = "";
+      challengeState.questResult = null;
+      challengeState.questFields = {};
+      challengeState.questInputError = "";
       challengeState.inputValue = "";
       challengeState.rpgHit = "";
-      setStatus(level().rpg ? `Boss 进入下一形态：${challengeStage().title}` : `进入阶段 ${challengeState.stage + 1}：${challengeStage().title}`);
+      setStatus(level().listQuest ? `进入下个任务：${challengeStage().title}` : level().rpg ? `Boss 进入下一形态：${challengeStage().title}` : `进入阶段 ${challengeState.stage + 1}：${challengeStage().title}`);
       updateCollectCount(); renderChallengePanel();
     }
 
@@ -2529,7 +3739,7 @@
         btn.className = `level-tab${index === currentLevel ? " active" : ""}${state.completed[index] ? " done" : ""}${unlocked ? "" : " locked"}`;
         btn.setAttribute("aria-label", `${unlocked ? "进入" : "解锁"}第 ${index + 1} 关 ${item.name}`);
         if (index === currentLevel) btn.setAttribute("aria-current", "step");
-        btn.innerHTML = `<span class="level-num">${state.completed[index] ? "✓" : index + 1}</span><span class="level-copy"><strong>${item.shortName}</strong><small>${state.stars[index] ? "★".repeat(state.stars[index]) : unlocked ? "等待挑战" : "直播解锁"}</small></span>${unlocked ? "" : `<span class="lock-mark">${iconSvg("lock")}</span>`}`;
+        btn.innerHTML = `<span class="level-num">${state.completed[index] ? "✓" : index + 1}</span><span class="level-copy"><strong>${item.shortName}</strong><small>${state.stars[index] ? "★".repeat(state.stars[index]) : unlocked ? "等待挑战" : item.password == null ? "口令待设置" : "直播解锁"}</small></span>${unlocked ? "" : `<span class="lock-mark">${iconSvg("lock")}</span>`}`;
         btn.addEventListener("click", () => unlocked ? selectLevel(index) : openPassword(index));
         map.appendChild(btn);
       });
@@ -2902,18 +4112,18 @@
       playSuccess();
       if (!level().rpg) launchConfetti();
       $("#completeIcon use").setAttribute("href", "#icon-trophy");
-      $("#completeTitle").textContent = currentLevel === GAME_CONFIG.levels.length - 1 ? "十六关全部完成！" : "闯关成功！";
+      $("#completeTitle").textContent = currentLevel === GAME_CONFIG.levels.length - 1 ? "21 关全部完成！" : "闯关成功！";
       $("#completeStars").textContent = "★".repeat(earned) + "☆".repeat(3 - earned);
       $("#completeMessage").textContent = isChallengeLevel() ? (earned === 3 ? "三颗星到手！你没有依赖提示，并在两次失败内完成了调试。" : `任务完成！本关使用提示：${challengeState.hintUsed ? "是" : "否"}，失败运行：${challengeState.failedAttempts} 次。`) : level().drawing ? (currentLevel === 2 ? "参数调对了！五条线组成了一颗完整五角星。" : "变量自增生效！五角星正在一轮一轮变大。") : earned === 3 ? "三颗星到手！你的程序又短又准确。" : "小海龟安全抵达终点！再精简指令，还能点亮更多星星。";
       const used = isChallengeLevel() ? level().knowledge.slice(0, 4).map(label => `<code>${escapeHtml(label)}</code>`).join("、") : [...new Set(program.map(commandLabel))].map(label => `<code>${label}</code>`).join("、");
       $("#codeUsed").innerHTML = `本关掌握：${used}`;
       $("#knowledgeText").textContent = level().lesson;
       const last = currentLevel === GAME_CONFIG.levels.length - 1;
-      $("#nextHint").textContent = last ? "你已经完成十六课知识挑战。接下来可以打开知识地图，回顾整条 Python 冒险路线。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
+      $("#nextHint").textContent = last ? "你已经完成21 课知识挑战。接下来可以打开知识地图，回顾整条 Python 冒险路线。" : "下一张地图的彩蛋口令，会在直播课结束时出现。记得回来解锁新世界。";
       $("#rewardCard").classList.add("earned");
       $("#rewardTitle").textContent = "本关通关奖励";
       $("#rewardText").textContent = "记得截图发给老师，你获得一颗4500积分赤星源码蛋哦！";
-      $("#nextActionBtn").textContent = last ? "打开十六关知识地图" : "看看下一张地图";
+      $("#nextActionBtn").textContent = last ? "打开 21 关知识地图" : "看看下一张地图";
       const finishFlow = () => beginLeaderboardFlow(currentLevel + 1, state.stars[currentLevel]);
       if (level().rpg) startRpgCutscene(() => { launchConfetti(); finishFlow(); });
       else finishFlow();
@@ -2922,7 +4132,7 @@
     function openPassword(index) {
       selectedLockedLevel = index;
       $("#passwordTitle").textContent = `打开第 ${index + 1} 个冒险世界`;
-      $("#passwordIntro").textContent = `${GAME_CONFIG.levels[index].name}的彩蛋口令，会在直播课结束时公布。`;
+      $("#passwordIntro").textContent = GAME_CONFIG.levels[index].password == null ? `${GAME_CONFIG.levels[index].name}已准备好，口令待老师设置。` : `${GAME_CONFIG.levels[index].name}的彩蛋口令，会在直播课结束时公布。`;
       $("#passwordInput").value = ""; $("#passwordError").textContent = "";
       $("#passwordModal").classList.remove("hidden");
       setTimeout(() => $("#passwordInput").focus(), 50);
@@ -2930,7 +4140,9 @@
     function submitPassword(event) {
       event.preventDefault();
       const entered = $("#passwordInput").value.trim().toUpperCase();
-      const expected = GAME_CONFIG.levels[selectedLockedLevel].password.toUpperCase();
+      const password = GAME_CONFIG.levels[selectedLockedLevel]?.password;
+      if (password == null) { $("#passwordError").textContent = "本关口令待老师设置，请稍后再来。"; return; }
+      const expected = password.toUpperCase();
       if (!entered) { $("#passwordError").textContent = "先输入老师公布的口令哦。"; return; }
       if (entered !== expected) {
         $("#passwordError").textContent = "口令不正确，再检查一下大小写或数字。";
@@ -3259,12 +4471,13 @@
           const next=currentLevel+1; state.unlocked.includes(next)?selectLevel(next):openPassword(next);
         } else {
           challengeState.freeMode=true;
-          setStatus("自由创作已开启，星级不会改变。选择颜色和表情继续实验。");
+          setStatus("21 关知识地图已点亮，星级已保存。可以查看完整冒险成绩。");
           renderChallengePanel(); updateCollectCount();
         }
       });
       $("#challengePanel").addEventListener("input", event => { if(event.target.id === "challengeInput") challengeState.inputValue=event.target.value; });
       $("#missionLab").addEventListener("input", event => {
+        if (event.target.dataset.questField) challengeState.questFields[event.target.dataset.questField] = event.target.value;
         if (event.target.id !== "runtimeNameInput") return;
         challengeState.inputValue = event.target.value;
         if (challengeState.runtimeInputError) {
@@ -3274,6 +4487,7 @@
         }
       });
       $("#missionLab").addEventListener("submit", event => {
+        if (event.target.matches("[data-quest-input-form]")) { event.preventDefault(); submitQuestInput(); return; }
         if (!event.target.matches("[data-runtime-input-form]")) return;
         event.preventDefault();
         submitRuntimeInput($("#runtimeNameInput")?.value);

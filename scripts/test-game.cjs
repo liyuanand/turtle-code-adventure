@@ -12,10 +12,10 @@ try{
   localStorage.setItem('migration-test-seeded','1');}});
  await p.goto(url);
  const snapshot=()=>p.evaluate(()=>({unlocked:state.unlocked,stars:state.stars,completed:state.completed,version:state.progressVersion,sound:state.sound}));
- const migrated=await snapshot();assert.equal(migrated.version,2);assert.deepEqual(migrated.unlocked,[0,5,11,13,15]);assert.equal(migrated.stars[10],0);assert.deepEqual(migrated.stars.slice(11),[1,2,3,2,1]);assert(migrated.completed[11]&&migrated.completed[15]);assert(!migrated.completed[10]);assert.equal(migrated.sound,false);
+ const migrated=await snapshot();assert.equal(migrated.version,2);assert.deepEqual(migrated.unlocked,[0,5,11,13,15]);assert.equal(migrated.stars[10],0);assert.deepEqual(migrated.stars.slice(11,16),[1,2,3,2,1]);assert(migrated.completed[11]&&migrated.completed[15]);assert(!migrated.completed[10]);assert.equal(migrated.sound,false);
  await p.reload();assert.deepEqual(await snapshot(),migrated);
- assert.equal(await p.locator('.level-tab').count(),16);
- assert.equal(await p.evaluate(()=>GAME_CONFIG.levels.length*3),48);
+ assert.equal(await p.locator('.level-tab').count(),21);
+ assert(await p.evaluate(()=>GAME_CONFIG.levels.slice(16).every(l=>l.stages.length===3)));
  fs.writeFileSync('/tmp/game-code-audit.json',JSON.stringify(await p.evaluate(()=>GAME_CONFIG.levels.map(l=>({name:l.name,example:l.example,stages:l.stages?.map(s=>({code:s.code,rounds:s.rounds.map(r=>({mode:r.mode,cards:r.cards,correct:r.correct}))}))}))),null,2));
  await p.evaluate(()=>{playerProfile.pendingScores={11:2};queueLeaderboardScore(11,3);queueLeaderboardScore(12,3);});
  assert.deepEqual(await p.evaluate(()=>playerProfile.pendingScores),{'11':3,'16':3});
