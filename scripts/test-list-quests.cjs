@@ -14,8 +14,10 @@ const fs=require('node:fs');
   assert.equal(progress.stars.length,21);assert.equal(progress.stars[15],3);assert(progress.completed[15]);assert.deepEqual(progress.stars.slice(16),[0,0,0,0,0]);assert.deepEqual(progress.unlocked,[0,10,15]);
   for(let i=16;i<21;i++){
    await page.evaluate(i=>openPassword(i),i);await page.locator('#passwordInput').fill('1701');await page.locator('#passwordForm').evaluate(e=>e.requestSubmit());
-   assert((await page.locator('#passwordError').innerText()).includes('待老师设置'));assert(!await page.evaluate(i=>state.unlocked.includes(i),i));
-   await page.locator('#cancelPasswordBtn').click();
+   assert((await page.locator('#passwordError').innerText()).includes('口令不正确'));assert(!await page.evaluate(i=>state.unlocked.includes(i),i));
+   await page.locator('#passwordInput').fill(['2018','2019','2020','2025','2026'][i-16]);await page.locator('#passwordForm').evaluate(e=>e.requestSubmit());
+   assert(await page.evaluate(i=>state.unlocked.includes(i)&&currentLevel===i,i));
+   assert(await page.locator('#passwordModal').evaluate(e=>e.classList.contains('hidden')));
   }
   const originalConfig=await page.evaluate(()=>JSON.stringify(GAME_CONFIG.levels));
   // Save correct Python snippets for an independent syntax audit.
@@ -74,6 +76,6 @@ const fs=require('node:fs');
    }
   }
   assert.equal(await page.evaluate(()=>JSON.stringify(GAME_CONFIG.levels)),originalConfig,'Operations must not mutate curriculum templates');assert.deepEqual(errors,[]);
-  console.log('PASS: 21 levels; existing save preserved; pending passwords protected; stable score IDs; 30 tasks; integer input errors/ranges; real list outputs; balanced options; mobile/desktop layout'+(process.env.CHECK_ART?'; all new art and 15 story frames loaded.':'.'));
+  console.log('PASS: 21 levels; existing save preserved; lesson passwords verified; stable score IDs; 30 tasks; integer input errors/ranges; real list outputs; balanced options; mobile/desktop layout'+(process.env.CHECK_ART?'; all new art and 15 story frames loaded.':'.'));
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
