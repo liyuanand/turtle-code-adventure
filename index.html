@@ -1072,6 +1072,21 @@
       .rpg-unit-name, .rpg-form-label, .rpg-battle-caption { font-size: 11px; }
     }
     .rpg-cutscene.art-loading .cutscene-art { opacity: .25; }
+
+    /* Painted lesson artwork is presentation only; all lesson data remains unchanged. */
+    body.illustrated-lesson .canvas-wrap { aspect-ratio: auto; min-height: 0; }
+    body.illustrated-lesson .mission-lab { position: relative; min-height: 0; }
+    .lesson-world-preview { display: block; width: 100%; height: clamp(120px, 18vw, 190px); object-fit: cover; border-bottom: 3px solid #273952; }
+    .lesson-painting { width: min(650px, 100%); margin: 0; display: grid; gap: 9px; }
+    .lesson-painting-frame { position: relative; overflow: hidden; border-radius: 10px; border: 2px solid #718399; background: #17283d; }
+    .lesson-painting img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 538; object-fit: contain; }
+    .lesson-painting figcaption { color: #fff1b4; font-size: 13px; line-height: 1.6; font-weight: 800; }
+    .lesson-painting-badge { color: #d0ebff; font: 800 13px/1.5 ui-monospace, monospace; }
+    .lesson-painting.passed img { animation: lesson-art-reveal .6s ease-out both; }
+    .lesson-console-stack { width: 100%; display: grid; gap: 12px; justify-items: center; }
+    .lesson-console-stack .console-window { width: min(650px,100%); }
+    @keyframes lesson-art-reveal { from { opacity: .4; transform: scale(1.025); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .lesson-painting.passed img { animation: none; } }
   </style>
 </head>
 <body>
@@ -1137,6 +1152,7 @@
           </div>
           <div class="best-stars" id="bestStars" aria-label="本关最高星级">☆☆☆</div>
         </header>
+        <img class="lesson-world-preview hidden" id="lessonWorldPreview" alt="" width="1200" height="538">
         <div class="canvas-wrap" id="canvasWrap">
           <div class="mission-chip"><svg class="ui-icon" aria-hidden="true"><use href="#icon-target"></use></svg><span id="missionChip">任务：抵达终点</span></div>
           <canvas id="gameCanvas" width="900" height="700" aria-label="迷宫游戏区域"></canvas>
@@ -2149,6 +2165,21 @@
         $("#missionLab .scene-visual")?.scrollIntoView({ behavior: "instant", block: "center" });
       }
     }
+    const lessonArtworkCache = new Map();
+    function lessonArtworkUrl(key) { return `assets/lessons/${key}.webp?v=painted-v1`; }
+    function lessonArtwork(key) {
+      if (!lessonArtworkCache.has(key)) {
+        const image = new Image();
+        image.onload = () => { if (currentLevel < 5) draw(); };
+        image.src = lessonArtworkUrl(key);
+        lessonArtworkCache.set(key, image);
+      }
+      const image = lessonArtworkCache.get(key);
+      return image.complete && image.naturalWidth ? image : null;
+    }
+    function renderLessonPainting(key, caption, badge = "", passed = false) {
+      return `<figure class="lesson-painting${passed ? " passed" : ""}">${badge ? `<div class="lesson-painting-badge">${escapeHtml(badge)}</div>` : ""}<div class="lesson-painting-frame"><img src="${lessonArtworkUrl(key)}" width="1200" height="538" alt="${escapeHtml(caption)}">${currentLevel === 5 && passed ? '<span class="firework one"></span><span class="firework two"></span><span class="firework three"></span>' : ""}</div><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
+    }
     function renderChallengeScene() {
       if (!isChallengeLevel()) return;
       const lab = $("#missionLab");
@@ -2159,7 +2190,7 @@
       const dots = level().singleFlow ? "" : level().stages.map((_, index) => `<span class="stage-dot${index < challengeState.stage ? " done" : index === challengeState.stage ? " active" : ""}"></span>`).join("");
       let visual = "";
       if (challengeState.battle) {
-        visual = `<div class="battle-arena" role="img" aria-label="黑色小勇士拿着发光三角形击败敌人，烟花绽放"><div class="battle-name">${escapeHtml(challengeState.studentName)}的星光勇士</div><span class="firework one"></span><span class="firework two"></span><span class="firework three"></span><div class="battle-character battle-hero"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><span class="battle-shape">▲</span><div class="battle-character battle-enemy"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><strong class="battle-impact">成功击败！</strong></div>`;
+        visual = renderLessonPainting("level-6-victory", `${challengeState.studentName}的星光勇士：三角形出击，成功击败！`, "", true);
       } else if (challengeState.freeMode) {
         visual = `<div class="lesson-quest-scene passed" style="--quest-position:100%" role="img" aria-label="小海龟走完整张十一至十六课冒险地图"><span class="quest-badge">15 关知识地图</span><span class="quest-object">🏆</span><strong class="quest-result">多分支、逻辑、除法、range 和嵌套循环全部通关</strong></div>`;
       } else if (challengeState.awaitingInput) {
@@ -2171,14 +2202,9 @@
       } else if (stage.scene === "reward-story") {
         const passed = challengeState.roundPassed;
         const result = !passed ? "小狗正在等你运行代码" : challengeState.stage === 2 ? "False：不执行奖励，小狗陪你继续加油" : challengeState.stage === 1 ? "True：奖励触发，周末出发！" : "生活约定已经写进程序";
-        visual = `<div class="reward-story${passed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="小朋友和摇尾巴的小狗一起运行成绩奖励程序"><div class="reward-rule">if score &gt;= 90:</div><div class="score-envelope">${escapeHtml(stage.score)}</div><div class="reward-kid"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><div class="story-dog"><span class="dog-tail"></span><span class="dog-body"></span><span class="dog-head"></span><span class="dog-ear"></span><span class="dog-leg one"></span><span class="dog-leg two"></span></div><span class="dog-heart">♥</span><div class="reward-meal" aria-hidden="true"><span class="meal-fries"></span><span class="meal-box">M</span></div><strong class="reward-result">${escapeHtml(result)}</strong></div>`;
-      } else if (stage.scene === "camp-story") {
-        visual = `<div class="life-story-scene camp-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="家庭露营汽车根据程序检查结果选择路线"><div class="life-badge">${escapeHtml(stage.badge)}</div><div class="camp-meter">${escapeHtml(stage.badge)}</div><div class="camp-car"><span class="camp-wheel one"></span><span class="camp-wheel two"></span></div><div class="camp-tent"></div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
-      } else if (stage.scene === "park-story") {
-        visual = `<div class="life-story-scene park-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="小朋友在游乐园身高尺和安全闸门前运行边界判断"><div class="life-badge">${escapeHtml(stage.badge)}</div><div class="park-track"></div><div class="park-car"></div><div class="park-ruler">${escapeHtml(stage.badge)}</div><div class="park-kid"><span class="figure-head"></span><span class="figure-body"></span><span class="figure-arm left"></span><span class="figure-arm right"></span><span class="figure-leg left"></span><span class="figure-leg right"></span></div><div class="park-gate"><span class="park-arm"></span></div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
-      } else if (stage.scene === "party-story") {
-        const partyMood = challengeState.stage === 1 && !challengeState.roundPassed ? "sleepy" : "happy";
-        visual = `<div class="life-story-scene party-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="机器人用 turtle 圆形和半圆弧完成生日派对"><div class="life-badge">${escapeHtml(stage.badge)}</div><span class="party-balloons"></span>${renderRobotPreview(partyMood, "#39a8ff")}<div class="party-cake">★</div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
+        visual = renderLessonPainting(`level-7-${challengeState.stage}-${passed ? 'passed' : 'ready'}`, result, `if score >= 90: · ${stage.score}`, passed);
+      } else if (["camp-story", "park-story", "party-story"].includes(stage.scene)) {
+        visual = renderLessonPainting(`level-${currentLevel + 1}-${challengeState.stage}-${challengeState.roundPassed ? 'passed' : 'ready'}`, challengeState.roundPassed ? stage.result : stage.waiting, stage.badge, challengeState.roundPassed);
       } else if (stage.scene === "quest-world" && level().rpg) {
         const rpg = level().rpg;
         const artwork = rpgArtworkUrl();
@@ -2208,6 +2234,9 @@
         visual = renderRobotPreview();
       } else {
         visual = `<div class="console-window">${escapeHtml(challengeState.lastConsole || "> 等待测试……")}</div>`;
+      }
+      if (currentLevel === 5 && !challengeState.battle) {
+        visual = `<div class="lesson-console-stack">${renderLessonPainting("level-6-ready", "星光勇士等待你的三角形程序")}${visual}</div>`;
       }
       const title = challengeState.battle ? "三角形出击！" : challengeState.freeMode ? "十六关知识地图" : challengeState.awaitingInput ? "程序运行到 input()" : stage.title;
       const intro = challengeState.battle ? `${challengeState.studentName}成功打印三角形，黑色小勇士获得星光力量！` : challengeState.freeMode ? "从海龟绘图、micro:bit 到嵌套循环，你已经完成整条 Python 冒险路线。" : challengeState.awaitingInput ? "代码顺序正确。输入姓名后，程序才会继续执行下面的 print()。" : (round.question || stage.prompt);
@@ -2498,6 +2527,17 @@
       const challenge = isChallengeLevel();
       document.body.classList.toggle("challenge-active", challenge);
       document.body.classList.toggle("rpg-active", Boolean(item.rpg));
+      document.body.classList.toggle("illustrated-lesson", currentLevel >= 5 && currentLevel < 10);
+      $("#lessonWorldPreview").classList.toggle("hidden", currentLevel >= 5);
+      if (currentLevel < 5) {
+        $("#lessonWorldPreview").src = lessonArtworkUrl(`level-${currentLevel + 1}-world`);
+        lessonArtwork(`level-${currentLevel + 1}-world`);
+        lessonArtwork("turtle-sprite");
+        if (!item.drawing) lessonArtwork(`level-${currentLevel + 1}-wall`);
+      } else if (currentLevel < 10) {
+        const keys = currentLevel === 5 ? ["level-6-ready", "level-6-victory"] : item.stages.flatMap((_, i) => ["ready", "passed"].map(state => `level-${currentLevel + 1}-${i}-${state}`));
+        keys.forEach(lessonArtwork);
+      }
       if (item.rpg) for (let phase = 0; phase < 6; phase++) {
         const image = new Image(); image.src = `assets/rpg/forms/${item.rpg.artKey}-${phase}.webp?v=painted-v1`;
       }
@@ -2944,7 +2984,11 @@
         const grad = ctx.createLinearGradient(0,0,0,canvas.height);
         grad.addColorStop(0,item.palette.sky); grad.addColorStop(1,shade(item.palette.sky, 20));
         ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
-        drawBackgroundDetails(l, item);
+        const world = lessonArtwork(`level-${currentLevel + 1}-world`);
+        if (world) {
+          const scale = Math.max(canvas.width / world.width, canvas.height / world.height);
+          ctx.drawImage(world, (canvas.width - world.width * scale) / 2, (canvas.height - world.height * scale) / 2, world.width * scale, world.height * scale);
+        } else drawBackgroundDetails(l, item);
         if (item.drawing) {
           drawSketchBoard(item);
           drawSketch(item);
@@ -2960,7 +3004,7 @@
     function drawSketchBoard(item) {
       const pad = Math.min(canvas.width, canvas.height) * .09;
       ctx.save();
-      ctx.fillStyle = "rgba(255,255,255,.9)";
+      ctx.fillStyle = "rgba(255,255,255,.97)";
       roundedRect(pad, pad, canvas.width - pad * 2, canvas.height - pad * 1.65, Math.max(8,pad*.12));
       ctx.fill();
       ctx.strokeStyle = currentLevel === 2 ? "rgba(64,88,145,.13)" : "rgba(10,112,124,.14)";
@@ -2971,7 +3015,7 @@
       ctx.fillStyle = currentLevel === 2 ? "rgba(50,64,108,.55)" : "rgba(10,92,101,.58)";
       ctx.font = `900 ${Math.max(13,Math.min(canvas.width,canvas.height)*.027)}px "PingFang SC", sans-serif`;
       ctx.textAlign = "left"; ctx.textBaseline = "top";
-      ctx.fillText(currentLevel === 2 ? "FOR 循环绘图板" : "变量自增绘图板", pad * 1.25, pad * 1.25);
+      ctx.fillText(currentLevel === 2 ? "FOR 循环绘图板" : "变量自增绘图板", pad * 1.25, pad * 1.8);
       ctx.restore();
     }
 
@@ -2989,6 +3033,11 @@
 
     function drawSketchTurtle() {
       const s = Math.min(canvas.width,canvas.height) * .055;
+      const sprite = lessonArtwork("turtle-sprite");
+      if (sprite) {
+        ctx.save(); ctx.translate(sketchTurtle.x*canvas.width,sketchTurtle.y*canvas.height); ctx.rotate(sketchTurtle.heading + Math.PI/2);
+        ctx.drawImage(sprite, -s, -s, s*2, s*2); ctx.restore(); return;
+      }
       ctx.save(); ctx.translate(sketchTurtle.x*canvas.width,sketchTurtle.y*canvas.height); ctx.rotate(sketchTurtle.heading);
       ctx.fillStyle = "#48bb78";
       [[-.7,-.45],[.7,-.45],[-.7,.45],[.7,.45]].forEach(([x,y])=>{ctx.beginPath();ctx.ellipse(x*s,y*s,s*.28,s*.2,x>0?.5:-.5,0,Math.PI*2);ctx.fill();});
@@ -3046,8 +3095,17 @@
     }
     function drawCell(x,y,type,l,item) {
       const px=l.ox+x*l.cell, py=l.oy+y*l.cell, inset=l.cell*.045;
+      const wall = type !== "0" && lessonArtwork(`level-${currentLevel + 1}-wall`);
+      if (wall) {
+        ctx.save();
+        roundedRect(px+inset, py+inset, l.cell-inset*2, l.cell-inset*2, l.cell*.1);
+        ctx.clip(); ctx.drawImage(wall, px+inset, py+inset, l.cell-inset*2, l.cell-inset*2); ctx.restore();
+        return;
+      }
       if (type === "0") {
-        ctx.fillStyle=item.palette.floor; roundedRect(px+inset,py+inset,l.cell-inset*2,l.cell-inset*2,l.cell*.08); ctx.fill();
+        const stone = ctx.createLinearGradient(px,py,px+l.cell,py+l.cell);
+        stone.addColorStop(0, shade(item.palette.floor,12)); stone.addColorStop(1,shade(item.palette.floor,-22));
+        ctx.fillStyle=stone; roundedRect(px+inset,py+inset,l.cell-inset*2,l.cell-inset*2,l.cell*.08); ctx.fill();
         ctx.fillStyle="rgba(255,255,255,.35)"; ctx.beginPath(); ctx.arc(px+l.cell*.28,py+l.cell*.28,l.cell*.055,0,Math.PI*2); ctx.fill();
         if (currentLevel === 2) { ctx.fillStyle="rgba(50,72,120,.11)"; ctx.fillRect(px+l.cell*.47,py+l.cell*.16,l.cell*.06,l.cell*.68); }
         if (currentLevel === 3) { ctx.strokeStyle="rgba(12,108,127,.18)";ctx.lineWidth=l.cell*.025;ctx.beginPath();ctx.arc(px+l.cell*.55,py+l.cell*.55,l.cell*.18,0,Math.PI);ctx.stroke(); }
@@ -3112,6 +3170,11 @@
     }
     function drawTurtle(l,item,position=turtle) {
       const c=cellCenter(position.x,position.y,l), s=l.cell;
+      const sprite = lessonArtwork("turtle-sprite");
+      if (sprite) {
+        ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(position.dir*Math.PI/2);
+        ctx.drawImage(sprite, -s*.44, -s*.44, s*.88, s*.88); ctx.restore(); return;
+      }
       ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(position.dir*Math.PI/2);
       ctx.fillStyle="rgba(29,45,59,.18)"; ctx.beginPath(); ctx.ellipse(0,s*.21,s*.29,s*.11,0,0,Math.PI*2); ctx.fill();
       ctx.fillStyle="#48bb78";
