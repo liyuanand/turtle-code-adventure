@@ -43,6 +43,8 @@ try{
     await p.locator('[data-challenge-run]').click();await p.waitForFunction(()=>!document.querySelector('#cutsceneModal').classList.contains('hidden'));
     const frames=[];
     for(let frame=0;frame<3;frame++){
+     await p.waitForFunction(()=>!document.querySelector('#rpgCutscene').classList.contains('art-loading'));
+     await p.evaluate(()=>clearTimeout(cutsceneTimer));
      const art=await p.locator('#rpgCutscene').evaluate(e=>e.style.getPropertyValue('--cutscene-art'));frames.push(art);
      await p.evaluate(async()=>{const im=new Image();im.src=rpgArtworkUrl(cutsceneFrame);await im.decode()});
      if(frame<2)await p.locator('#cutsceneNextBtn').click();

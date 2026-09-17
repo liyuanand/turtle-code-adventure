@@ -1071,6 +1071,7 @@
       .rpg-battle { gap: 8px; }
       .rpg-unit-name, .rpg-form-label, .rpg-battle-caption { font-size: 11px; }
     }
+    .rpg-cutscene.art-loading .cutscene-art { opacity: .25; }
   </style>
 </head>
 <body>
@@ -1857,6 +1858,7 @@
     let challengeState = createChallengeState();
     let cutsceneFrame = 0;
     let cutsceneTimer = null;
+    let cutsceneRenderVersion = 0;
     let cutsceneDone = null;
 
     function defaultProgress() {
@@ -2139,7 +2141,7 @@
     }
     function rpgArtworkUrl(frame = null) {
       const phase = frame === null ? Math.min(3, challengeState.stage + (challengeState.roundPassed ? 1 : 0)) : 3 + frame;
-      return `assets/rpg/forms/${level().rpg.artKey}-${phase}.webp`;
+      return `assets/rpg/forms/${level().rpg.artKey}-${phase}.webp?v=painted-v1`;
     }
     function focusChallengeScene() {
       if (matchMedia("(max-width: 900px)").matches) {
@@ -2218,15 +2220,32 @@
       const scene = rpg.cutscene[cutsceneFrame];
       const player = $("#rpgCutscene");
       player.className = `rpg-cutscene shot-${scene.shot}`;
-      player.style.setProperty("--cutscene-art", `url('${rpgArtworkUrl(cutsceneFrame)}')`);
-      $("#cutsceneChapter").textContent = `${rpg.chapter} · 第 ${cutsceneFrame + 1} 幕 / ${rpg.cutscene.length}`;
+      const version = ++cutsceneRenderVersion;
+      const artwork = rpgArtworkUrl(cutsceneFrame);
+      const chapterLabel = `${rpg.chapter} · 第 ${cutsceneFrame + 1} 幕 / ${rpg.cutscene.length}`;
+      player.classList.add("art-loading");
+      $("#cutsceneChapter").textContent = chapterLabel + " · 画面加载中";
       $("#cutsceneBoss").replaceChildren();
       $("#cutsceneSpeaker").textContent = scene.speaker;
       $("#cutsceneText").textContent = scene.text;
       $("#cutsceneDots").innerHTML = rpg.cutscene.map((_, index) => `<span class="cutscene-dot${index === cutsceneFrame ? " active" : ""}"></span>`).join("");
       $("#cutsceneNextBtn").textContent = cutsceneFrame === rpg.cutscene.length - 1 ? "领取通关星星" : "下一幕";
       clearTimeout(cutsceneTimer);
-      cutsceneTimer = setTimeout(advanceCutscene, prefersReducedMotion ? 3200 : 4800);
+      cutsceneTimer = null;
+      const image = new Image();
+      image.onload = () => {
+        if (version !== cutsceneRenderVersion || $("#cutsceneModal").classList.contains("hidden")) return;
+        player.style.setProperty("--cutscene-art", `url('${artwork}')`);
+        player.classList.remove("art-loading");
+        $("#cutsceneChapter").textContent = chapterLabel;
+        // Give the learner the full reading time after the painting is visible.
+        cutsceneTimer = setTimeout(advanceCutscene, prefersReducedMotion ? 3200 : 4800);
+      };
+      image.onerror = () => {
+        if (version !== cutsceneRenderVersion || $("#cutsceneModal").classList.contains("hidden")) return;
+        $("#cutsceneChapter").textContent = chapterLabel + " · 图片加载失败，可点击下一幕";
+      };
+      image.src = artwork;
       playTone(480 + cutsceneFrame * 120, .1, "triangle");
     }
     function startRpgCutscene(done) {
@@ -2245,6 +2264,7 @@
       finishCutscene();
     }
     function finishCutscene() {
+      cutsceneRenderVersion += 1;
       clearTimeout(cutsceneTimer);
       cutsceneTimer = null;
       $("#cutsceneModal").classList.add("hidden");
@@ -2479,7 +2499,7 @@
       document.body.classList.toggle("challenge-active", challenge);
       document.body.classList.toggle("rpg-active", Boolean(item.rpg));
       if (item.rpg) for (let phase = 0; phase < 6; phase++) {
-        const image = new Image(); image.src = `assets/rpg/forms/${item.rpg.artKey}-${phase}.webp`;
+        const image = new Image(); image.src = `assets/rpg/forms/${item.rpg.artKey}-${phase}.webp?v=painted-v1`;
       }
       canvas.classList.toggle("hidden", challenge);
       $("#missionLab").classList.toggle("hidden", !challenge);
