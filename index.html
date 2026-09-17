@@ -628,9 +628,10 @@
     .quest-result { position: absolute; z-index: 4; left: 50%; bottom: 8px; transform: translateX(-50%); width: max-content; max-width: 92%; padding: 6px 10px; border-radius: 5px; background: rgba(15,28,45,.92); color: white; font-size: 12px; font-weight: 1000; line-height: 1.3; text-align: center; }
     .rpg-battle-scene {
       position: relative; width: min(650px, 100%); height: 218px; overflow: hidden; border: 3px solid rgba(255,255,255,.35); border-radius: 8px;
-      background-image: linear-gradient(90deg, rgba(8,20,37,.12), rgba(8,20,37,.5) 35%, #172840 60%, #243753), var(--rpg-art); background-position: center; background-size: cover;
+      background-image: linear-gradient(180deg, rgba(5,15,30,.08) 0 54%, rgba(5,15,30,.78) 100%), var(--rpg-art); background-position: center; background-size: cover;
       box-shadow: inset 0 -48px 54px rgba(7,17,30,.38);
     }
+    .rpg-battle-scene::after { content: ""; position: absolute; z-index: 4; right: 18%; top: 40%; width: 18px; height: 18px; border-radius: 50%; opacity: 0; background: white; box-shadow: 0 0 14px 8px #fff, 0 0 34px 20px #5de1ff, 0 0 58px 32px #ffda55; pointer-events: none; }
     .rpg-battle-hud { position: absolute; z-index: 5; top: 8px; left: 8px; right: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 38px; }
     .rpg-unit-card { padding: 5px 7px; border: 2px solid rgba(255,255,255,.8); border-radius: 6px; background: rgba(10,22,40,.86); color: white; box-shadow: 3px 3px 0 rgba(4,11,22,.45); }
     .rpg-unit-card.boss { text-align: right; }
@@ -639,43 +640,46 @@
     .rpg-hp-track { height: 7px; overflow: hidden; border: 1px solid rgba(255,255,255,.72); border-radius: 4px; background: #2b3445; }
     .rpg-hp-fill { display: block; width: var(--hp); height: 100%; background: #37d486; transition: width .45s ease; }
     .rpg-unit-card.boss .rpg-hp-fill { margin-left: auto; background: #f05b5b; }
-    .rpg-fighter { position: absolute; z-index: 3; bottom: 35px; display: grid; place-items: center; width: 72px; height: 72px; border: 4px solid #17223b; border-radius: 50%; background: rgba(255,255,255,.94); box-shadow: 6px 7px 0 rgba(10,20,35,.38); }
+    .rpg-fighter { display: none; }
     .rpg-fighter.hero { left: 10%; color: #23885a; }
     .rpg-fighter.hero .ui-icon { width: 50px; height: 50px; }
     .rpg-fighter.hero::after { content: ""; position: absolute; right: -12px; top: 36px; width: 31px; height: 9px; border: 3px solid #17223b; border-radius: 3px; background: #ef554d; transform: rotate(-16deg); }
     .rpg-fighter.boss { right: 10%; font-size: 40px; }
-    .rpg-spell { position: absolute; z-index: 4; left: 31%; right: 31%; top: 52%; height: 8px; opacity: 0; border-radius: 4px; background: #ffe057; box-shadow: 0 0 10px #fff, 0 0 24px #54d8ff; transform-origin: left center; }
+    .rpg-spell { position: absolute; z-index: 4; left: 24%; right: 23%; top: 54%; height: 8px; opacity: 0; border-radius: 4px; background: #ffe057; box-shadow: 0 0 10px #fff, 0 0 24px #54d8ff; transform-origin: left center; }
     .rpg-battle-scene.boss-hit .rpg-spell { animation: rpg-cast .72s ease-out both; }
-    .rpg-battle-scene.boss-hit .rpg-fighter.boss { animation: rpg-boss-hit .7s ease-out; }
-    .rpg-battle-scene.hero-hit .rpg-fighter.hero { animation: rpg-hero-hit .55s ease-out; }
+    .rpg-battle-scene.boss-hit::after { animation: rpg-impact .72s ease-out both; }
     .rpg-battle-scene.hero-hit { animation: rpg-scene-shake .42s ease-out; }
     .rpg-battle-caption { position: absolute; z-index: 6; left: 50%; bottom: 7px; transform: translateX(-50%); width: max-content; max-width: 92%; padding: 6px 10px; border: 2px solid rgba(255,255,255,.78); border-radius: 6px; background: rgba(8,20,37,.9); color: white; font-size: 11px; font-weight: 1000; text-align: center; }
     @keyframes rpg-cast { 0% { opacity: 0; transform: scaleX(.05); } 25% { opacity: 1; } 78% { opacity: 1; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1.14); } }
+    @keyframes rpg-impact { 0%,45% { opacity: 0; transform: scale(.15); } 68% { opacity: 1; transform: scale(1.15); } 100% { opacity: 0; transform: scale(1.7); } }
     @keyframes rpg-boss-hit { 35% { transform: translateX(12px) rotate(8deg) scale(.9); filter: brightness(2); } }
     @keyframes rpg-hero-hit { 35% { transform: translateX(-10px) rotate(-8deg); filter: saturate(.2) brightness(1.7); } }
     @keyframes rpg-scene-shake { 20%,60% { transform: translateX(-3px); } 40%,80% { transform: translateX(3px); } }
 
     .cutscene-backdrop { z-index: 95; padding: 16px; background: rgba(5,10,20,.92); backdrop-filter: blur(8px); }
     .rpg-cutscene { position: relative; width: min(1000px, 100%); aspect-ratio: 16 / 9; max-height: calc(100vh - 32px); overflow: hidden; border: 3px solid rgba(255,255,255,.82); border-radius: 8px; background: #081325; color: white; box-shadow: 0 28px 90px rgba(0,0,0,.55); }
-    .cutscene-art { position: absolute; inset: -3%; background-image: linear-gradient(180deg, rgba(6,14,28,.04), rgba(6,14,28,.64)), var(--cutscene-art); background-size: cover; background-position: center; transform: scale(1.06); }
+    .cutscene-art { position: absolute; inset: -3%; background-image: linear-gradient(180deg, rgba(6,14,28,.02), rgba(6,14,28,.62)), var(--cutscene-art); background-size: cover; background-position: center; background-repeat: no-repeat; transform: scale(1.06); }
+    .rpg-cutscene.shot-hero .cutscene-art { background-position: 28% center; }
+    .rpg-cutscene.shot-boss .cutscene-art { background-position: 72% center; }
+    .rpg-cutscene.shot-victory .cutscene-art { background-position: center; }
     .rpg-cutscene.shot-hero .cutscene-art { animation: cutscene-hero-camera 4.2s ease-out both; }
     .rpg-cutscene.shot-boss .cutscene-art { animation: cutscene-boss-camera 4.2s ease-out both; }
     .rpg-cutscene.shot-victory .cutscene-art { animation: cutscene-victory-camera 4.2s ease-out both; }
     .cutscene-vignette { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, transparent 30%, rgba(3,9,20,.42) 100%); pointer-events: none; }
     .cutscene-chapter { position: absolute; z-index: 4; top: 18px; left: 20px; padding: 7px 11px; border-left: 5px solid #ffcf45; background: rgba(5,13,26,.78); font-size: 12px; font-weight: 1000; }
-    .cutscene-skip { position: absolute; z-index: 8; top: 14px; right: 14px; min-height: 38px; padding: 0 13px; border: 1px solid rgba(255,255,255,.72); border-radius: 6px; background: rgba(5,13,26,.7); color: white; font-weight: 900; cursor: pointer; }
-    .cutscene-actor { position: absolute; z-index: 4; bottom: 112px; display: grid; place-items: center; width: 102px; height: 102px; border: 4px solid rgba(255,255,255,.9); border-radius: 50%; background: rgba(245,250,255,.94); box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+    .cutscene-skip { position: absolute; z-index: 8; top: 14px; right: 14px; min-height: 44px; padding: 0 13px; border: 1px solid rgba(255,255,255,.72); border-radius: 6px; background: rgba(5,13,26,.7); color: white; font-weight: 900; cursor: pointer; }
+    .cutscene-actor { display: none; }
     .cutscene-actor.hero { left: 9%; color: #23885a; animation: cutscene-hero-enter .8s ease-out both; }
     .cutscene-actor.hero .ui-icon { width: 74px; height: 74px; }
     .cutscene-actor.boss { right: 9%; font-size: 58px; animation: cutscene-boss-enter .85s ease-out both; }
     .shot-victory .cutscene-actor.hero { animation: cutscene-victory-hop .8s ease-in-out 2; }
     .shot-victory .cutscene-actor.boss { opacity: .25; transform: translateY(20px) scale(.72); filter: grayscale(1); }
     .cutscene-flash { position: absolute; z-index: 3; left: 50%; top: 43%; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 0 18px 9px #fff, 0 0 48px 24px #59d7ff, 0 0 85px 38px #ffd84e; animation: cutscene-flash 1.2s ease-out both; }
-    .cutscene-dialogue { position: absolute; z-index: 7; left: 18px; right: 18px; bottom: 18px; min-height: 92px; padding: 14px 158px 13px 16px; border: 3px solid rgba(255,255,255,.88); border-radius: 7px; background: rgba(6,15,30,.92); box-shadow: 7px 7px 0 rgba(0,0,0,.35); }
+    .cutscene-dialogue { position: absolute; z-index: 7; left: 18px; right: 18px; bottom: 18px; min-height: 92px; max-height: 38%; overflow: auto; padding: 14px 158px 13px 16px; border: 3px solid rgba(255,255,255,.88); border-radius: 7px; background: rgba(6,15,30,.92); box-shadow: 7px 7px 0 rgba(0,0,0,.35); }
     .cutscene-speaker { display: block; margin-bottom: 5px; color: #ffd85a; font-size: 12px; font-weight: 1000; }
     .cutscene-text { margin: 0; min-height: 42px; font-size: 16px; font-weight: 900; line-height: 1.55; }
     .cutscene-controls { position: absolute; z-index: 8; right: 30px; bottom: 31px; width: 126px; }
-    .cutscene-next { width: 100%; min-height: 42px; border: 0; border-radius: 6px; background: #ffd44d; color: #17223b; font-weight: 1000; cursor: pointer; box-shadow: 0 4px 0 #9f7410; }
+    .cutscene-next { width: 100%; min-height: 44px; border: 0; border-radius: 6px; background: #ffd44d; color: #17223b; font-weight: 1000; cursor: pointer; box-shadow: 0 4px 0 #9f7410; }
     .cutscene-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 7px; }
     .cutscene-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.35); }
     .cutscene-dot.active { background: #ffd44d; box-shadow: 0 0 8px #ffd44d; }
@@ -964,15 +968,21 @@
       .rpg-fighter.hero::after { right: -9px; top: 27px; width: 23px; height: 6px; border-width: 2px; }
       .rpg-battle-caption { bottom: 5px; padding: 4px 6px; font-size: 9px; }
       .cutscene-backdrop { padding: 0; }
-      .rpg-cutscene { width: 100%; height: 100%; max-height: none; border: 0; border-radius: 0; aspect-ratio: auto; }
-      .cutscene-art { inset: 0; background-position: center; }
+      .rpg-cutscene { width: 100%; height: 100vh; height: 100dvh; max-height: none; border: 0; border-radius: 0; aspect-ratio: auto; }
+      .cutscene-art,
+      .rpg-cutscene.shot-hero .cutscene-art,
+      .rpg-cutscene.shot-boss .cutscene-art,
+      .rpg-cutscene.shot-victory .cutscene-art {
+        inset: auto 8px calc(174px + env(safe-area-inset-bottom)); top: max(62px, calc(env(safe-area-inset-top) + 52px)); aspect-ratio: auto;
+        background-size: contain; background-position: center; background-color: #0b1729; transform: none;
+        border: 1px solid rgba(255,255,255,.3); border-radius: 6px; animation: cutscene-mobile-reveal .5s ease-out both;
+      }
+      .cutscene-vignette { display: none; }
       .cutscene-chapter { top: max(12px, env(safe-area-inset-top)); left: 10px; max-width: 70%; font-size: 10px; }
-      .cutscene-skip { top: max(10px, env(safe-area-inset-top)); right: 10px; min-height: 42px; }
-      .cutscene-actor { bottom: 160px; width: 72px; height: 72px; }
-      .cutscene-actor.hero { left: 7%; } .cutscene-actor.boss { right: 7%; font-size: 40px; }
-      .cutscene-actor.hero .ui-icon { width: 52px; height: 52px; }
-      .cutscene-dialogue { left: 10px; right: 10px; bottom: calc(12px + env(safe-area-inset-bottom)); min-height: 136px; padding: 13px 13px 62px; }
-      .cutscene-text { font-size: 15px; }
+      .cutscene-skip { top: max(10px, env(safe-area-inset-top)); right: 10px; min-height: 44px; }
+      .cutscene-flash { display: none; }
+      .cutscene-dialogue { left: 10px; right: 10px; bottom: calc(12px + env(safe-area-inset-bottom)); min-height: 148px; max-height: min(190px, 34dvh); padding: 13px 13px 62px; }
+      .cutscene-text { min-height: 0; font-size: 15px; }
       .cutscene-controls { right: 23px; bottom: calc(23px + env(safe-area-inset-bottom)); width: 132px; }
       .gate-frame { width: 122px; height: 142px; border-width: 10px; }
       .visitor { width: 64px; font-size: 10px; }
@@ -991,11 +1001,35 @@
       #missionLab.free-studio .scene-shell > p { display: none; }
       .challenge-options { grid-template-columns: 1fr; }
     }
+    @media (max-height: 500px) and (orientation: landscape) {
+      .cutscene-backdrop { padding: 0; }
+      .rpg-cutscene { width: 100%; height: 100vh; height: 100dvh; max-height: none; border: 0; border-radius: 0; aspect-ratio: auto; }
+      .cutscene-art,
+      .rpg-cutscene.shot-hero .cutscene-art,
+      .rpg-cutscene.shot-boss .cutscene-art,
+      .rpg-cutscene.shot-victory .cutscene-art {
+        inset: auto max(8px, env(safe-area-inset-right)) auto max(8px, env(safe-area-inset-left));
+        top: max(44px, calc(env(safe-area-inset-top) + 38px));
+        height: calc(100dvh - 166px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); aspect-ratio: auto;
+        background-size: contain; background-position: center; background-color: #0b1729; transform: none;
+        border: 1px solid rgba(255,255,255,.3); border-radius: 6px; animation: cutscene-mobile-reveal .5s ease-out both;
+      }
+      .cutscene-vignette, .cutscene-flash { display: none; }
+      .cutscene-chapter { top: max(6px, env(safe-area-inset-top)); }
+      .cutscene-skip { top: max(4px, env(safe-area-inset-top)); min-height: 44px; }
+      .cutscene-dialogue { bottom: calc(7px + env(safe-area-inset-bottom)); min-height: 108px; max-height: 118px; padding: 9px 142px 9px 12px; }
+      .cutscene-speaker { margin-bottom: 3px; }
+      .cutscene-text { font-size: 13px; line-height: 1.4; }
+      .cutscene-controls { right: calc(20px + env(safe-area-inset-right)); bottom: calc(18px + env(safe-area-inset-bottom)); width: 120px; }
+      .cutscene-next { min-height: 44px; }
+    }
+    @keyframes cutscene-mobile-reveal { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
     @media (prefers-reduced-motion: reduce) {
       .battle-hero { animation-duration: .01ms; transform: translateX(105px); }
       .battle-shape { animation-duration: .01ms; opacity: 0; }
       .battle-enemy { animation-duration: .01ms; opacity: .18; transform: translate(24px,34px) rotate(82deg); }
       .battle-impact, .firework { animation-duration: .01ms; opacity: 1; }
+      .rpg-cutscene .cutscene-art, .rpg-battle-scene, .rpg-battle-scene::after, .rpg-spell { animation-duration: .01ms !important; }
     }
 
     .rpg-fighter.boss { width: 102px; height: 102px; bottom: 37px; border: 0; border-radius: 0; background: none; box-shadow: none; }
@@ -1899,6 +1933,10 @@
       const eyes = defeated ? '<path d="M40 52 L51 63 M51 52 L40 63 M70 52 L81 63 M81 52 L70 63" fill="none"/>' : '<path d="M39 51 L53 55 L48 62 L40 60Z M67 55 L81 51 L80 60 L72 62Z" fill="#fff8cf"/><path d="M49 77 Q60 84 73 75" fill="none"/>';
       return `<svg class="boss-avatar${defeated ? " boss-defeated" : ""}" viewBox="0 0 120 120" aria-hidden="true"><g class="boss-body" fill="${color}" stroke="#18253e" stroke-width="4" stroke-linejoin="round">${bodies[rpg.bossKind]}${eyes}</g>${defeated ? '<path class="boss-core" d="M60 12 L72 28 L60 45 L48 28Z"/>' : ""}</svg>`;
     }
+    function rpgArtworkUrl() {
+      if (currentLevel >= 10 && currentLevel <= 14) return `assets/rpg/chapter-${currentLevel + 1}.jpg`;
+      return level().rpg?.art || "";
+    }
     function focusChallengeScene() {
       if (matchMedia("(max-width: 900px)").matches) {
         // Jump before rendering the result so the whole attack is visible on phones.
@@ -1937,12 +1975,13 @@
         visual = `<div class="life-story-scene party-story${challengeState.roundPassed ? " passed" : ""}" data-story-stage="${challengeState.stage}" role="img" aria-label="机器人用 turtle 圆形和半圆弧完成生日派对"><div class="life-badge">${escapeHtml(stage.badge)}</div><span class="party-balloons"></span>${renderRobotPreview(partyMood, "#39a8ff")}<div class="party-cake">★</div><strong class="life-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
       } else if (stage.scene === "quest-world" && level().rpg) {
         const rpg = level().rpg;
+        const artwork = rpgArtworkUrl();
         const bossHp = Math.max(0, 100 - challengeState.stage * 33 - (challengeState.roundPassed ? 34 : 0));
         const heroHp = Math.max(35, 100 - challengeState.failedAttempts * 12);
         const hitClass = challengeState.rpgHit === "boss" ? " boss-hit" : challengeState.rpgHit === "hero" ? " hero-hit" : "";
         const formName = rpg.forms[challengeState.stage];
         const caption = challengeState.roundPassed ? `${formName}已击破！${bossHp === 0 ? "全部形态击败，核心已净化！" : "核心显露，继续追击下一形态！"}` : `选择正确代码，施放${rpg.skill}`;
-        visual = `<div class="rpg-battle-scene${hitClass}" style="--rpg-art:url('${escapeHtml(rpg.art)}')" role="img" aria-label="源码骑士与${escapeHtml(rpg.boss)}的${escapeHtml(formName)}形态进行代码对战，${challengeState.roundPassed ? "形态已击破" : "等待施放技能"}"><div class="rpg-battle-hud"><div class="rpg-unit-card"><div class="rpg-unit-name"><span>源码骑士</span><span>${heroHp}%</span></div><div class="rpg-hp-track"><span class="rpg-hp-fill" style="--hp:${heroHp}%"></span></div></div><div class="rpg-unit-card boss"><div class="rpg-unit-name"><span>${escapeHtml(rpg.boss)}</span><span>${bossHp}%</span></div><div class="rpg-hp-track"><span class="rpg-hp-fill" style="--hp:${bossHp}%"></span></div></div></div><div class="rpg-fighter hero">${iconSvg("turtle")}</div><div class="rpg-spell"></div><span class="rpg-form-label">${challengeState.stage + 1} / ${rpg.forms.length} · ${escapeHtml(formName)}</span><div class="rpg-fighter boss" aria-hidden="true">${renderBossAvatar(rpg, challengeState.stage, challengeState.roundPassed)}</div><strong class="rpg-battle-caption">${escapeHtml(caption)}</strong></div>`;
+        visual = `<div class="rpg-battle-scene${hitClass}" style="--rpg-art:url('${escapeHtml(artwork)}')" role="img" aria-label="源码骑士与${escapeHtml(rpg.boss)}的${escapeHtml(formName)}形态进行代码对战，${challengeState.roundPassed ? "形态已击破" : "等待施放技能"}"><div class="rpg-battle-hud"><div class="rpg-unit-card"><div class="rpg-unit-name"><span>源码骑士</span><span>${heroHp}%</span></div><div class="rpg-hp-track"><span class="rpg-hp-fill" style="--hp:${heroHp}%"></span></div></div><div class="rpg-unit-card boss"><div class="rpg-unit-name"><span>${escapeHtml(rpg.boss)}</span><span>${bossHp}%</span></div><div class="rpg-hp-track"><span class="rpg-hp-fill" style="--hp:${bossHp}%"></span></div></div></div><div class="rpg-spell"></div><span class="rpg-form-label">${challengeState.stage + 1} / ${rpg.forms.length} · ${escapeHtml(formName)}</span><strong class="rpg-battle-caption">${escapeHtml(caption)}</strong></div>`;
       } else if (stage.scene === "quest-world") {
         visual = `<div class="lesson-quest-scene${challengeState.roundPassed ? " passed" : ""}" style="--quest-position:${escapeHtml(stage.scenePosition || "50%")}" role="img" aria-label="${escapeHtml(stage.title)}的冒险场景"><span class="quest-badge">${escapeHtml(stage.badge)}</span><span class="quest-object" aria-hidden="true">${escapeHtml(stage.emoji)}</span><strong class="quest-result">${escapeHtml(challengeState.roundPassed ? stage.result : stage.waiting)}</strong></div>`;
       } else if (["gate","visitors"].includes(stage.scene)) {
@@ -1973,7 +2012,7 @@
       const scene = rpg.cutscene[cutsceneFrame];
       const player = $("#rpgCutscene");
       player.className = `rpg-cutscene shot-${scene.shot}`;
-      player.style.setProperty("--cutscene-art", `url('${rpg.art}')`);
+      player.style.setProperty("--cutscene-art", `url('${rpgArtworkUrl()}')`);
       $("#cutsceneChapter").textContent = `${rpg.chapter} · 第 ${cutsceneFrame + 1} 幕 / ${rpg.cutscene.length}`;
       $("#cutsceneBoss").innerHTML = renderBossAvatar(rpg, rpg.forms.length - 1, true);
       $("#cutsceneSpeaker").textContent = scene.speaker;
