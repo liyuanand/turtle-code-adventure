@@ -19,7 +19,7 @@ try{
  fs.writeFileSync('/tmp/game-code-audit.json',JSON.stringify(await p.evaluate(()=>GAME_CONFIG.levels.map(l=>({name:l.name,example:l.example,stages:l.stages?.map(s=>({code:s.code,rounds:s.rounds.map(r=>({mode:r.mode,cards:r.cards,correct:r.correct}))}))}))),null,2));
  await p.evaluate(()=>{playerProfile.pendingScores={11:2};queueLeaderboardScore(11,3);queueLeaderboardScore(12,3);});
  assert.deepEqual(await p.evaluate(()=>playerProfile.pendingScores),{'11':3,'16':3});
- const passwords=['1818','1010','2121','9712','1001','0729'];
+ const passwords=['2000','1010','2121','9712','1001','0729'];
  for(let i=0;i<6;i++){await p.evaluate(i=>openPassword(i+10),i);await p.locator('#passwordInput').fill(passwords[i]);await p.locator('#passwordForm').evaluate(e=>e.requestSubmit());assert.equal(await p.evaluate(()=>currentLevel),i+10);}
  await p.evaluate(()=>selectLevel(10));
  const initial=await p.locator('.rpg-battle-art').getAttribute('src');
