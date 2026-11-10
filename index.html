@@ -1115,6 +1115,7 @@
     .quest-arcs > div { width: min(140px,45%); }
     .quest-download { color: #a9d9ff; font-size: 12px; min-height: 32px; }
     .quest-theme-blocks .list-cell, .quest-theme-blocks .quest-art-frame { border-radius: 2px; }
+    .atom-special{text-decoration:none;border-color:#397d83;background:#102d3b;color:#c3fff2;box-shadow:0 3px 0 #275863}.atom-special .level-num{background:#153c4b;color:#8fffe0}.atom-special:hover{background:#174455!important}.atom-special small{color:#a7dbcf}
   </style>
 </head>
 <body>
@@ -3742,6 +3743,14 @@
         btn.innerHTML = `<span class="level-num">${state.completed[index] ? "✓" : index + 1}</span><span class="level-copy"><strong>${item.shortName}</strong><small>${state.stars[index] ? "★".repeat(state.stars[index]) : unlocked ? "等待挑战" : item.password == null ? "口令待设置" : "直播解锁"}</small></span>${unlocked ? "" : `<span class="lock-mark">${iconSvg("lock")}</span>`}`;
         btn.addEventListener("click", () => unlocked ? selectLevel(index) : openPassword(index));
         map.appendChild(btn);
+        if (index === 17) {
+          const special = document.createElement("a");
+          special.className = "level-tab atom-special";
+          special.href = "atom-teacher/";
+          special.setAttribute("aria-label", "进入特别关卡：原子老师的源码之约，无需密码");
+          special.innerHTML = '<span class="level-num">✦</span><span class="level-copy"><strong>源码之约</strong><small>特别关 · 无需密码</small></span>';
+          map.appendChild(special);
+        }
       });
     }
 
@@ -4124,6 +4133,10 @@
       $("#rewardTitle").textContent = "本关通关奖励";
       $("#rewardText").textContent = "记得截图发给老师，你获得一颗4500积分赤星源码蛋哦！";
       $("#nextActionBtn").textContent = last ? "打开 21 关知识地图" : "看看下一张地图";
+      if (currentLevel === 17) {
+        $("#nextHint").textContent = "原子老师在下一站等你！进入无需密码的特别关卡，点亮四枚成长印记。";
+        $("#nextActionBtn").textContent = "进入特别关 · 源码之约";
+      }
       const finishFlow = () => beginLeaderboardFlow(currentLevel + 1, state.stars[currentLevel]);
       if (level().rpg) startRpgCutscene(() => { launchConfetti(); finishFlow(); });
       else finishFlow();
@@ -4467,6 +4480,7 @@
       $("#replayBtn").addEventListener("click", () => { $("#completeModal").classList.add("hidden"); program=[]; challengeState=createChallengeState(); resetBoard(); renderProgram(); });
       $("#nextActionBtn").addEventListener("click", () => {
         $("#completeModal").classList.add("hidden");
+        if (currentLevel === 17) { location.href = "atom-teacher/"; return; }
         if(currentLevel < GAME_CONFIG.levels.length-1) {
           const next=currentLevel+1; state.unlocked.includes(next)?selectLevel(next):openPassword(next);
         } else {
@@ -4513,6 +4527,10 @@
     function init() {
       initializeLevelParams(); setupEvents(); renderAll(); resetBoard(false);
       if(state.guideSeen) $("#guideModal").classList.add("hidden");
+      if (new URLSearchParams(location.search).get("resume") === "19") {
+        $("#guideModal").classList.add("hidden");
+        state.unlocked.includes(18) ? selectLevel(18) : openPassword(18);
+      }
       if(playerProfile.displayName && Object.keys(playerProfile.pendingScores).length) flushPendingScores().catch(()=>{});
       window.TurtleGame = { config: GAME_CONFIG, selectLevel, resetBoard, getState: () => ({currentLevel,program:[...program],turtle:{...turtle},progress:{...state}}) };
     }
