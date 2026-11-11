@@ -10,3 +10,80 @@
 .screenshot-cta span{display:block;font-size:13px;margin-top:6px;font-weight:600;opacity:.85}
 @keyframes cta-pulse{0%,100%{box-shadow:0 0 20px #ffcc4d55,0 4px 0 #b8741a}50%{box-shadow:0 0 38px #ffcc4dbb,0 4px 0 #b8741a}}
 @media(max-width:650px){.screenshot-cta{padding:14px 12px}.screenshot-cta strong{font-size:15px}.screenshot-cta span{font-size:12px}}
+
+/* Keep the mobile keepsake and its controls together in the visible viewport. */
+@media (max-width: 650px) {
+  body:has(#stage[data-scene="card"]) .shell {
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+  .shell:has(#stage[data-scene="card"]) > :is(.adventure-nav, header, .topline, .bottom) { display: none; }
+  #stage[data-scene="card"] { min-height: 0; border: 0; clip-path: none; background: none; box-shadow: none; }
+  #stage[data-scene="card"]::before, #stage[data-scene="card"]::after { display: none; }
+  .card-page { padding: 0; }
+  .keepsake { padding: 12px 14px !important; }
+  .keepsake::before { inset: 5px; }
+  .keepsake-top { padding-bottom: 6px; }
+  .keepsake-title { padding: 8px 68px 3px 0; }
+  .keepsake .keepsake-title h2 { font-size: 25px; margin: 3px 0 0; }
+  .keepsake-title h2 > span { margin-top: 4px; }
+  .completion-seal { top: 13px; width: 48px; height: 48px; gap: 2px; }
+  .keepsake-hero { min-height: 0; }
+  .explorer h3 { font-size: 21px; margin: 3px 0; }
+  .keepsake .explorer p, .keepsake-message > strong span { display: none; }
+  .egg-showcase { min-height: 0; }
+  .egg-showcase .egg { width: 90px; height: 86px; }
+  .egg-orbit { width: 70px; height: 70px; top: 8px; }
+  .keepsake-badges { margin: 6px 0 8px; }
+  .keepsake-badges > div { padding: 5px 2px; }
+  .keepsake-badges b { font-size: 15px; margin-bottom: 2px; }
+  .keepsake-records > div { padding: 0 0 5px; }
+  .keepsake-records strong { font-size: 15px; margin-top: 2px; }
+  .keepsake-wish, .keepsake-future { margin-top: 6px; padding-left: 8px; }
+  .keepsake .keepsake-wish p, .keepsake .keepsake-future p { margin-top: 2px; line-height: 1.4; }
+  .keepsake-message { margin: 8px 0 5px; padding-top: 5px; }
+  .keepsake .keepsake-message p { font-size: 12px; line-height: 1.4; letter-spacing: 0; margin: 3px 0; }
+  .keepsake-message p br { display: none; }
+  .keepsake-message > strong { font-size: 10px; }
+  .keepsake-footer { padding-top: 5px; }
+  .keepsake .keepsake-footer p { margin-top: 1px; }
+  .card-page .toolbar { margin-top: 7px; gap: 6px; }
+  .card-page .toolbar > * { font-size: 13px; padding: 8px 12px; min-height: 44px; }
+  .card-page > .notice { display: none; }
+}
+@media (max-width: 650px) {
+  .keepsake .egg-showcase .egg { width: 76px; height: 72px; margin: 0; }
+  .egg-orbit { width: 58px; height: 58px; }
+  .keepsake-footer > div { display: none; } /* The reward and claim instructions appear in the callout below. */
+  .keepsake-footer { justify-content: flex-end; }
+  .screenshot-cta { margin-top: 6px; padding: 5px 8px; animation: none; box-shadow: none; }
+  .screenshot-cta-tag { display: none; }
+  .screenshot-cta strong { font-size: 13px; letter-spacing: 0; }
+  .screenshot-cta span { font-size: 10px; margin-top: 1px; }
+}
+@media (max-width: 650px) and (max-height: 700px) {
+  .keepsake-top, .keepsake-message > span { display: none; }
+  .keepsake-message { margin-top: 5px; }
+  .keepsake-title { padding-top: 2px; }
+  .completion-seal { top: 8px; }
+  .keepsake-badges { margin: 4px 0 5px; }
+  .keepsake-wish, .keepsake-future { margin-top: 4px; }
+}
+@media (max-width: 650px) and (max-height: 700px) {
+  .keepsake .keepsake-title h2 { font-size: 22px; letter-spacing: 2px; }
+  .keepsake-title h2 > span { display: inline; margin-left: 5px; letter-spacing: 1px; }
+  .explorer h3 { font-size: 17px; line-height: 1.2; }
+  .keepsake .egg-showcase .egg { height: 59px; }
+  .egg-orbit { width: 48px; height: 48px; }
+  .keepsake-message > strong { display: none; }
+  .keepsake .keepsake-message p { font-size: 11px; }
+  .keepsake .keepsake-wish p, .keepsake .keepsake-future p { font-size: 11px; }
+  .keepsake-badges b { font-size: 13px; }
+  .completion-seal { width: 41px; height: 41px; }
+}
+@media (max-width: 650px) {
+  .completion-seal strong, .completion-seal span { white-space: nowrap; overflow-wrap: normal; }
+}
+@media (max-width: 650px) and (max-height: 700px) {
+  .completion-seal strong { font-size: 12px; }
+  .completion-seal span { font-size: 7px; }
+}
